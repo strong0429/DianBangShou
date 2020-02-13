@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.percent.PercentRelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground">
+
+    <Button
+        android:id="@+id/supp_del"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/selector_button_bg_s"
+        app:layout_widthPercent="35%"
+        app:layout_marginLeftPercent="10%"
+        android:layout_marginBottom="16dp"
+        style="@style/Button_Text"
+        android:text="删除"/>
+    <Button
+        android:id="@+id/supp_edit"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/selector_button_bg"
+        app:layout_widthPercent="35%"
+        app:layout_marginRightPercent="10%"
+        android:layout_marginBottom="16dp"
+        style="@style/Button_Text"
+        android:text="保存"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_above="@id/supp_del"
+        android:layout_margin="8dp"
+        android:gravity="center_vertical">
+
+        <EditText
+            android:id="@+id/supp_name"
+            android:layout_width="match_parent"
+            android:layout_margin="4dp"
+            android:paddingLeft="8dp"
+            style="@style/EditText"
+            android:hint="输入供应商名称"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/supp_name"
+            android:layout_alignEnd="@id/supp_name"
+            android:layout_alignRight="@id/supp_name"
+            android:layout_margin="8dp"
+            android:textColor="@color/colorPrimary"
+            android:text="供应商"/>
+
+        <EditText
+            android:id="@+id/supp_contacter"
+            android:layout_width="match_parent"
+            android:layout_below="@id/supp_name"
+            android:layout_margin="4dp"
+            android:paddingLeft="8dp"
+            style="@style/EditText"
+            android:hint="输入供应商联系人"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/supp_contacter"
+            android:layout_alignEnd="@id/supp_contacter"
+            android:layout_alignRight="@id/supp_contacter"
+            android:layout_margin="8dp"
+            android:textColor="@color/colorPrimary"
+            android:text="联系人"/>
+
+        <EditText
+            android:id="@+id/supp_tel"
+            android:layout_width="match_parent"
+            android:layout_below="@id/supp_contacter"
+            android:layout_margin="4dp"
+            android:paddingLeft="8dp"
+            style="@style/EditText"
+            android:inputType="phone"
+            android:hint="输入供应商电话"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/supp_tel"
+            android:layout_alignEnd="@id/supp_tel"
+            android:layout_alignRight="@id/supp_tel"
+            android:layout_margin="8dp"
+            android:textColor="@color/colorPrimary"
+            android:text="电话"/>
+
+        <EditText
+            android:id="@+id/supp_addr"
+            android:layout_width="match_parent"
+            android:layout_below="@id/supp_tel"
+            android:layout_margin="4dp"
+            android:paddingLeft="8dp"
+            style="@style/EditText"
+            android:hint="输入供应商地址"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/supp_addr"
+            android:layout_alignEnd="@id/supp_addr"
+            android:layout_alignRight="@id/supp_addr"
+            android:layout_margin="8dp"
+            android:textColor="@color/colorPrimary"
+            android:text="地址"/>
+    </RelativeLayout>
+
+</android.support.percent.PercentRelativeLayout>

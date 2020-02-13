@@ -1,0 +1,104 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. Theme.AppCompat.Light.DarkActionBar-->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="NoTitleTranslucentTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+
+    <style name="CustomProgressDialog" parent="Theme.AppCompat.Dialog">
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="colorAccent">#ffff</item>
+    </style>
+
+    <style name="TabText">
+        <item name="android:layout_height">48dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">@color/colorTab</item>
+        <item name="android:textColor">@color/colorTabText</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="TabText_Title">
+        <item name="android:layout_height">48dp</item>
+        <item name="android:background">@color/colorTabTitle</item>
+        <item name="android:textColor">@color/colorTabTitleText</item>
+        <item name="android:paddingBottom">2dp</item>
+        <item name="android:gravity">bottom|center_horizontal</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="Title">
+        <item name="android:background">@color/colorPrimary</item>
+        <item name="android:textColor">@android:color/primary_text_dark</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="Title_1" parent="Title">
+        <item name="android:background">@color/colorPrimaryDark</item>
+        <item name="android:textColor">#000</item>
+    </style>
+
+    <style name="CommonText">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:padding">4dp</item>
+        <item name="android:textColor">#000</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="EditText">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="edit_hint" parent="CommonText">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="CommonText_1" parent="CommonText">
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:padding">0dp</item>
+    </style>
+
+    <style name="CommonText_2" parent="CommonText">
+        <item name="android:padding">0dp</item>
+    </style>
+
+    <style name="CommonTitle" parent="CommonText">
+        <item name="android:textColor">@android:color/primary_text_dark</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:gravity">center_horizontal</item>
+    </style>
+
+    <style name="Button_Text">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@drawable/selector_button_txtcolor</item>
+    </style>
+
+    <style name="Button_Text_S">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@drawable/selector_button_txtcolor_s</item>
+    </style>
+
+    <style name="Tablayout_Text_Style">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+</resources>

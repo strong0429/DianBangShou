@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent">
+
+    <SurfaceView
+        android:id="@+id/capture_preview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <android.support.percent.PercentRelativeLayout
+        android:id="@+id/capture_container"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_alignParentTop="true">
+
+        <ImageView
+            android:id="@+id/capture_mask_top"
+            android:layout_width="match_parent"
+            app:layout_heightPercent="15%"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:background="@drawable/shadow"/>
+
+        <ImageView
+            android:id="@+id/capture_mask_left"
+            app:layout_widthPercent="20%"
+            app:layout_heightPercent="70%"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/capture_mask_top"
+            android:background="@drawable/shadow"/>
+
+        <RelativeLayout
+            android:id="@+id/capture_crop_view"
+            app:layout_widthPercent="60%"
+            app:layout_heightPercent="70%"
+            android:layout_toEndOf="@+id/capture_mask_left"
+            android:layout_below="@id/capture_mask_top"
+            android:background="@drawable/zxing_code_bg">
+            <ImageView
+                android:id="@+id/capture_scan_line"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:contentDescription="@null"
+                android:src="@drawable/zxing_line"/>
+        </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/capture_mask_right"
+            app:layout_widthPercent="20%"
+            app:layout_heightPercent="70%"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/capture_mask_top"
+            android:background="@drawable/shadow"/>
+
+        <ImageView
+            android:id="@+id/capture_mask_bottom"
+            android:layout_width="match_parent"
+            android:layout_below="@+id/capture_crop_view"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/shadow"/>
+
+        <ImageButton
+            android:id="@+id/flash_switch"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_margin="8dp"
+            android:layout_toEndOf="@id/capture_crop_view"
+            android:background="@drawable/flash_on"
+            android:tag="off"/>
+
+    </android.support.percent.PercentRelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/layout_barcode"
+        android:layout_below="@+id/capture_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorDisabledDark"
+        android:padding="4dp">
+
+        <EditText
+            android:id="@+id/edit_barcode"
+            android:layout_height="32dp"
+            android:layout_width="match_parent"
+            android:layout_centerVertical="true"
+            android:background="@color/colorDisabledLight"
+            android:layout_margin="8dp"
+            android:padding="4dp"
+            android:gravity="center"
+            android:inputType="number"
+            android:textSize="16sp"/>
+
+        <ImageButton
+            android:id="@+id/barcode_input"
+            android:layout_width="36dp"
+            android:layout_height="28dp"
+            android:layout_alignEnd="@id/edit_barcode"
+            android:layout_alignBottom="@id/edit_barcode"
+            android:layout_marginEnd="4dp"
+            android:background="@drawable/keyboard"/>
+    </RelativeLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_sale_record"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/layout_barcode"
+        android:background="#eee">
+    </android.support.v7.widget.RecyclerView>
+</RelativeLayout>

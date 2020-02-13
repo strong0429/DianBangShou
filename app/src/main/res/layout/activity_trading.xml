@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.xingdhl.www.storehelper.Trading.TradingActivity">
+
+    <android.support.design.widget.TabLayout
+        android:id="@+id/tablayout_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:tabBackground="@drawable/selector_tablayout"
+        app:tabIndicatorColor="#FFF"
+        app:tabIndicatorHeight="4dp"
+        app:tabTextAppearance="@style/Tablayout_Text_Style"
+        app:tabSelectedTextColor="#FFF"
+        app:tabTextColor="@color/colorDisabled">
+
+    </android.support.design.widget.TabLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/trade_pager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tablayout_title"
+        android:layout_above="@id/button_submit">
+
+    </android.support.v4.view.ViewPager>
+
+    <ImageView
+        android:id="@+id/shop_cart"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_margin="4dp"
+        android:layout_alignParentBottom="true"
+        android:scaleType="fitXY"
+        android:src="@drawable/rmb"/>
+
+    <Button
+        android:id="@+id/button_submit"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/selector_button_bg"
+        android:layout_margin="4dp"
+        style="@style/Button_Text"
+        android:text="@string/trade_pay"/>
+
+    <TextView
+        android:id="@+id/total_money"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/shop_cart"
+        android:layout_toRightOf="@id/shop_cart"
+        android:layout_alignBottom="@id/shop_cart"
+        android:layout_marginBottom="12dp"
+        android:text="@string/trade_total"
+        android:textColor="@android:color/holo_red_dark"
+        android:textSize="16sp"
+        android:textStyle="bold"/>
+</RelativeLayout>

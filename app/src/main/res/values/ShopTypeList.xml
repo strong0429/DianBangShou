@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="shop_type_array">
+        <item>-- 请选择经营类别 --</item>
+        <item>日常用品</item>
+        <item>烟酒饮料</item>
+        <item>生鲜蔬菜</item>
+        <item>五金配件</item>
+        <item>地方特产</item>
+        <item>服装</item>
+    </string-array>
+</resources>

@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent">
+
+    <SurfaceView
+        android:id="@+id/capture_preview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <android.support.percent.PercentRelativeLayout
+        android:id="@+id/capture_container"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_alignParentTop="true">
+
+        <ImageView
+            android:id="@+id/capture_mask_top"
+            android:layout_width="match_parent"
+            app:layout_heightPercent="15%"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:background="@drawable/shadow"/>
+
+        <ImageView
+            android:id="@+id/capture_mask_left"
+            app:layout_widthPercent="20%"
+            app:layout_heightPercent="70%"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/capture_mask_top"
+            android:background="@drawable/shadow"/>
+
+        <RelativeLayout
+            android:id="@+id/capture_crop_view"
+            app:layout_widthPercent="60%"
+            app:layout_heightPercent="70%"
+            android:layout_toRightOf="@id/capture_mask_left"
+            android:layout_toEndOf="@id/capture_mask_left"
+            android:layout_below="@id/capture_mask_top"
+            android:background="@drawable/zxing_code_bg">
+            <ImageView
+                android:id="@+id/capture_scan_line"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:contentDescription="@null"
+                android:src="@drawable/zxing_line"/>
+        </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/capture_mask_right"
+            app:layout_widthPercent="20%"
+            app:layout_heightPercent="70%"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/capture_mask_top"
+            android:background="@drawable/shadow"/>
+
+        <ImageView
+            android:id="@+id/capture_mask_bottom"
+            android:layout_width="match_parent"
+            android:layout_below="@id/capture_crop_view"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/shadow"/>
+
+        <Button
+            android:id="@+id/flash_switch"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_margin="8dp"
+            android:layout_toEndOf="@id/capture_crop_view"
+            android:background="@drawable/flash_on"
+            android:tag="off"/>
+
+    </android.support.percent.PercentRelativeLayout>
+
+    <android.support.percent.PercentRelativeLayout
+        android:id="@+id/layout_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorBackground"
+        android:layout_below="@id/capture_container"
+        android:layout_above="@id/button_layout"
+        android:padding="12dp"
+        android:gravity="center_vertical">
+
+        <EditText
+            android:id="@+id/goods_barcode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:textSize="16sp"
+            android:inputType="number"
+            android:singleLine="true"
+            android:enabled="false"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/goods_barcode"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/colorPrimary"
+            android:text="商品条码"/>
+        <Button
+            android:id="@+id/key_input"
+            android:layout_width="36dp"
+            android:layout_height="28dp"
+            android:layout_alignEnd="@id/goods_barcode"
+            android:layout_alignRight="@id/goods_barcode"
+            android:background="@drawable/keyboard"/>
+
+        <EditText
+            android:id="@+id/goods_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/goods_barcode"
+            android:gravity="center_horizontal"
+            android:textSize="16sp"
+            android:singleLine="true"
+            android:enabled="false"/>
+        <TextView
+            android:id="@+id/title_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/goods_name"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/colorPrimary"
+            android:text="商品名称"/>
+
+        <EditText
+            android:id="@+id/goods_spec"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/goods_name"
+            android:gravity="center_horizontal"
+            android:textSize="16sp"
+            android:singleLine="true"
+            android:enabled="false"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/goods_spec"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/colorPrimary"
+            android:text="商品规格"/>
+
+        <EditText
+            android:id="@+id/goods_count"
+            android:layout_below="@id/goods_spec"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:inputType="numberDecimal"
+            app:layout_widthPercent="48%"
+            android:textSize="16sp"
+            android:singleLine="true"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_alignTop="@id/goods_count"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/colorPrimary"
+            android:text="数量"/>
+
+        <EditText
+            android:id="@+id/goods_unit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/goods_spec"
+            android:layout_toEndOf="@id/goods_count"
+            android:layout_toRightOf="@id/goods_count"
+            app:layout_marginLeftPercent="4%"
+            android:gravity="center_horizontal"
+            android:singleLine="true"
+            android:textSize="16sp"
+            android:text="个"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/goods_unit"
+            android:layout_alignStart="@id/goods_unit"
+            android:layout_alignTop="@id/goods_unit"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/colorPrimary"
+            android:text="单位"/>
+
+        <EditText
+            android:id="@+id/buy_price"
+            app:layout_widthPercent="48%"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/goods_count"
+            android:gravity="center_horizontal"
+            android:inputType="numberDecimal"
+            android:textSize="16sp"
+            android:singleLine="true"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/buy_price"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/colorPrimary"
+            android:text="购价"/>
+
+        <EditText
+            android:id="@+id/goods_price"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/goods_unit"
+            android:layout_toEndOf="@id/buy_price"
+            android:layout_toRightOf="@id/buy_price"
+            app:layout_marginLeftPercent="4%"
+            android:gravity="center_horizontal"
+            android:inputType="numberDecimal"
+            android:textSize="16sp"
+            android:singleLine="true"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/goods_price"
+            android:layout_alignStart="@id/goods_price"
+            android:layout_alignTop="@id/goods_price"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/colorPrimary"
+            android:text="售价"/>
+
+        <Spinner
+            android:id="@+id/spinner_supp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/goods_price"
+            android:layout_marginTop="12dp"
+            android:padding="4dp"
+            android:spinnerMode="dialog"/>
+
+    </android.support.percent.PercentRelativeLayout>
+
+    <android.support.percent.PercentRelativeLayout
+        android:id="@+id/button_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:paddingBottom="8dp"
+        android:background="@color/colorBackground">
+        <Button
+            android:id="@+id/button_ok"
+            android:layout_centerInParent="true"
+            android:layout_height="wrap_content"
+            app:layout_widthPercent="70%"
+            android:background="@drawable/selector_button_bg"
+            style="@style/Button_Text"
+            android:text="@string/button_ok"/>
+    </android.support.percent.PercentRelativeLayout>
+</RelativeLayout>

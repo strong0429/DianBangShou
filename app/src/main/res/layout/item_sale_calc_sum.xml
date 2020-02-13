@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="2dp"
+    android:layout_marginTop="2dp">
+
+    <TextView
+        android:id="@+id/goods_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:padding="2dp"
+        android:maxLines="1"
+        tools:text="项目"/>
+
+    <TextView
+        android:id="@+id/sale_amount"
+        android:layout_width="64dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:gravity="center"
+        android:padding="2dp"
+        android:singleLine="true"
+        tools:text="销售额"/>
+
+    <TextView
+        android:id="@+id/sale_profit"
+        android:layout_width="64dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:padding="2dp"
+        android:gravity="center"
+        android:singleLine="true"
+        tools:text="销售利润"/>
+
+    <TextView
+        android:id="@+id/profit_rate"
+        android:layout_width="48dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:padding="2dp"
+        android:gravity="center"
+        android:singleLine="true"
+        tools:text="利润率"/>
+
+    <TextView
+        android:id="@+id/profit_proportion"
+        android:layout_width="48dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:padding="2dp"
+        android:gravity="center"
+        android:singleLine="true"
+        tools:text="利润比"/>
+</LinearLayout>

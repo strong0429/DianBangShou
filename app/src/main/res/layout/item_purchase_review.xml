@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.percent.PercentRelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tool="http://schemas.android.com/tools"
+    android:background="@color/colorBackground"
+    android:layout_marginBottom="4dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginLeft="8dp"
+    android:layout_marginRight="8dp"
+    android:padding="4dp">
+
+    <TextView
+        android:id="@+id/goods_name"
+        app:layout_widthPercent="48%"
+        app:layout_marginLeftPercent="2%"
+        style="@style/CommonText"
+        tool:text="商品名称"/>
+    <TextView
+        android:id="@+id/goods_barcode"
+        app:layout_widthPercent="48%"
+        app:layout_marginRightPercent="2%"
+        android:layout_toEndOf="@id/goods_name"
+        android:layout_toRightOf="@id/goods_name"
+        style="@style/CommonText"
+        tool:text="商品条码"/>
+
+    <View
+        android:id="@+id/title_-"
+        android:layout_height="2dp"
+        android:layout_width="match_parent"
+        android:layout_below="@id/goods_name"
+        android:background="@color/colorDisabledLight"/>
+
+    <TextView
+        android:id="@+id/goods_count"
+        app:layout_widthPercent="40%"
+        app:layout_marginLeftPercent="2%"
+        android:layout_below="@id/title_-"
+        style="@style/CommonText"
+        android:textSize="14sp"
+        tool:text="数量：100 件"/>
+    <TextView
+        android:id="@+id/goods_supplier"
+        app:layout_widthPercent="56%"
+        app:layout_marginRightPercent="2%"
+        android:layout_below="@id/title_-"
+        android:layout_toEndOf="@id/goods_count"
+        android:layout_toRightOf="@id/goods_count"
+        style="@style/CommonText"
+        android:textSize="14sp"
+        tool:text="供应商："/>
+
+    <TextView
+        android:id="@+id/goods_price"
+        app:layout_widthPercent="40%"
+        android:layout_below="@id/goods_count"
+        android:layout_alignStart="@id/goods_count"
+        android:layout_alignLeft="@id/goods_count"
+        style="@style/CommonText"
+        android:textSize="14sp"
+        tool:text="单价：100.00 元"/>
+    <TextView
+        android:id="@+id/goods_buyer"
+        app:layout_widthPercent="56%"
+        app:layout_marginRightPercent="2%"
+        android:layout_below="@id/goods_supplier"
+        android:layout_toEndOf="@id/goods_price"
+        android:layout_toRightOf="@id/goods_price"
+        style="@style/CommonText"
+        android:textSize="14sp"
+        tool:text="采购员：18926464845"/>
+
+    <TextView
+        android:id="@+id/goods_sum"
+        app:layout_widthPercent="40%"
+        android:layout_below="@id/goods_price"
+        android:layout_alignStart="@id/goods_count"
+        android:layout_alignLeft="@id/goods_count"
+        style="@style/CommonText"
+        android:textSize="14sp"
+        tool:text="总价：100.00 元"/>
+    <TextView
+        android:id="@+id/purchase_date"
+        app:layout_widthPercent="56%"
+        android:layout_below="@id/goods_buyer"
+        android:layout_toEndOf="@id/goods_sum"
+        android:layout_toRightOf="@id/goods_sum"
+        style="@style/CommonText"
+        android:textSize="14sp"
+        tool:text="日期：2018-05-08"/>
+
+</android.support.percent.PercentRelativeLayout>

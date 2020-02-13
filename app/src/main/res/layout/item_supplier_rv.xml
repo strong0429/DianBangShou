@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp">
+
+    <TextView
+        android:id="@+id/title_name"
+        android:layout_width="72dp"
+        android:layout_margin="4dp"
+        style="@style/CommonText"
+        android:text="供应商："/>
+    <TextView
+        android:id="@+id/supp_name"
+        android:layout_width="match_parent"
+        android:layout_toEndOf="@id/title_name"
+        android:layout_toRightOf="@id/title_name"
+        android:layout_margin="4dp"
+        style="@style/CommonText"
+        tools:text="星点互联网络技术有限公司"/>
+
+    <TextView
+        android:id="@+id/title_contacter"
+        android:layout_width="72dp"
+        android:layout_below="@id/title_name"
+        android:layout_margin="4dp"
+        style="@style/CommonText"
+        android:text="联系人："/>
+    <TextView
+        android:id="@+id/supp_contacter"
+        android:layout_width="match_parent"
+        android:layout_below="@id/supp_name"
+        android:layout_toEndOf="@id/title_contacter"
+        android:layout_toRightOf="@id/title_contacter"
+        android:layout_margin="4dp"
+        style="@style/CommonText"
+        tools:text="张三四"/>
+
+    <TextView
+        android:id="@+id/title_phone"
+        android:layout_width="72dp"
+        android:layout_below="@id/title_contacter"
+        android:layout_margin="4dp"
+        style="@style/CommonText"
+        android:text="电话："/>
+    <TextView
+        android:id="@+id/supp_tel"
+        android:layout_width="match_parent"
+        android:layout_below="@id/supp_contacter"
+        android:layout_toEndOf="@id/title_contacter"
+        android:layout_toRightOf="@id/title_contacter"
+        android:layout_margin="4dp"
+        style="@style/CommonText"
+        tools:text="0755-88888888"/>
+
+</RelativeLayout>

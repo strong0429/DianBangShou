@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/shop_pager"
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:background="@drawable/title_bg_shape">
+
+        </android.support.v4.view.ViewPager>
+
+        <TextView
+            android:id="@+id/sell_sum_title"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@color/colorPrimaryDark"
+            android:gravity="center_vertical"
+            android:paddingStart="8dp"
+            android:paddingLeft="8dp"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:textColor="#fff"
+            android:text="@string/sell_calc_title"/>
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/sell_calc_pager"
+            android:layout_height="0dp"
+            android:layout_width="match_parent"
+            android:layout_weight="1">
+
+        </android.support.v4.view.ViewPager>
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/layout_calc_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:tabBackground="@drawable/selector_tablayout"
+            app:tabIndicatorColor="@color/colorPrimaryDark"
+            app:tabSelectedTextColor="#FFF"
+            app:tabTextAppearance="@style/Tablayout_Text_Style"
+            app:tabTextColor="@color/colorDisabled"
+            app:tabIndicatorHeight="2dp">
+
+        </android.support.design.widget.TabLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:orientation="horizontal"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp">
+
+            <ImageButton
+                android:id="@+id/button_purchase"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:background="@null"
+                android:scaleType="centerInside"
+                android:src="@drawable/selector_purchase"/>
+
+            <ImageButton
+                android:id="@+id/button_sale"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:background="@null"
+                android:scaleType="centerInside"
+                android:src="@drawable/selector_sell"/>
+
+            <ImageButton
+                android:id="@+id/button_storage"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:background="@null"
+                android:scaleType="centerInside"
+                android:src="@drawable/selector_goods"/>
+
+            <ImageButton
+                android:id="@+id/button_more"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:background="@null"
+                android:scaleType="centerInside"
+                android:src="@drawable/selector_more"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <android.support.design.widget.NavigationView
+        android:id="@+id/main_menu_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        app:menu="@menu/owner_main_menu"/>
+</android.support.v4.widget.DrawerLayout>

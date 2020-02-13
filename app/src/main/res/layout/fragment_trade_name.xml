@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.percent.PercentRelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="2dp">
+
+    <EditText
+        android:id="@+id/goods_name"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:background="@drawable/bg_border"
+        android:layout_alignParentTop="true"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="2dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginEnd="2dp"
+        android:layout_marginRight="2dp"
+        style="@style/CommonText"
+        android:hint="输入商品名称或名称拼音首字母查找"/>
+
+    <ImageView
+        android:id="@+id/button_clear"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignBottom="@+id/goods_name"
+        android:layout_margin="2dp"
+        app:layout_widthPercent="10%"
+        android:src="@drawable/rubber"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/goods_list"
+        android:layout_below="@+id/goods_name"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_margin="2dp"
+        android:background="@drawable/bg_border"/>
+</android.support.percent.PercentRelativeLayout>

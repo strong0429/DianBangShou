@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tool="http://schemas.android.com/tools"
+    android:background="@drawable/title_bg_shape"
+    android:gravity="center_vertical">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/shop_photo"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_margin="8dp"/>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/shop_photo"
+        android:layout_toRightOf="@id/shop_photo"
+        android:layout_alignBottom="@id/shop_photo"
+        android:layout_alignTop="@id/shop_photo"
+        android:gravity="center_vertical"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp">
+        <TextView
+            android:id="@+id/title_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:textColor="#fff"
+            android:text="名称："/>
+        <TextView
+            android:id="@+id/shop_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/title_name"
+            android:layout_toRightOf="@id/title_name"
+            android:layout_alignTop="@id/title_name"
+            android:textColor="#fff"
+            tool:text="喜悦里便利店"/>
+
+        <TextView
+            android:id="@+id/title_addr"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/shop_name"
+            android:layout_margin="8dp"
+            android:textColor="#fff"
+            android:text="地址："/>
+        <TextView
+            android:id="@+id/shop_addr"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/title_addr"
+            android:layout_toRightOf="@id/title_addr"
+            android:layout_alignTop="@id/title_addr"
+            android:textColor="#fff"
+            tool:text="深圳市龙岗区碧新路喜悦里花园商业街18号"/>
+
+        <TextView
+            android:id="@+id/title_phone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/shop_addr"
+            android:layout_margin="8dp"
+            android:textColor="#fff"
+            android:text="电话："/>
+        <TextView
+            android:id="@+id/shop_phone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/title_phone"
+            android:layout_toRightOf="@id/title_phone"
+            android:layout_alignTop="@id/title_phone"
+            android:textColor="#fff"
+            tool:text="0755-88888888"/>
+    </RelativeLayout>
+</RelativeLayout>

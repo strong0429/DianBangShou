@@ -1,0 +1,85 @@
+<resources>
+    <string name="app_name">店帮手</string>
+    <string name="image_text">使用店帮手，开店再无忧</string>
+    <string name="user_phone">手机号码</string>
+    <string name="hint_phone">请输入手机号码</string>
+    <string name="user_password">登录密码</string>
+    <string name="hint_password">请输入登录密码</string>
+    <string name="remember_pwd">记住密码</string>
+    <string name="forgot_pwd">忘记密码？</string>
+    <string name="button_login">登  录</string>
+    <string name="button_register">用户注册</string>
+    <string name="button_reset">重置密码</string>
+    <string name="button_guest">游  客</string>
+    <string name="check_number">验证码</string>
+    <string name="hint_chknum">请输入验证码</string>
+    <string name="button_chknum">获取验证码</string>
+    <string name="passwd_review">密码确认</string>
+    <string name="user_protocol">我已阅读并同意</string>
+    <string name="button_protocol">《店帮手用户协议》</string>
+    <string name="copyright">© 2017-2018 深圳星点互联科技有限公司</string>
+    <string name="waiting_msg">网络请求，请等待...</string>
+    <string name="dialog_title">加载中......</string>
+    <string name="button_customer_guid">我要开店！</string>
+    <string name="button_guest_guid">我要注册！</string>
+
+    <string name="shop_name">店铺名称</string>
+    <string name="hint_shop_name">请输入店铺名称</string>
+    <string name="shop_addr">店铺地址</string>
+    <string name="shop_addr_format">%1$s:%2$s:%3$s:%4$s:%5$s</string>
+    <string name="hint_addr_province">XX省</string>
+    <string name="hint_addr_city">XX市</string>
+    <string name="hint_addr_district">XX区</string>
+    <string name="hint_addr_street">XX街道</string>
+    <string name="hint_addr_detail">详细地址</string>
+
+    <string name="button_map">获取当前位置</string>
+    <string name="shop_phone">联系电话</string>
+    <string name="hint_shop_phone">请输入店铺联系电话</string>
+    <string name="shop_type">类别</string>
+    <string name="hint_shop_type">请选择经营类别</string>
+    <string name="shop_desc">店铺描述</string>
+    <string name="hint_shop_desc">输入不超过128字的描述信息</string>
+    <string name="button_shop">开    店</string>
+    <string name="shop_picture">店铺展示图片</string>
+    <string name="button_select">选择图片</string>
+    <string name="button_upload">上传图片</string>
+
+    <string name="trade_barcode">商品条码</string>
+    <string name="trade_name">商品名称</string>
+    <string name="trade_simple">快速记账</string>
+    <string name="trade_total">总计：%.2f元</string>
+    <string name="trade_pay">结账</string>
+
+    <string name="goods_purchase">商品进货</string>
+    <string name="goods_sale">商品销售</string>
+    <string name="goods_more">更多...</string>
+
+    <string name="goods_count">采购数量</string>
+    <string name="goods_price">采购单价</string>
+    <string name="goods_supplier">供应商</string>
+    <string name="goods_price_discount">%1$.2f (*%2$.2f)</string>
+    <string name="button_ok">确认</string>
+
+    <string name="hint_scancode">请对准条码扫描</string>
+
+    <string name="format_float">%.2f</string>
+    <string name="format_price">%1$.2f元/%2$s</string>
+    <string name="format_discount">(折扣：%1$.2f)</string>
+
+    <string name="storage_prom_date">%1$s -- %2$s</string>
+
+    <string name="sell_calc_title">%1$s 营业小计</string>
+
+    <string name="pay_cash">现金：%.2f</string>
+    <string name="pay_weichat">微信：%.2f</string>
+    <string name="pay_alipay">支付宝：%.2f</string>
+    <string name="pay_other">其它：%.2f</string>
+
+    <string name="purchase_goods_count">数量：%1$.2f%2$s</string>
+    <string name="purchase_goods_price">单价：%.2f元</string>
+    <string name="purchase_goods_sum">总价：%.2f元</string>
+    <string name="purchase_supplier">供应商：%s</string>
+    <string name="purchase_buyer">采购员：%s</string>
+    <string name="purchase_date">日期：%s</string>
+</resources>

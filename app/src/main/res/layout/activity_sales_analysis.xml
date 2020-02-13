@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.percent.PercentRelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <View
+        android:id="@+id/title_-"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="@drawable/title_bg_shape"/>
+
+    <TextView
+        android:id="@+id/date_start"
+        app:layout_widthPercent="35%"
+        android:layout_height="32dp"
+        android:layout_marginTop="8dp"
+        app:layout_marginLeftPercent="5%"
+        android:gravity="center"
+        android:background="@drawable/bg_border"
+        android:hint="开始日期"
+        android:padding="2dp"
+        android:textSize="16sp"/>
+
+    <TextView
+        android:id="@+id/date_end"
+        app:layout_widthPercent="35%"
+        android:layout_height="32dp"
+        android:layout_toEndOf="@id/date_start"
+        android:layout_toRightOf="@id/date_start"
+        app:layout_marginLeftPercent="5%"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_border"
+        android:padding="2dp"
+        android:gravity="center"
+        android:hint="结束日期"
+        android:textSize="14sp"/>
+
+    <ImageButton
+        android:id="@+id/img_calendar"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        app:layout_marginRightPercent="5%"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/daily_icon"
+        android:clickable="false"/>
+
+    <RadioGroup
+        android:id="@+id/radio_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/date_start"
+        android:layout_alignLeft="@id/date_start"
+        android:layout_alignRight="@id/date_end"
+        android:layout_marginTop="4dp"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal">
+        <RadioButton
+            android:id="@+id/rb_day"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="当天"/>
+        <RadioButton
+            android:id="@+id/rb_week"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="32dp"
+            android:layout_marginRight="32dp"
+            android:text="本周"/>
+        <RadioButton
+            android:id="@+id/rb_month"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="当月"/>
+    </RadioGroup>
+
+    <android.support.design.widget.TabLayout
+        android:id="@+id/tab_sale_calc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        app:tabBackground="@drawable/selector_tablayout"
+        app:tabIndicatorColor="@color/colorPrimaryDark"
+        app:tabSelectedTextColor="#FFF"
+        app:tabTextAppearance="@style/Tablayout_Text_Style"
+        app:tabTextColor="@color/colorDisabled"
+        app:tabIndicatorHeight="2dp">
+
+    </android.support.design.widget.TabLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/pager_sale_calc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/title_-"
+        android:layout_above="@id/tab_sale_calc">
+
+    </android.support.v4.view.ViewPager>
+</android.support.percent.PercentRelativeLayout>

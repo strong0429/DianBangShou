@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.percent.PercentRelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tool="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="2dp">
+
+    <ImageView
+        android:id="@+id/goods_image"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignTop="@+id/goods_name"
+        android:layout_alignBottom="@+id/goods_price_title"
+        app:layout_widthPercent="15%"
+        android:layout_margin="4dp"
+        android:src="@drawable/goods_default"/>
+
+    <TextView
+        android:id="@+id/goods_name"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/goods_image"
+        android:layout_toEndOf="@+id/goods_image"
+        app:layout_widthPercent="45%"
+        style="@style/CommonText"
+        android:padding="0dp"
+        tool:text="商品名称"/>
+    <TextView
+        android:id="@+id/goods_spec"
+        android:layout_toRightOf="@+id/goods_image"
+        android:layout_toEndOf="@+id/goods_image"
+        android:layout_below="@+id/goods_name"
+        app:layout_widthPercent="45%"
+        style="@style/CommonText"
+        android:padding="0dp"
+        tool:text="商品规格"/>
+    <TextView
+        android:id="@+id/goods_price_title"
+        android:layout_toRightOf="@+id/goods_image"
+        android:layout_toEndOf="@+id/goods_image"
+        android:layout_below="@+id/goods_spec"
+        android:layout_width="wrap_content"
+        style="@style/CommonText"
+        android:padding="0dp"
+        android:text="单价:"/>
+    <TextView
+        android:id="@+id/goods_price"
+        android:layout_width="wrap_content"
+        android:layout_toRightOf="@+id/goods_price_title"
+        android:layout_toEndOf="@+id/goods_price_title"
+        android:layout_below="@+id/goods_spec"
+        style="@style/CommonText"
+        android:padding="0dp"
+        android:textColor="#F00A"
+        tool:text="12.55 (*1.00)"/>
+
+    <ImageView
+        android:id="@+id/goods_num_sub"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/goods_spec"
+        android:layout_toEndOf="@+id/goods_spec"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
+        android:layout_margin="4dp"
+        android:src="@drawable/newsales_delete"/>
+
+    <ImageView
+        android:id="@+id/goods_num_add"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
+        android:layout_margin="4dp"
+        android:layout_gravity="center_vertical"
+        android:src="@drawable/newsales_add"/>
+
+    <EditText
+        android:id="@+id/goods_count"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/goods_num_sub"
+        android:layout_toEndOf="@+id/goods_num_sub"
+        android:layout_toLeftOf="@+id/goods_num_add"
+        android:layout_toStartOf="@+id/goods_num_add"
+        style="@style/CommonText"
+        android:background="@null"
+        android:inputType="numberDecimal"
+        android:gravity="center"
+        tool:text="123456"/>
+</android.support.percent.PercentRelativeLayout>

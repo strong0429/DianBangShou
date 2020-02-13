@@ -1,0 +1,65 @@
+apply plugin: 'com.android.application'
+
+android {
+    signingConfigs {
+        Signing_debug {
+            keyAlias 'xdb_key'
+            keyPassword 'leeq0429'
+            storeFile file('C:/Users/Strong/xdb_debug_keystore.jks')
+            storePassword 'leeq0429'
+        }
+        Signing_release {
+            keyAlias 'key_release'
+            keyPassword 'leeq0429'
+            storeFile file('C:/Users/Strong/xdb_release_keystore.jks')
+            storePassword 'leeq0429'
+        }
+    }
+    compileSdkVersion 27
+    buildToolsVersion '28.0.3'
+    defaultConfig {
+        applicationId "com.xingdhl.www.storehelper"
+        minSdkVersion 19
+        targetSdkVersion 27
+        versionCode 65
+        versionName "V0.65 (2018-06-02)"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.Signing_release
+        }
+        debug {
+            // signingConfig signingConfigs.Signing_debug
+        }
+    }
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    testImplementation 'junit:junit:4.12'
+    implementation 'com.android.support:recyclerview-v7:27.1.1'
+    implementation 'com.android.support:cardview-v7:27.1.1'
+    implementation 'com.amap.api:map2d:5.2.0'
+    implementation 'com.amap.api:location:3.6.1'
+    implementation files('libs/pinyin4j-2.5.0.jar')
+    implementation 'com.android.support:percent:27.1.1'
+    implementation 'com.android.support:design:27.1.1'
+    implementation project(':zxinglibrary')
+    implementation 'com.google.zxing:core:3.3.2'
+    implementation 'de.hdodenhof:circleimageview:2.1.0'
+    implementation files('libs/Msc.jar')
+}

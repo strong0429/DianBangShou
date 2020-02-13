@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorBackground"
+    android:paddingTop="2dp"
+    android:paddingBottom="2dp"
+    android:layout_marginBottom="2dp"
+    android:layout_marginTop="2dp">
+
+    <TextView
+        android:id="@+id/sn_date"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:paddingLeft="2dp"
+        android:singleLine="true"
+        tools:text="2012-12-12"/>
+    <TextView
+        android:id="@+id/sn_time"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/sn_date"
+        android:paddingLeft="2dp"
+        android:singleLine="true"
+        tools:text="113045000"/>
+
+    <TextView
+        android:id="@+id/sale_count"
+        android:layout_width="64dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:paddingLeft="2dp"
+        android:singleLine="true"
+        tools:text="99999.99"/>
+    <TextView
+        android:id="@+id/sale_paymode"
+        android:layout_width="64dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/sale_count"
+        android:paddingLeft="2dp"
+        android:singleLine="true"
+        tools:text="现金"/>
+
+    <TextView
+        android:id="@+id/goods_count"
+        android:layout_width="64dp"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@id/sale_count"
+        android:layout_toStartOf="@id/sale_count"
+        android:paddingLeft="2dp"
+        android:singleLine="true"
+        tools:text="10"/>
+    <TextView
+        android:id="@+id/goods_price"
+        android:layout_width="64dp"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@id/sale_count"
+        android:layout_toStartOf="@id/sale_count"
+        android:layout_below="@id/goods_count"
+        android:paddingLeft="2dp"
+        android:singleLine="true"
+        tools:text="999.99"/>
+
+    <TextView
+        android:id="@+id/goods_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/sn_time"
+        android:layout_toRightOf="@id/sn_time"
+        android:layout_toLeftOf="@id/goods_price"
+        android:layout_toStartOf="@id/goods_price"
+        android:paddingLeft="2dp"
+        android:singleLine="true"
+        tools:text="商品名称"/>
+    <TextView
+        android:id="@+id/goods_barcode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/sn_date"
+        android:layout_toRightOf="@id/sn_date"
+        android:layout_toLeftOf="@id/goods_count"
+        android:layout_toStartOf="@id/goods_count"
+        android:layout_below="@id/goods_name"
+        android:paddingLeft="2dp"
+        android:singleLine="true"
+        tools:text="1234567890123"/>
+
+</RelativeLayout>
