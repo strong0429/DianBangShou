@@ -27,17 +27,19 @@ import java.util.Map;
  */
 
 public class WebServiceAPIs {
-    //private static final String URL_HOST = "http://192.168.0.104/storehelper/dbs/";
+    private static final String URL_HOST = "http://192.168.0.110:8000/xing/";
     //private static final String URL_HOST = "http://111.230.153.117/dbs/";
-    private static final String URL_HOST = "http://www.xingdhl.cn/dbs/";
+
+    private static final String URL_TOKEN = URL_HOST + "token/";
+    private static final String URL_VERSION = URL_HOST + "version/";
+    private static final String URL_LOGIN = URL_HOST + "login/";
+
     public static final String URL_GET_APP = URL_HOST + "file/app/download";
-    public static final String URL_GET_APP_VER = URL_HOST + "file/app/version";
     public static final String URL_POST_FILE_IMG = URL_HOST + "file/img/upload";
     public static final String URL_GET_FILE_IMG = URL_HOST + "file/img/download";
 
     private static final String URL_USER = URL_HOST + "users";
     private static final String URL_GET_CHKNUM = URL_HOST + "users/auth-code";
-    private static final String URL_USER_LOGIN = URL_HOST + "users/login";
     private static final String URL_USER_REGISTER = URL_HOST + "users/register";
     private static final String URL_USER_CLERKS = URL_HOST + "users/clerks";
     private static final String URL_UPDATE_CLERK = URL_HOST + "users/clerks/%d";
@@ -64,13 +66,13 @@ public class WebServiceAPIs {
     private static final String CONTENT_TYPE_JSON = "application/json";
     private static final String CONTENT_TYPE_FORM = "application/x-www-form-urlencoded";
 
-    public static final int HTTP_OK = 0;
+    public static final int HTTP_OK = 200;
     public static final int HTTP_CONTINUE = 1;
 
-    public static final int HTTP_API_ERROR = -100;
-    public static final int HTTP_NETWORK_ERROR = -101;
-    public static final int HTTP_SERVER_ERROR = -102;
-    public static final int HTTP_SYS_ERROR = -103;
+    public static final int HTTP_NETWORK_ERROR = 600;
+    public static final int HTTP_SERVER_ERROR = 601;
+    public static final int HTTP_API_ERROR = 602;
+    public static final int HTTP_DATA_ERROR = 603;
 
     public static final int HTTP_OVER_RIGHT = -200;
     public static final int HTTP_HAD_EXIST = -201;
@@ -120,18 +122,75 @@ public class WebServiceAPIs {
     }
 
     private static int transHttpCode(int code){
-        switch (code){
-            case 200:   //server response ok;
-            case 0:
-                return HTTP_OK;
-            case -1:    //_HTTP_API_ERR
-                return HTTP_API_ERROR;
-            case -2:    //_HTTP_NETWORK_ERR
-                return HTTP_NETWORK_ERROR;
-            case -3: // _HTTP_SERVER_ERR
-                return HTTP_SERVER_ERROR;
-        }
         return code;
+    }
+
+    public static void getToken(final HttpHandler httpHandler){
+        HttpRunnable httpRunnable = new HttpRunnable(URL_TOKEN) {
+            @Override
+            public void run() {
+                addJsonParams("username", "Authenticator");
+                addJsonParams("password", "118590");
+
+                byte[] urlData = httpRequest("POST", CONTENT_TYPE_JSON);
+
+                Message msg = httpHandler.obtainMessage();
+                msg.what = MSG_GET_TOKEN;
+                if((msg.arg1 = getHttpCode()) != HTTP_OK){
+                    httpHandler.sendMessage(msg);
+                    return;
+                }
+
+                JSONObject jsonObject;
+                String jsonString = new String(urlData);
+                try {
+                    jsonObject = new JSONObject(jsonString);
+                    Bundle data = new Bundle();
+                    data.putString("token", jsonObject.getString("token"));
+                    msg.setData(data);
+                }catch (JSONException je){
+                    Log.d(GCV.D_TAG, "clerkRegister()--->output data error: " + jsonString);
+                    msg.arg1 = HTTP_DATA_ERROR;
+                }
+                httpHandler.sendMessage(msg);
+            }
+        };
+        new Thread(httpRunnable).start();
+    }
+
+    public static void getAppVersion(final HttpHandler httpHandler) {
+        String token = User.getUser(null).getToken();
+        HttpRunnable httpRunnable = new HttpRunnable(URL_VERSION, token) {
+            @Override
+            public void run() {
+                addQueryParams("app_name", "storehelper");
+                byte[] urlData = httpRequest("GET", CONTENT_TYPE_JSON);
+
+                Message msg = httpHandler.obtainMessage();
+                msg.what = MSG_GET_APP_VER;
+                if((msg.arg1 = getHttpCode()) != HTTP_OK){
+                    httpHandler.sendMessage(msg);
+                    return;
+                }
+
+                JSONObject jsonObject;
+                String jsonString = new String(urlData);
+                try {
+                    Bundle data = new Bundle();
+                    jsonObject = new JSONObject(jsonString);
+                    msg.arg2 = jsonObject.getInt("ver_code");
+                    data.putString("ver_txt", jsonObject.getString("ver_txt"));
+                    data.putString("date_pub", jsonObject.getString("date_pub"));
+                    data.putString("detail", jsonObject.getString("detail"));
+                    msg.setData(data);
+                } catch (JSONException je) {
+                    Log.d(GCV.D_TAG, "getAppVersion()--->output data error: " + jsonString);
+                    msg.arg1 = HTTP_DATA_ERROR;
+                }
+                httpHandler.sendMessage(msg);
+            }
+        };
+        new Thread(httpRunnable).start();
     }
 
     public static void clerkRegister(final HttpHandler httpHandler, final Clerk clerk) {
@@ -172,7 +231,7 @@ public class WebServiceAPIs {
                     }
                 } catch (JSONException je) {
                     Log.d(GCV.D_TAG, "clerkRegister()--->output data error: " + jsonString);
-                    msg.arg1 = HTTP_SYS_ERROR;
+                    msg.arg1 = HTTP_DATA_ERROR;
                 }
                 httpHandler.sendMessage(msg);
             }
@@ -217,7 +276,7 @@ public class WebServiceAPIs {
                     }
                 } catch (JSONException je) {
                     Log.d(GCV.D_TAG, "clerkUpdate()--->output data error: " + jsonString);
-                    msg.arg1 = HTTP_SYS_ERROR;
+                    msg.arg1 = HTTP_DATA_ERROR;
                 }
                 httpHandler.sendMessage(msg);
             }
@@ -254,7 +313,7 @@ public class WebServiceAPIs {
                     }
                 } catch (JSONException je) {
                     Log.d(GCV.D_TAG, "clerkUpdate()--->output data error: " + jsonString);
-                    msg.arg1 = HTTP_SYS_ERROR;
+                    msg.arg1 = HTTP_DATA_ERROR;
                 }
                 httpHandler.sendMessage(msg);
             }
@@ -296,7 +355,7 @@ public class WebServiceAPIs {
                     }
                 } catch (JSONException je) {
                     Log.d(GCV.D_TAG, "getClerks()--->output data error: " + jsonString);
-                    msg.arg1 = HTTP_SYS_ERROR;
+                    msg.arg1 = HTTP_DATA_ERROR;
                 }
                 httpHandler.sendMessage(msg);
             }
@@ -382,7 +441,7 @@ public class WebServiceAPIs {
                     }
                 } catch (JSONException je) {
                     Log.d(GCV.D_TAG, "uploadFile()--->output data error: " + jsonString);
-                    msg.arg1 = HTTP_SYS_ERROR;
+                    msg.arg1 = HTTP_DATA_ERROR;
                     httpHandler.sendMessage(msg);
                     return;
                 }
@@ -390,49 +449,6 @@ public class WebServiceAPIs {
             }
         };
         httpHandler.showDlg(MSG_UPLOAD_FILE);
-        new Thread(httpRunnable).start();
-    }
-
-    public static void getAppVersion(final HttpHandler httpHandler) {
-        HttpRunnable httpRunnable = new HttpRunnable(URL_GET_APP_VER) {
-            @Override
-            public void run() {
-                byte[] urlData = httpRequest("GET", CONTENT_TYPE_JSON);
-
-                Message msg = httpHandler.obtainMessage();
-                msg.what = MSG_GET_APP_VER;
-                if((msg.arg1 = getHttpCode()) != HTTP_OK){
-                    httpHandler.sendMessage(msg);
-                    return;
-                }
-
-                String errMsg;
-                JSONObject jsonObject;
-                String jsonString = new String(urlData);
-                try {
-                    jsonObject = new JSONObject(jsonString);
-                    errMsg = jsonObject.getString(KEY_ERR_MSG);
-                    if(HTTP_OK == (msg.arg1 = jsonObject.getInt(KEY_ERR_CODE))){
-                        msg.arg2 = jsonObject.getInt("verCode");
-                        Bundle data = new Bundle();
-                        data.putString("verName", jsonObject.getString("verName"));
-                        data.putString("verDate", jsonObject.getString("verDate"));
-                        data.putString("verDesc", jsonObject.getString("verDesc"));
-                        msg.setData(data);
-                    }else {
-                        Log.d(GCV.D_TAG, "getAppVersion()--->Error message: " + errMsg);
-                        msg.arg1 = HTTP_NO_EXIST;
-                    }
-                } catch (JSONException je) {
-                    Log.d(GCV.D_TAG, "getAppVersion()--->output data error: " + jsonString);
-                    msg.arg1 = HTTP_SYS_ERROR;
-                    httpHandler.sendMessage(msg);
-                    return;
-                }
-                httpHandler.sendMessage(msg);
-            }
-        };
-        //httpHandler.showDlg(MSG_GET_APP_VER);
         new Thread(httpRunnable).start();
     }
 
@@ -470,7 +486,7 @@ public class WebServiceAPIs {
                     returnDetail = jsonObject.getString(KEY_ERR_MSG);
                 } catch (JSONException je) {
                     Log.d(GCV.D_TAG, "updateStorage()--->output data error: " + jsonString);
-                    msg.arg1 = HTTP_SYS_ERROR;
+                    msg.arg1 = HTTP_DATA_ERROR;
                     httpHandler.sendMessage(msg);
                     return;
                 }
@@ -526,7 +542,7 @@ public class WebServiceAPIs {
                     returnDetail = jsonObject.getString(KEY_ERR_MSG);
                 } catch (JSONException je) {
                     Log.d(GCV.D_TAG, "addStorage()--->output data error: " + jsonString);
-                    msg.arg1 = HTTP_SYS_ERROR;
+                    msg.arg1 = HTTP_DATA_ERROR;
                     httpHandler.sendMessage(msg);
                     return;
                 }
@@ -586,7 +602,7 @@ public class WebServiceAPIs {
                     }
                 } catch (JSONException je) {
                     Log.d(GCV.D_TAG, "getGoodsList()--->output data error: " + jsonString);
-                    msg.arg1 = HTTP_SYS_ERROR;
+                    msg.arg1 = HTTP_DATA_ERROR;
                 }
                 httpHandler.sendMessage(msg);
             }
@@ -629,7 +645,7 @@ public class WebServiceAPIs {
                     }
                 } catch (JSONException je) {
                     Log.d(GCV.D_TAG, "getStorage()--->output data error: " + jsonString);
-                    msg.arg1 = HTTP_SYS_ERROR;
+                    msg.arg1 = HTTP_DATA_ERROR;
                 }
                 httpHandler.sendMessage(msg);
             }
@@ -684,7 +700,7 @@ public class WebServiceAPIs {
                     }
                 } catch (JSONException je) {
                     Log.d(GCV.D_TAG, "getSalesSummary()--->output data error: " + jsonString);
-                    msg.arg1 = HTTP_SYS_ERROR;
+                    msg.arg1 = HTTP_DATA_ERROR;
                 }
 
                 msg.arg2 = id;
@@ -731,7 +747,7 @@ public class WebServiceAPIs {
                     msg.arg2 = jsonObject.getInt("count");
                 } catch (JSONException je) {
                     Log.d(GCV.D_TAG, "getSaleSumByDay()--->output data error: " + jsonString);
-                    msg.arg1 = HTTP_SYS_ERROR;
+                    msg.arg1 = HTTP_DATA_ERROR;
                     msg.arg2 = id;
                     httpHandler.sendMessage(msg);
                     return;
@@ -752,7 +768,7 @@ public class WebServiceAPIs {
                     }
                 }catch (JSONException jae){
                     Log.d(GCV.D_TAG, "getSaleSumByDay()--->output data error: " + jsonString);
-                    msg.arg1 = HTTP_SYS_ERROR;
+                    msg.arg1 = HTTP_DATA_ERROR;
                 }
                 bundle.putLongArray("date", date);
                 bundle.putDoubleArray("sum", sum);
@@ -806,7 +822,7 @@ public class WebServiceAPIs {
                     }
                 } catch (JSONException je) {
                     Log.d(GCV.D_TAG, "getSalesSummary()--->output data error: " + jsonString);
-                    msg.arg1 = HTTP_SYS_ERROR;
+                    msg.arg1 = HTTP_DATA_ERROR;
                     httpHandler.sendMessage(msg);
                     return;
                 }
@@ -855,7 +871,7 @@ public class WebServiceAPIs {
                     msg.arg1 = jsonObject.getInt(KEY_ERR_CODE);
                 } catch (JSONException je) {
                     errMsg = "addSellRecord()--->output data error: " + jsonString;
-                    msg.arg1 = HTTP_SYS_ERROR;
+                    msg.arg1 = HTTP_DATA_ERROR;
                 }
 
                 if(msg.arg1 != HTTP_OK){
@@ -905,7 +921,7 @@ public class WebServiceAPIs {
                     msg.arg1 = jsonObject.getInt(KEY_ERR_CODE);
                 } catch (JSONException je) {
                     errMsg = "output data error = " + jsonString;
-                    msg.arg1 = HTTP_SYS_ERROR;
+                    msg.arg1 = HTTP_DATA_ERROR;
                 }
 
                 if(msg.arg1 != HTTP_OK) {
@@ -959,7 +975,7 @@ public class WebServiceAPIs {
                     }
                 } catch (JSONException je) {
                     Log.d(GCV.D_TAG, "addPurchase()--->output data error: " + jsonString);
-                    msg.arg1 = HTTP_SYS_ERROR;
+                    msg.arg1 = HTTP_DATA_ERROR;
                 }
                 httpHandler.sendMessage(msg);
             }
@@ -1000,7 +1016,7 @@ public class WebServiceAPIs {
                     }
                 } catch (JSONException je) {
                     Log.d(GCV.D_TAG, "getGoods()--->output data error: " + jsonString);
-                    msg.arg1 = HTTP_SYS_ERROR;
+                    msg.arg1 = HTTP_DATA_ERROR;
                 }
                 httpHandler.sendMessage(msg);
             }
@@ -1041,7 +1057,7 @@ public class WebServiceAPIs {
                     }
                 } catch (JSONException je) {
                     Log.d(GCV.D_TAG, "addGoods()--->output data error: " + jsonString);
-                    msg.arg1 = HTTP_SYS_ERROR;
+                    msg.arg1 = HTTP_DATA_ERROR;
                 }
                 httpHandler.sendMessage(msg);
             }
@@ -1084,11 +1100,11 @@ public class WebServiceAPIs {
                         }
                     }else {
                         Log.d(GCV.D_TAG, "getGoodsCategory()--->Error message: " + msgDetail);
-                        msg.arg1 = HTTP_SYS_ERROR;
+                        msg.arg1 = HTTP_DATA_ERROR;
                     }
                 } catch (JSONException je) {
                     Log.d(GCV.D_TAG, "getGoodsCategory()--->output data error: " + jsonString);
-                    msg.arg1 = HTTP_SYS_ERROR;
+                    msg.arg1 = HTTP_DATA_ERROR;
                     httpHandler.sendMessage(msg);
                     return;
                 }
@@ -1102,46 +1118,36 @@ public class WebServiceAPIs {
     public static void userLogin(final HttpHandler httpHandler) {
         final User user = User.getUser(null);
 
-        HttpRunnable httpRunnable = new HttpRunnable(URL_USER_LOGIN) {
+        HttpRunnable httpRunnable = new HttpRunnable(URL_LOGIN, user.getToken()) {
             @Override
             public void run() {
-                addFormParams("tel_num", user.getPhoneNum());
+                addFormParams("username", user.getUserName());
                 addFormParams("password", user.getPassword());
                 byte[] returnData = httpRequest("POST", CONTENT_TYPE_FORM);
 
                 Message msg = httpHandler.obtainMessage();
                 msg.what = MSG_USER_LOGIN;
-                if( (msg.arg1 = transHttpCode(getHttpCode())) != HTTP_OK) {
+                if((msg.arg1 = getHttpCode()) != HTTP_OK) {
                     httpHandler.sendMessage(msg);
                     return;
                 }
 
-                String errMsg;
                 JSONObject jsonObject;
                 String jsonString = new String(returnData);
                 try {
                     jsonObject = new JSONObject(jsonString);
-                    errMsg = jsonObject.getString(KEY_ERR_MSG);
-                    if(HTTP_OK == (msg.arg1 = jsonObject.getInt(KEY_ERR_CODE))){
-                        user.getStores().clear();
-                        user.setToken(jsonObject.getString("token"));
-                        jsonObject = jsonObject.getJSONObject("user");
-                        user.setUser(jsonObject);
-                        JSONArray jsonArray = jsonObject.getJSONArray("stores");
-                        for(int i = 0; i < jsonArray.length(); i++){
-                            Store store = new Store(jsonArray.getJSONObject(i));
-                            user.getStores().add(store);
-                        }
-                    }else if(msg.arg1 == -2/*未注册*/) {
-                        msg.arg1 = HTTP_NO_EXIST;
-                    }else if(msg.arg1 == -3/*密码错误*/) {
-                        msg.arg1 = HTTP_DATA_INVALID;
-                    }else{
-                        Log.d(GCV.D_TAG, "userLogin()--->error message: " + errMsg);
+                    user.setToken(jsonObject.getString("token"));
+                    user.getStores().clear();
+                    jsonObject = jsonObject.getJSONObject("user");
+                    user.setUser(jsonObject);
+                    JSONArray jsonArray = jsonObject.getJSONArray("stores");
+                    for(int i = 0; i < jsonArray.length(); i++){
+                        Store store = new Store(jsonArray.getJSONObject(i));
+                        user.getStores().add(store);
                     }
                 } catch (JSONException je) {
                     Log.d(GCV.D_TAG, "userLogin()--->output data error: " + jsonString);
-                    msg.arg1 = HTTP_SYS_ERROR;
+                    msg.arg1 = HTTP_DATA_ERROR;
                 }
                 httpHandler.sendMessage(msg);
             }
@@ -1182,7 +1188,7 @@ public class WebServiceAPIs {
                     }
                 } catch (JSONException je) {
                     Log.d(GCV.D_TAG, "userUpdate()--->output data error: " + jsonString);
-                    msg.arg1 = HTTP_SYS_ERROR;
+                    msg.arg1 = HTTP_DATA_ERROR;
                 }
                 httpHandler.sendMessage(msg);
             }
@@ -1218,7 +1224,7 @@ public class WebServiceAPIs {
                         Log.d(GCV.D_TAG, "getCheckNumber()--->Error code: " + msg.arg1 + ", Error message: " + errMsg);
                 } catch (JSONException je) {
                     Log.d(GCV.D_TAG, "getCheckNumber()--->output data error: " + jsonString);
-                    msg.arg1 = HTTP_SYS_ERROR;
+                    msg.arg1 = HTTP_DATA_ERROR;
                 }
                 httpHandler.sendMessage(msg);
             }
@@ -1255,7 +1261,7 @@ public class WebServiceAPIs {
                         Log.d(GCV.D_TAG, "urserRegister()--->Error code: " + msg.arg1 + ", Error message: " + errMsg);
                 } catch (JSONException je) {
                     Log.d(GCV.D_TAG, "userRegister()--->output data error: " + jsonString);
-                    msg.arg1 = HTTP_SYS_ERROR;
+                    msg.arg1 = HTTP_DATA_ERROR;
                 }
                 httpHandler.sendMessage(msg);
             }
@@ -1305,7 +1311,7 @@ public class WebServiceAPIs {
                     }
                 } catch (JSONException je) {
                     Log.d(GCV.D_TAG, "storeRegister()--->output data error: " + jsonString);
-                    msg.arg1 = HTTP_SYS_ERROR;
+                    msg.arg1 = HTTP_DATA_ERROR;
                 }
                httpHandler.sendMessage(msg);
             }
@@ -1352,7 +1358,7 @@ public class WebServiceAPIs {
                     }
                 } catch (JSONException je) {
                     Log.d(GCV.D_TAG, "storeUpdate()--->output data error: " + jsonString);
-                    msg.arg1 = HTTP_SYS_ERROR;
+                    msg.arg1 = HTTP_DATA_ERROR;
                 }
                 httpHandler.sendMessage(msg);
             }
@@ -1389,7 +1395,7 @@ public class WebServiceAPIs {
                     msgDetail = jsonObject.getString(KEY_ERR_MSG);
                 } catch (JSONException je) {
                     Log.d(GCV.D_TAG, "resetPassword()--->output data error:" + jsonString);
-                    msg.arg1 = HTTP_SYS_ERROR;
+                    msg.arg1 = HTTP_DATA_ERROR;
                     return;
                 }
 
@@ -1430,7 +1436,7 @@ public class WebServiceAPIs {
                     msgDetail = jsonObject.getString(KEY_ERR_MSG);
                 } catch (JSONException je) {
                     Log.d(GCV.D_TAG, "modifyPassword()--->output data error: " + jsonString);
-                    msg.arg1 = HTTP_SYS_ERROR;
+                    msg.arg1 = HTTP_DATA_ERROR;
                     httpHandler.sendMessage(msg);
                     return;
                 }
@@ -1477,11 +1483,11 @@ public class WebServiceAPIs {
                         }
                     }else {
                         Log.d(GCV.D_TAG, "getShopType()--->Error message: " + msgDetail);
-                        msg.arg1 = HTTP_SYS_ERROR;
+                        msg.arg1 = HTTP_DATA_ERROR;
                     }
                 } catch (JSONException je) {
                     Log.d(GCV.D_TAG, "getShopType()--->output data error: " + jsonString);
-                    msg.arg1 = HTTP_SYS_ERROR;
+                    msg.arg1 = HTTP_DATA_ERROR;
                     httpHandler.sendMessage(msg);
                     return;
                 }
@@ -1518,7 +1524,7 @@ public class WebServiceAPIs {
                     //returnDetail = jsonObject.getString("detail");
                 } catch (JSONException je) {
                     Log.d(GCV.D_TAG, "getUserInfo()--->output data error: " + jsonString);
-                    msg.arg1 = HTTP_SYS_ERROR;
+                    msg.arg1 = HTTP_DATA_ERROR;
                     httpHandler.sendMessage(msg);
                     return;
                 }
@@ -1526,10 +1532,10 @@ public class WebServiceAPIs {
                     Log.d(GCV.D_TAG, "getUserInfo()--->Error code: " + msg.arg1 + ", error message: " + returnDetail);
                     msg.arg1 = HTTP_NO_EXIST;
                 } else {
-                    user.setRole(jsonObject);
+                    user.setStaffStatus(jsonObject);
                     user.setEmail(jsonObject);
                     user.setIdCard(jsonObject);
-                    user.setName(jsonObject);
+                    user.setUserName(jsonObject);
                 }
                 httpHandler.sendMessage(msg);
             }
@@ -1575,7 +1581,7 @@ public class WebServiceAPIs {
                     }
                 } catch (JSONException je) {
                     Log.d(GCV.D_TAG, "updateSupplier()--->output data error: " + jsonString);
-                    msg.arg1 = HTTP_SYS_ERROR;
+                    msg.arg1 = HTTP_DATA_ERROR;
                 }
                 httpHandler.sendMessage(msg);
             }
@@ -1613,11 +1619,11 @@ public class WebServiceAPIs {
                         }
                     }else {
                         Log.d(GCV.D_TAG, "getSuppliers()--->Error message: " + msgDetail);
-                        msg.arg1 = HTTP_SYS_ERROR;
+                        msg.arg1 = HTTP_DATA_ERROR;
                     }
                 } catch (JSONException je) {
                     Log.d(GCV.D_TAG, "getSuppliers()--->output data error: " + jsonString);
-                    msg.arg1 = HTTP_SYS_ERROR;
+                    msg.arg1 = HTTP_DATA_ERROR;
                 }
                 httpHandler.sendMessage(msg);
             }
@@ -1663,7 +1669,7 @@ public class WebServiceAPIs {
                     }
                 } catch (JSONException je) {
                     Log.d(GCV.D_TAG, "updateSupplier()--->output data error: " + jsonString);
-                    msg.arg1 = HTTP_SYS_ERROR;
+                    msg.arg1 = HTTP_DATA_ERROR;
                 }
                 httpHandler.sendMessage(msg);
             }
@@ -1702,7 +1708,7 @@ public class WebServiceAPIs {
                     }
                 } catch (JSONException je) {
                     Log.d(GCV.D_TAG, "updateSupplier()--->output data error: " + jsonString);
-                    msg.arg1 = HTTP_SYS_ERROR;
+                    msg.arg1 = HTTP_DATA_ERROR;
                 }
                 httpHandler.sendMessage(msg);
             }
@@ -1755,7 +1761,7 @@ public class WebServiceAPIs {
                     }
                 } catch (JSONException je) {
                     Log.d(GCV.D_TAG, "getPurchaseRds()--->output data error: " + jsonString);
-                    msg.arg1 = HTTP_SYS_ERROR;
+                    msg.arg1 = HTTP_DATA_ERROR;
                 }
                 httpHandler.sendMessage(msg);
             }
