@@ -1532,7 +1532,7 @@ public class WebServiceAPIs {
                     Log.d(GCV.D_TAG, "getUserInfo()--->Error code: " + msg.arg1 + ", error message: " + returnDetail);
                     msg.arg1 = HTTP_NO_EXIST;
                 } else {
-                    user.setStaffStatus(jsonObject);
+                    //user.setStaffStatus(jsonObject);
                     user.setEmail(jsonObject);
                     user.setIdCard(jsonObject);
                     user.setUserName(jsonObject);

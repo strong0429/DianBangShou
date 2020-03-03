@@ -24,10 +24,10 @@ import java.net.URL;
 public abstract class HttpRunnable implements Runnable{
     private final String TAG = "XDB_DebugInfo";
 
-    private static final int _HTTP_OK = 0;
-    private static final int _HTTP_API_ERR = -1;
-    private static final int _HTTP_NETWORK_ERR = -2;
-    private static final int _HTTP_SERVER_ERR = -3;
+    //private static final int _HTTP_OK = 0;
+    private static final int _HTTP_NETWORK_ERR = 600;
+    private static final int _HTTP_SERVER_ERR = 601;
+    private static final int _HTTP_API_ERR = 602;
 
     private String mUrl;        //URL;
     private String mToken;
@@ -191,15 +191,17 @@ public abstract class HttpRunnable implements Runnable{
             }
             bufOutputStream.flush();
         } catch (IOException ioe) {
-            mHttpCode = _HTTP_NETWORK_ERR;
-            Log.d(TAG, mUrl + ": with " + ioe);
-            if(ioe.getMessage().contains("Connection refused")){
+            String err_msg = ioe.getMessage();
+            Log.d(TAG, mUrl + ": with " + err_msg);
+            if(err_msg.contains("unreachable")) {
+                mHttpCode = _HTTP_NETWORK_ERR;
+            }
+            else{
                 mHttpCode = _HTTP_SERVER_ERR;
             }
         } finally {
             connection.disconnect();
         }
-        //mHttpCode = _HTTP_OK;
         return null;
     }
 
@@ -251,12 +253,13 @@ public abstract class HttpRunnable implements Runnable{
             }
             out.close();
         } catch (IOException ioe) {
-            mHttpCode = _HTTP_NETWORK_ERR;
-            Log.d(TAG, mUrl + ": with " + ioe);
-            if(ioe.getMessage() != null) {
-                if (ioe.getMessage().contains("Connection refused")) {
-                    mHttpCode = _HTTP_SERVER_ERR;
-                }
+            String err_msg = ioe.getMessage();
+            Log.d(TAG, mUrl + ": with " + err_msg);
+            if(err_msg.contains("unreachable")) {
+                mHttpCode = _HTTP_NETWORK_ERR;
+            }
+            else{
+                mHttpCode = _HTTP_SERVER_ERR;
             }
             return null;
         } finally {
@@ -321,12 +324,13 @@ public abstract class HttpRunnable implements Runnable{
             }
             out.close();
         } catch (IOException ioe) {
-            mHttpCode = _HTTP_NETWORK_ERR;
-            Log.d(TAG, mUrl + ": with " + ioe);
-            if(ioe.getMessage() != null){
-                if (ioe.getMessage().contains("Connection refused")) {
-                    mHttpCode = _HTTP_SERVER_ERR;
-                }
+            String err_msg = ioe.getMessage();
+            Log.d(TAG, mUrl + ": with " + err_msg);
+            if(err_msg.contains("unreachable")) {
+                mHttpCode = _HTTP_NETWORK_ERR;
+            }
+            else{
+                mHttpCode = _HTTP_SERVER_ERR;
             }
             return null;
         } finally {
@@ -336,7 +340,6 @@ public abstract class HttpRunnable implements Runnable{
                 e.printStackTrace();
             }
         }
-        mHttpCode = _HTTP_OK;
         return out.toByteArray();
     }
 }

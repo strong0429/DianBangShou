@@ -78,7 +78,7 @@ public class StoreOwnerActivity extends AppCompatActivity implements
                 startActivityForResult(intent, 1);
                 break;
             case R.id.button_purchase: //‘商品入库’
-                if (mUser.getRole() == GCV.CLERK) {
+                if (mUser.getStaffStatus() == GCV.CLERK) {
                     FreeToast.makeText(this, "您未授权，不能执行该操作！", Toast.LENGTH_SHORT).show();
                     break;
                 }
@@ -105,7 +105,7 @@ public class StoreOwnerActivity extends AppCompatActivity implements
                 startActivity(new Intent(this, ScanBardcodeActivity.class));
                 break;
             case R.id.menu_sell_calc:
-                if(mUser.getRole() == GCV.CLERK){
+                if(mUser.getStaffStatus() == GCV.CLERK){
                     FreeToast.makeText(this, "您未授权，不能执行该操作！", Toast.LENGTH_SHORT).show();
                     break;
                 }
@@ -114,14 +114,14 @@ public class StoreOwnerActivity extends AppCompatActivity implements
                 startActivity(intent);
                 break;
             case R.id.menu_clerk_manage:
-                if(mUser.getRole() == GCV.CLERK){
+                if(mUser.getStaffStatus() == GCV.CLERK){
                     FreeToast.makeText(this, "您未授权，不能执行该操作！", Toast.LENGTH_SHORT).show();
                     break;
                 }
                 startActivity(new Intent(StoreOwnerActivity.this, ClerkManageActivity.class));
                 break;
             case R.id.menu_store_register:
-                if(mUser.getRole() == GCV.CLERK){
+                if(mUser.getStaffStatus() == GCV.CLERK){
                     FreeToast.makeText(this, "您未授权，不能执行该操作！", Toast.LENGTH_SHORT).show();
                     break;
                 }
@@ -130,7 +130,7 @@ public class StoreOwnerActivity extends AppCompatActivity implements
                 startActivityForResult(intent, 0);
                 break;
             case R.id.menu_supplier_manage:
-                if(mUser.getRole() == GCV.CLERK){
+                if(mUser.getStaffStatus() == GCV.CLERK){
                     FreeToast.makeText(this, "您未授权，不能执行该操作！", Toast.LENGTH_SHORT).show();
                     break;
                 }
@@ -147,7 +147,7 @@ public class StoreOwnerActivity extends AppCompatActivity implements
                 startActivity(intent);
                 break;
             case R.id.menu_purchase:
-                if(mUser.getRole() == GCV.CLERK){
+                if(mUser.getStaffStatus() == GCV.CLERK){
                     FreeToast.makeText(this, "您未授权，不能执行该操作！", Toast.LENGTH_SHORT).show();
                     break;
                 }

@@ -144,7 +144,7 @@ public class StorageManageActivity extends AppCompatActivity implements
 
     @Override
     public void onLongClick(View v, int position) {
-        if(User.getUser(null).getRole() == GCV.CLERK){
+        if(User.getUser(null).getStaffStatus() == GCV.CLERK){
             FreeToast.makeText(this, "您未授权，不能执行该操作！", Toast.LENGTH_SHORT).show();
             return;
         }

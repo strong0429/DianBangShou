@@ -1,5 +1,6 @@
 package com.xingdhl.www.storehelper.user;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Message;
@@ -159,13 +160,14 @@ public class UserRegisterActivity extends AppCompatActivity implements
 
         mUser = User.getUser(getApplicationContext());
 
-        mETChkNum = (EditText)findViewById(R.id.edit_chknum);
-        mETPasswd = (EditText)findViewById(R.id.edit_passward);
+        mETChkNum = findViewById(R.id.edit_chknum);
+        mETPasswd = findViewById(R.id.edit_passward);
         mETPasswd.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
 
+            @SuppressLint("SetTextI18n")
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 String text = s.toString();

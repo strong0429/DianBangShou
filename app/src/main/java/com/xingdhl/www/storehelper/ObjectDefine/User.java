@@ -22,22 +22,24 @@ public class User {
 
     private String mPhoneNum;
     private String mPassword;
-    private String mName;
-    private String mNickName;
+    private String mUserName;
+    private String mFirstName;
     private String mIdCard;
     private String mRegDate;
     private String mWechat;
     private String mEmail;
-    private String mAddr;
+    //private String mAddr;
 
-    private int mPhotoId;
-    private byte mRole;
-
-    private String mToken;
+    //private int mPhotoId;
     private boolean mAutoLogin;
 
     private List<Store> mStores;
+    private List<UserGroup> mUserGroups;
+    private List<UserPermission> mUserPermissions;
+
     private List<DetailStorage> mGoodsList;
+
+    private String mToken;
 
     private Map<String, Object> mMap;
 
@@ -56,13 +58,15 @@ public class User {
 
         SharedPreferences preferences = mContext.getSharedPreferences("user_info", Context.MODE_PRIVATE);
         mPassword = preferences.getString("password", "");
-        mPhoneNum = preferences.getString("phone_num", "");
+        mUserName = preferences.getString("username", "");
         mAutoLogin = preferences.getBoolean("rem_passwd", false);
-        mPhotoId = preferences.getInt("photo_id", -1);
+        //mPhotoId = preferences.getInt("photo_id", -1);
 
         mMap = new HashMap<String, Object>();
         mStores = new ArrayList<>();
         mGoodsList = new ArrayList<>();
+        mUserGroups = new ArrayList<>();
+        mUserPermissions = new ArrayList<>();
     }
 
     public static User getUser(Context context) {
@@ -75,29 +79,29 @@ public class User {
     public void saveInfo() {
         SharedPreferences.Editor editor = mContext.getSharedPreferences("user_info", Context.MODE_PRIVATE).edit();
         editor.putString("password", mPassword);
-        editor.putString("phone_num", mPhoneNum);
+        editor.putString("username", mUserName);
         editor.putBoolean("rem_passwd", mAutoLogin);
-        editor.putInt("photo_id", mPhotoId);
+        //editor.putInt("photo_id", mPhotoId);
 
-        editor.commit();
+        //editor.commit();
+        editor.apply();
     }
 
     public void setUser(JSONObject jsonObject){
-        setRole(jsonObject);
         setRegDate(jsonObject);
-        setName(jsonObject);
-        setNickName(jsonObject);
+        setUserName(jsonObject);
+        setFirstName(jsonObject);
         setIdCard(jsonObject);
         setEmail(jsonObject);
         setWechat(jsonObject);
-        setAddr(jsonObject);
-        setPhotoId(jsonObject);
+        //setAddr(jsonObject);
+        //setPhotoId(jsonObject);
     }
 
     public List<DetailStorage> getGoodsList(){
         return mGoodsList;
     }
-
+    /*
     public String getAddr() {
         return mAddr;
     }
@@ -113,7 +117,7 @@ public class User {
             mAddr = null;
         }
     }
-
+    */
     public String getWechat() {
         return mWechat;
     }
@@ -130,22 +134,22 @@ public class User {
         }
     }
 
-    public String getNickName() {
-        return mNickName;
+    public String getFirstName() {
+        return mFirstName;
     }
 
-    public void setNickName(String nickName) {
-        mNickName = nickName;
+    public void setFirstName(String firstName) {
+        mFirstName = firstName;
     }
 
-    public void setNickName(JSONObject jsonObject) {
+    public void setFirstName(JSONObject jsonObject) {
         try{
-            mNickName = jsonObject.getString("nickName");
+            mFirstName = jsonObject.getString("first_name");
         }catch (JSONException je) {
-            mNickName = null;
+            mFirstName = null;
         }
     }
-
+    /*
     public int getPhotoId() {
         return mPhotoId;
     }
@@ -154,12 +158,20 @@ public class User {
         mPhotoId = photoId;
     }
 
+    public void setPhotoId(JSONObject jsonObject) {
+        try{
+            mPhotoId = jsonObject.getInt("photoId");
+        }catch (JSONException je) {
+            mPhotoId = -1;
+        }
+    }
+    */
     public String getToken() {
         return mToken;
     }
 
     public void setToken(String token) {
-        mToken = token;
+        mToken = "JWT " + token;
     }
 
     public String getRegDate() {
@@ -172,17 +184,9 @@ public class User {
 
     public void setRegDate(JSONObject jsonObject) {
         try{
-            mRegDate = jsonObject.getString("regDate");
+            mRegDate = jsonObject.getString("date_joined");
         }catch (JSONException je) {
             mRegDate = null;
-        }
-    }
-
-    public void setPhotoId(JSONObject jsonObject) {
-        try{
-            mPhotoId = jsonObject.getInt("photoId");
-        }catch (JSONException je) {
-            mPhotoId = -1;
         }
     }
 
@@ -218,19 +222,19 @@ public class User {
         }
     }
 
-    public String getName() {
-        return mName;
+    public String getUserName() {
+        return mUserName;
     }
 
-    public void setName(String name) {
-        mName = name;
+    public void setUserName(String name) {
+        mUserName = name;
     }
 
-    public void setName(JSONObject jsonObject) {
+    public void setUserName(JSONObject jsonObject) {
         try{
-            mName = jsonObject.getString("name");
+            mUserName = jsonObject.getString("username");
         }catch (JSONException je) {
-            mName = null;
+            mUserName = null;
         }
     }
 
@@ -242,24 +246,8 @@ public class User {
         return mStores;
     }
 
-    public void addShop(Store shop){
-        mStores.add(shop);
-    }
-
-    public byte getRole() {
-        return mRole;
-    }
-
-    public void setRole(byte role) {
-        mRole = role;
-    }
-
-    public void setRole(JSONObject jsonObject) {
-        try{
-            mRole = (byte)jsonObject.getInt("role");
-        }catch (JSONException je) {
-            mRole = -1;
-        }
+    public void addStore(Store store){
+        mStores.add(store);
     }
 
     public String getPhoneNum() {

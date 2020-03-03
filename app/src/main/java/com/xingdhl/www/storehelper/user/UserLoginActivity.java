@@ -23,7 +23,7 @@ import com.xingdhl.www.storehelper.webservice.WebServiceAPIs;
 
 public class UserLoginActivity extends AppCompatActivity implements
         HttpHandler.handlerCallback, QueryDialog.QueryDlgListener, View.OnClickListener{
-    private EditText mTextPhone;
+    private EditText mTextUserName;
     private EditText mTextPasswd;
     private CheckBox mAutoLogin;
 
@@ -34,18 +34,12 @@ public class UserLoginActivity extends AppCompatActivity implements
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.button_login:
-                mUser.setPhoneNum(mTextPhone.getText().toString());
+                mUser.setUserName(mTextUserName.getText().toString());
                 mUser.setPassword(mTextPasswd.getText().toString());
                 mUser.setAutoLogin(mAutoLogin.isChecked());
 
-                if(!mUser.getPhoneNum().matches(GCV.RegExp_cell))
-                {
-                    FreeToast.makeText(UserLoginActivity.this, "请输入正确的手机号码！",
-                            Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if(mUser.getPassword().isEmpty()) {
-                    FreeToast.makeText(UserLoginActivity.this, "请输入您的登录密码！",
+                if(mUser.getUserName().isEmpty() || mUser.getPassword().isEmpty()) {
+                    FreeToast.makeText(UserLoginActivity.this, "请输入用户名和密码！",
                             Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -54,13 +48,13 @@ public class UserLoginActivity extends AppCompatActivity implements
                 break;
             case R.id.button_register:
                 Intent iRegister = new Intent(UserLoginActivity.this, UserRegisterActivity.class);
-                iRegister.putExtra("phone", mTextPhone.getText().toString());
+                iRegister.putExtra("phone", mTextUserName.getText().toString());
                 startActivity(iRegister);
                 finish();
                 break;
             case R.id.forgot_pwd:
                 Intent iForgot = new Intent(UserLoginActivity.this, ResetPasswordActivity.class);
-                iForgot.putExtra("phone", mTextPhone.getText().toString());
+                iForgot.putExtra("phone", mTextUserName.getText().toString());
                 startActivity(iForgot);
                 finish();
         }
@@ -88,9 +82,9 @@ public class UserLoginActivity extends AppCompatActivity implements
             case WebServiceAPIs.HTTP_OK:
                 mUser.saveInfo();
                 Intent intent;
-                if (mUser.getRole() == GCV.OWNER) { //店主，获取其所有店铺信息；
+                if (mUser.getStaffStatus() == GCV.OWNER) { //店主，获取其所有店铺信息；
                     intent = new Intent(this, StoreOwnerActivity.class);
-                } else if (mUser.getRole() == GCV.CLERK) {  //店员，获取其所在店铺信息；
+                } else if (mUser.getStaffStatus() == GCV.CLERK) {  //店员，获取其所在店铺信息；
                     intent = new Intent(this, StoreOwnerActivity.class);
                 } else {
                     new QueryDialog(this, "您还没有注册店铺!\n\n\t‘是’注册新店铺\n\t‘否’退出程序").show();
@@ -126,8 +120,8 @@ public class UserLoginActivity extends AppCompatActivity implements
         if(mUser.isAutoLogin()) //是否填充密码；
             mTextPasswd.setText(mUser.getPassword());
 
-        mTextPhone = (EditText)findViewById(R.id.user_phone);
-        mTextPhone.setText(mUser.getPhoneNum());
+        mTextUserName = (EditText)findViewById(R.id.user_name);
+        mTextUserName.setText(mUser.getPhoneNum());
 
         mAutoLogin = (CheckBox)findViewById(R.id.remember_pwd);
         mAutoLogin.setChecked(mUser.isAutoLogin());
@@ -150,6 +144,6 @@ public class UserLoginActivity extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
 
-        mTextPhone.setText(mUser.getPhoneNum());
+        mTextUserName.setText(mUser.getPhoneNum());
     }
 }

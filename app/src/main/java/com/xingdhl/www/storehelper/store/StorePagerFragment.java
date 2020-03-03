@@ -81,7 +81,7 @@ public class StorePagerFragment extends Fragment {
         mStoreImgView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(User.getUser(null).getRole() != GCV.OWNER){
+                if(User.getUser(null).getStaffStatus() != GCV.OWNER){
                     return;
                 }
                 Intent intent = new Intent(getActivity(), StoreEditActivity.class);

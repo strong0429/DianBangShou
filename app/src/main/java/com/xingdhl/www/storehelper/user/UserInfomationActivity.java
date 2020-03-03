@@ -51,7 +51,7 @@ public class UserInfomationActivity extends AppCompatActivity implements View.On
                 FreeToast.makeText(this, "更新用户信息成功!", Toast.LENGTH_SHORT).show();
                 mButtonOk.setEnabled(false);
                 mUser.setPhoneNum(mEtPhone.getText().toString());
-                mUser.setName(mEtName.getText().toString());
+                mUser.setUserName(mEtName.getText().toString());
                 mUser.setIdCard(mEtIdcard.getText().toString());
                 mUser.setEmail(mEtEmail.getText().toString());
                 mEditMark = 0x00;
@@ -99,15 +99,15 @@ public class UserInfomationActivity extends AppCompatActivity implements View.On
         mEtPasswd.setText("12345678");
 
         mEtName = (EditText)findViewById(R.id.text_name);
-        mEtName.setText(mUser.getName());
+        mEtName.setText(mUser.getUserName());
         mEtName.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if((s.length() == 0 && (mUser.getName() == null || mUser.getName().length() == 0)) ||
-                        s.toString().equals(mUser.getName())){
+                if((s.length() == 0 && (mUser.getUserName() == null || mUser.getUserName().length() == 0)) ||
+                        s.toString().equals(mUser.getUserName())){
                     mEditMark &= 0xFD;
                 }else{
                     mEditMark |= 0x02;

@@ -23,6 +23,7 @@ import com.xingdhl.www.storehelper.webservice.WebServiceAPIs;
 public class WelcomeActivity extends AppCompatActivity implements
         HttpHandler.handlerCallback, QueryDialog.QueryDlgListener{
     private HttpHandler mHttpHandler;
+    private User mUser;
 
     @Override
     public void onDialogNegativeClick(DialogInterface dialog, int which) {
@@ -50,15 +51,27 @@ public class WelcomeActivity extends AppCompatActivity implements
         switch (msg.what){
             case WebServiceAPIs.MSG_GET_APP_VER:
                 if(msg.arg1 == WebServiceAPIs.HTTP_OK && msg.arg2 > getLocalVersion()){
-                    String verName = msg.getData().getString("verName");
-                    String verDate = msg.getData().getString("verDate");
-                    String verDesc = msg.getData().getString("verDesc");
-                    QueryDialog dialog = new QueryDialog(this, "发现新版本：" + verName +
-                        "\n发布日期：" + verDate + "\n更新信息：\n\t" + verDesc +
+                    String verTxt = msg.getData().getString("ver_txt");
+                    String verDate = msg.getData().getString("date_pub");
+                    String verDesc = msg.getData().getString("detail");
+                    QueryDialog dialog = new QueryDialog(this,
+                        "发现新版本：" + verTxt +
+                        "\n发布日期：" + verDate +
+                        "\n更新信息：\n\t" + verDesc +
                         "\n\n是否升级到新版本？");
                     dialog.show();
                 }else {
                     mHttpHandler.justWait(500,3);
+                }
+                break;
+            case WebServiceAPIs.MSG_GET_TOKEN:
+                if( msg.arg1 == WebServiceAPIs.HTTP_OK){
+                    mUser.setToken(msg.getData().getString("token"));
+                    WebServiceAPIs.getAppVersion(mHttpHandler);
+                } else {
+                    Intent intent = new Intent(WelcomeActivity.this, UserLoginActivity.class);
+                    startActivity(intent);
+                    finish();
                 }
                 break;
             case HttpHandler.JUST_WAITING:
@@ -79,7 +92,8 @@ public class WelcomeActivity extends AppCompatActivity implements
                         Toast.LENGTH_SHORT).show();
                 finish();
             }else{
-                WebServiceAPIs.getAppVersion(mHttpHandler);
+                // WebServiceAPIs.getAppVersion(mHttpHandler);
+                WebServiceAPIs.getToken(mHttpHandler);
             }
         }
     }
@@ -91,7 +105,7 @@ public class WelcomeActivity extends AppCompatActivity implements
 
         mHttpHandler = new HttpHandler(this);
         //初始化UserInfo；
-        User.getUser(getApplicationContext());
+        mUser = User.getUser(getApplicationContext());
         //创建本地数据库
         DbSchemaXingDB.instantiate(getApplicationContext());
 
@@ -104,7 +118,8 @@ public class WelcomeActivity extends AppCompatActivity implements
                             Manifest.permission.READ_EXTERNAL_STORAGE}, 101);//自定义的code
         }else{
             //获取服务器版本；
-            WebServiceAPIs.getAppVersion(mHttpHandler);
+            //WebServiceAPIs.getAppVersion(mHttpHandler);
+            WebServiceAPIs.getToken(mHttpHandler);
         }
     }
 

@@ -31,22 +31,46 @@
         android:paddingRight="16dp">
 
         <EditText
+            android:id="@+id/edit_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:hint="@string/hint_username"
+            android:inputType="text"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/edit_name"
+            android:layout_alignEnd="@id/edit_name"
+            android:layout_marginTop="8dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:textColor="@color/colorPrimary"
+            android:text="用户名"/>
+
+        <EditText
             android:id="@+id/edit_phone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/edit_name"
+            android:layout_alignStart="@id/edit_name"
             android:layout_marginBottom="4dp"
-            android:layout_marginTop="8dp"
-            android:paddingLeft="16dp"
+            android:layout_marginTop="4dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
             android:hint="@string/hint_phone"
             android:inputType="phone"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignTop="@id/edit_phone"
-            android:layout_alignRight="@id/edit_phone"
             android:layout_alignEnd="@id/edit_phone"
             android:layout_marginTop="8dp"
-            android:paddingRight="8dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
             android:textColor="@color/colorPrimary"
             android:text="手机号码"/>
 
@@ -56,22 +80,21 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/edit_phone"
             android:layout_alignStart="@id/edit_phone"
-            android:layout_alignLeft="@id/edit_phone"
-            android:layout_toStartOf="@id/button_chknum"
-            android:layout_toLeftOf="@id/button_chknum"
-            android:layout_marginBottom="4dp"
             android:layout_marginTop="4dp"
-            android:paddingLeft="16dp"
+            android:layout_marginBottom="4dp"
+            android:layout_toStartOf="@id/button_chknum"
             android:hint="@string/hint_chknum"
-            android:inputType="number"/>
+            android:inputType="number"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignTop="@id/edit_chknum"
-            android:layout_alignRight="@id/edit_chknum"
             android:layout_alignEnd="@id/edit_chknum"
             android:layout_marginTop="8dp"
-            android:paddingRight="8dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
             android:textColor="@color/colorPrimary"
             android:text="验证码"/>
 
@@ -80,10 +103,8 @@
             android:layout_width="88dp"
             android:layout_height="wrap_content"
             android:layout_alignEnd="@id/edit_phone"
-            android:layout_alignRight="@id/edit_phone"
             android:layout_alignBottom="@id/edit_chknum"
             android:background="@drawable/button_bg_s"
-            android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginBottom="4dp"
             android:text="@string/button_chknum"/>
@@ -95,17 +116,18 @@
             android:layout_below="@id/edit_chknum"
             android:layout_marginBottom="4dp"
             android:layout_marginTop="4dp"
-            android:paddingLeft="16dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
             android:hint="@string/hint_password"
             android:inputType="textPassword"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignTop="@id/edit_passward"
-            android:layout_alignRight="@id/edit_passward"
             android:layout_alignEnd="@id/edit_passward"
             android:layout_marginTop="8dp"
-            android:paddingRight="8dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
             android:textColor="@color/colorPrimary"
             android:text="登录密码"/>
 
@@ -116,17 +138,18 @@
             android:layout_below="@id/edit_passward"
             android:layout_marginBottom="4dp"
             android:layout_marginTop="4dp"
-            android:paddingLeft="16dp"
-            android:hint="请再次输入登录密码"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:hint="@string/hint_pwd_again"
             android:inputType="textPassword"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignTop="@id/edit_pwdrev"
-            android:layout_alignRight="@id/edit_pwdrev"
             android:layout_alignEnd="@id/edit_pwdrev"
             android:layout_marginTop="8dp"
-            android:paddingRight="8dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
             android:textColor="@color/colorPrimary"
             android:text="密码确认"/>
 
@@ -135,7 +158,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toStartOf="@+id/button_protocol"
-            android:layout_toLeftOf="@+id/button_protocol"
             android:layout_below="@+id/edit_pwdrev"
             android:layout_margin="8dp"
             android:text="@string/user_protocol"
@@ -146,7 +168,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/edit_pwdrev"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:text="@string/button_protocol"
             android:textColor="@color/colorAccent"/>
     </RelativeLayout>

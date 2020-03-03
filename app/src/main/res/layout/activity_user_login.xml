@@ -36,42 +36,43 @@
         app:layout_constraintBottom_toTopOf="@id/layout_button">
 
         <EditText
-            android:id="@+id/user_phone"
+            android:id="@+id/user_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_margin="8dp"
             android:hint="@string/hint_phone"
-            android:inputType="phone"
-            android:paddingLeft="8dp"/>
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignTop="@id/user_phone"
-            android:layout_alignRight="@id/user_phone"
-            android:layout_alignEnd="@id/user_phone"
+            android:layout_alignTop="@id/user_name"
+            android:layout_alignEnd="@id/user_name"
             android:layout_marginTop="8dp"
-            android:paddingRight="16dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
             android:textColor="@color/colorPrimary"
-            android:text="手机号码"/>
+            android:text="用户名"/>
 
         <EditText
             android:id="@+id/user_passward"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/user_phone"
+            android:layout_below="@id/user_name"
             android:layout_margin="8dp"
             android:hint="@string/hint_password"
             android:inputType="textPassword"
-            android:paddingLeft="16dp"/>
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignTop="@id/user_passward"
-            android:layout_alignRight="@id/user_passward"
             android:layout_alignEnd="@id/user_passward"
             android:layout_marginTop="8dp"
-            android:paddingRight="8dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
             android:textColor="@color/colorPrimary"
             android:text="登录密码"/>
 
@@ -79,8 +80,7 @@
             android:id="@+id/remember_pwd"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@id/user_phone"
-            android:layout_alignStart="@id/user_phone"
+            android:layout_alignStart="@id/user_name"
             android:layout_below="@id/user_passward"
             android:text="@string/remember_pwd"/>
 
@@ -90,7 +90,6 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/user_passward"
             android:layout_alignEnd="@id/user_passward"
-            android:layout_alignRight="@id/user_passward"
             android:text="@string/forgot_pwd"
             android:background="@null"
             style="@style/Button_Text_S"/>
