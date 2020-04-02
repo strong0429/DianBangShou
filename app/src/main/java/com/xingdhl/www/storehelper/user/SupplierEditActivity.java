@@ -21,6 +21,8 @@ import com.xingdhl.www.storehelper.R;
 import com.xingdhl.www.storehelper.webservice.HttpHandler;
 import com.xingdhl.www.storehelper.webservice.WebServiceAPIs;
 
+import static java.net.HttpURLConnection.HTTP_OK;
+
 /**
  * Created by Strong on 17/11/28.
  *
@@ -45,12 +47,12 @@ public class SupplierEditActivity extends AppCompatActivity implements
         Intent arg = new Intent();
         switch (msg.what){
             case WebServiceAPIs.MSG_ADD_SUPPLIER:
-                if(msg.arg1 != WebServiceAPIs.HTTP_OK){
+                if(msg.arg1 != HTTP_OK){
                     FreeToast.makeText(this, "添加供应商失败，请稍后重试!", Toast.LENGTH_SHORT).show();
                     return;
                 }
             case WebServiceAPIs.MSG_UPDATE_SUPPLIER:
-                if(msg.arg1 != WebServiceAPIs.HTTP_OK){
+                if(msg.arg1 != HTTP_OK){
                     FreeToast.makeText(this, "更新供应商信息失败，请稍后重试", Toast.LENGTH_SHORT).show();
                     return;
                 }

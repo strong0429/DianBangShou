@@ -15,14 +15,14 @@ android {
             storePassword 'leeq0429'
         }
     }
-    compileSdkVersion 27
+    compileSdkVersion 29
     buildToolsVersion '28.0.3'
     defaultConfig {
         applicationId "com.xingdhl.www.storehelper"
         minSdkVersion 19
-        targetSdkVersion 27
-        versionCode 65
-        versionName "V0.65 (2018-06-02)"
+        targetSdkVersion 29
+        versionCode 100
+        versionName "V1.00 (2020-02-06)"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -62,4 +62,6 @@ dependencies {
     implementation 'com.google.zxing:core:3.3.2'
     implementation 'de.hdodenhof:circleimageview:2.1.0'
     implementation files('libs/Msc.jar')
+    implementation 'org.jetbrains:annotations-java5:15.0'
 }
+

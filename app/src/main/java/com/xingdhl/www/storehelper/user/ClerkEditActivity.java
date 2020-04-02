@@ -29,6 +29,8 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 
+import static java.net.HttpURLConnection.HTTP_OK;
+
 public class ClerkEditActivity extends AppCompatActivity implements
         HttpHandler.handlerCallback, QueryDialog.QueryDlgListener{
     private EditText mClerkName, mClerkTel, mIdCard, mAddress, mRegDate, mPassword;
@@ -46,7 +48,7 @@ public class ClerkEditActivity extends AppCompatActivity implements
         Bundle bundle = new Bundle();
         switch (msg.what){
             case WebServiceAPIs.MSG_REGISTER_CLERK:
-                if(msg.arg1 == WebServiceAPIs.HTTP_OK){
+                if(msg.arg1 == HTTP_OK){
                     mClerk.setId(msg.arg2);
                 }else if(msg.arg1 == -7) {
                     FreeToast.makeText(this, "每个店铺最多可免费注册 2 个店员！", Toast.LENGTH_SHORT).show();
@@ -58,7 +60,7 @@ public class ClerkEditActivity extends AppCompatActivity implements
                     return;
                 }
             case WebServiceAPIs.MSG_UPDATE_CLERK:
-                if(msg.arg1 != WebServiceAPIs.HTTP_OK){
+                if(msg.arg1 != HTTP_OK){
                     FreeToast.makeText(this, "更新店员信息失败！请稍后重试", Toast.LENGTH_SHORT).show();
                     mClerk = (Clerk)getIntent().getBundleExtra("bundle").getSerializable("clerk");
                     return;
@@ -69,7 +71,7 @@ public class ClerkEditActivity extends AppCompatActivity implements
                 finish();
                 break;
             case WebServiceAPIs.MSG_DELETE_CLERK:
-                if(msg.arg1 != WebServiceAPIs.HTTP_OK){
+                if(msg.arg1 != HTTP_OK){
                     FreeToast.makeText(this, "注销店员失败！请稍后重试", Toast.LENGTH_SHORT).show();
                     return;
                 }

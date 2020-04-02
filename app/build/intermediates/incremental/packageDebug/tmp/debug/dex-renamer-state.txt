@@ -1,4 +1,4 @@
-#Thu Feb 13 22:31:05 CST 2020
-base.0=E\:\\DianBangShou\\app\\build\\intermediates\\dex\\debug\\mergeDexDebug\\out\\classes.dex
+#Thu Apr 02 20:39:30 CST 2020
+base.0=E\:\\GitHub\\DianBangShou\\app\\build\\intermediates\\dex\\debug\\out\\classes.dex
 path.0=classes.dex
 renamed.0=classes.dex

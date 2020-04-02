@@ -22,6 +22,8 @@ import com.xingdhl.www.storehelper.utility.VoiceInput;
 import com.xingdhl.www.storehelper.webservice.HttpHandler;
 import com.xingdhl.www.storehelper.webservice.WebServiceAPIs;
 
+import static java.net.HttpURLConnection.HTTP_OK;
+
 public class GoodsInputActivity extends AppCompatActivity implements VoiceInput.OnVoiceFinish,
         HttpHandler.handlerCallback, QueryDialog.QueryDlgListener{
     private EditText mGoodsName,mGoodsSpec, mGoodsManuf;
@@ -50,7 +52,7 @@ public class GoodsInputActivity extends AppCompatActivity implements VoiceInput.
         Bundle bundle = new Bundle();
         switch (msg.what){
             case WebServiceAPIs.MSG_GET_CATEGORY:
-                if(msg.arg1 == WebServiceAPIs.HTTP_OK) {
+                if(msg.arg1 == HTTP_OK) {
                     ArrayAdapter<Categories.Category> adapter = new ArrayAdapter<>(this,
                             R.layout.spinner_display_style, R.id.txtvwSpinner, Categories.getGoodsCategories());
                     adapter.setDropDownViewResource(R.layout.spinner_dropdown_style);
@@ -58,7 +60,7 @@ public class GoodsInputActivity extends AppCompatActivity implements VoiceInput.
                 }
                 break;
             case WebServiceAPIs.MSG_ADD_GOODS:
-                if(msg.arg1 != WebServiceAPIs.HTTP_OK){
+                if(msg.arg1 != HTTP_OK){
                     FreeToast.makeText(this, "录入商品失败，请稍后重试!", Toast.LENGTH_SHORT).show();
                     break;
                 }

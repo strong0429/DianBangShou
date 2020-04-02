@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
@@ -33,10 +34,10 @@ import com.xingdhl.www.storehelper.ObjectDefine.GCV;
 import com.xingdhl.www.storehelper.ObjectDefine.SaleSummary;
 import com.xingdhl.www.storehelper.ObjectDefine.User;
 import com.xingdhl.www.storehelper.R;
-import com.xingdhl.www.storehelper.Trading.SalesAnalysisActivity;
-import com.xingdhl.www.storehelper.Trading.SalesSumDataFragment;
-import com.xingdhl.www.storehelper.Trading.SalesSumFragment;
-import com.xingdhl.www.storehelper.Trading.TradingActivity;
+import com.xingdhl.www.storehelper.trading.SalesAnalysisActivity;
+import com.xingdhl.www.storehelper.trading.SalesSumDataFragment;
+import com.xingdhl.www.storehelper.trading.SalesSumFragment;
+import com.xingdhl.www.storehelper.trading.TradingActivity;
 import com.xingdhl.www.storehelper.store.CreateStoreActivity;
 import com.xingdhl.www.storehelper.store.PurchaseActivity;
 import com.xingdhl.www.storehelper.store.PurchaseReviewActivity;
@@ -51,6 +52,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+
+import static java.net.HttpURLConnection.HTTP_OK;
 
 public class StoreOwnerActivity extends AppCompatActivity implements
         HttpHandler.handlerCallback, QueryDialog.QueryDlgListener,
@@ -69,7 +72,7 @@ public class StoreOwnerActivity extends AppCompatActivity implements
     private User mUser;
 
     @Override
-    public void onClick(View v) {
+    public void onClick(@NonNull View v) {
         Intent intent;
         switch (v.getId()) {
             case R.id.button_sale: //‘开单销售’
@@ -164,7 +167,7 @@ public class StoreOwnerActivity extends AppCompatActivity implements
     public void onMsgHandler(Message msg) {
         switch (msg.what){
             case WebServiceAPIs.MSG_GET_SELL_SUM:
-                if(msg.arg1 == WebServiceAPIs.HTTP_OK){
+                if(msg.arg1 == HTTP_OK){
                     Bundle sumData = msg.getData();
                     setSaleSummary(msg.arg2, sumData);
                 }
@@ -181,7 +184,7 @@ public class StoreOwnerActivity extends AppCompatActivity implements
                 }
                 break;
             case WebServiceAPIs.MSG_GET_SELL_SUM_BY_DAY:
-                if(msg.arg1 != WebServiceAPIs.HTTP_OK)
+                if(msg.arg1 != HTTP_OK)
                     return;
 
                 double[] daysSum = msg.getData().getDoubleArray("sum");
@@ -224,7 +227,7 @@ public class StoreOwnerActivity extends AppCompatActivity implements
                 StorePagerFragment fragment = (StorePagerFragment)adapter.instantiateItem(mStorePager, msg.arg2);
 
                 String filePath = msg.getData().getString("file_name");
-                if(msg.arg1 == WebServiceAPIs.HTTP_OK){
+                if(msg.arg1 == HTTP_OK){
                     Bitmap bitmap = BitmapFactory.decodeFile(filePath);
                     fragment.setShopImg(bitmap);
                 }else{
@@ -255,18 +258,10 @@ public class StoreOwnerActivity extends AppCompatActivity implements
                             Manifest.permission.RECORD_AUDIO }, ACCESS_LOCATION_REQUEST_CODE);
         }
 
-        //查询当前用户所有店铺指定时间内的日销售额；
-        Calendar calendar = Calendar.getInstance(Locale.PRC);
-        long endTime = calendar.getTimeInMillis();
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        year -= (month == 0 ? 1 : 0);
-        month = month == 0 ? 11 : (month - 1);
-        calendar.set(year, month, 1, 0, 0, 0);
-        long startTime = calendar.getTimeInMillis();
+        //查询当前用户所有店铺上月至今的销售额统计；
         for(int i = 0; i < mUser.getStores().size(); i++) {
             mSaleSummaries.add(new SaleSummary());
-            WebServiceAPIs.getSalesSummary(mHttpHandler, i, startTime, endTime);
+            WebServiceAPIs.getSalesSummary(mHttpHandler, i);
         }
 
         mTitle = (TextView)findViewById(R.id.sell_sum_title);
@@ -400,22 +395,22 @@ public class StoreOwnerActivity extends AppCompatActivity implements
         }
 
         //当天销售、利润及环比增长；
-        saleSummary.setDaySum(sumData.getDouble("today"));
-        saleSummary.setDayProfit(sumData.getDouble("today_p"));
-        saleSummary.setDayRise(saleSummary.getDaySum() - sumData.getDouble("yesterday"));
-        saleSummary.setDayProfitRise(saleSummary.getDayProfit() - sumData.getDouble("yesterday_p"));
+        saleSummary.setDaySum(sumData.getDouble("td_sum"));
+        saleSummary.setDayProfit(sumData.getDouble("td_pro"));
+        saleSummary.setDayRise(saleSummary.getDaySum() - sumData.getDouble("yd_sum"));
+        saleSummary.setDayProfitRise(saleSummary.getDayProfit() - sumData.getDouble("yd_pro"));
 
         //本周销售及环比增长
-        saleSummary.setWeekSum(sumData.getDouble("week"));
-        saleSummary.setWeekProfit(sumData.getDouble("week_p"));
-        saleSummary.setWeekRise(saleSummary.getWeekSum() - sumData.getDouble("last_week"));
-        saleSummary.setWeekProfitRise(saleSummary.getWeekProfit() - sumData.getDouble("last_week_p"));
+        saleSummary.setWeekSum(sumData.getDouble("cw_sum"));
+        saleSummary.setWeekProfit(sumData.getDouble("cw_pro"));
+        saleSummary.setWeekRise(saleSummary.getWeekSum() - sumData.getDouble("lw_sum"));
+        saleSummary.setWeekProfitRise(saleSummary.getWeekProfit() - sumData.getDouble("lw_pro"));
 
         //本月销售及环比增长
-        saleSummary.setMonthSum(sumData.getDouble("month"));
-        saleSummary.setMonthProfit(sumData.getDouble("month_p"));
-        saleSummary.setMonthRise(saleSummary.getMonthSum() - sumData.getDouble("last_month"));
-        saleSummary.setMonthProfitRise(saleSummary.getMonthProfit() - sumData.getDouble("last_month_p"));
+        saleSummary.setMonthSum(sumData.getDouble("cm_sum"));
+        saleSummary.setMonthProfit(sumData.getDouble("cm_pro"));
+        saleSummary.setMonthRise(saleSummary.getMonthSum() - sumData.getDouble("lm_sum"));
+        saleSummary.setMonthProfitRise(saleSummary.getMonthProfit() - sumData.getDouble("lm_pro"));
     }
 
     @Override

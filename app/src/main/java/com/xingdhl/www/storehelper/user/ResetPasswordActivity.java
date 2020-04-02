@@ -18,9 +18,12 @@ import com.xingdhl.www.storehelper.ObjectDefine.GCV;
 import com.xingdhl.www.storehelper.ObjectDefine.User;
 import com.xingdhl.www.storehelper.R;
 import com.xingdhl.www.storehelper.webservice.HttpHandler;
+import com.xingdhl.www.storehelper.webservice.HttpRunnable;
 import com.xingdhl.www.storehelper.webservice.WebServiceAPIs;
 
 import java.util.Locale;
+
+import static java.net.HttpURLConnection.HTTP_OK;
 
 /**
  * Created by Strong on 17/11/11.
@@ -49,7 +52,7 @@ public class ResetPasswordActivity extends AppCompatActivity implements
                 }
                 mBtnChkNum.setEnabled(false);
                 mHttpHandler.justWait(1000, 60);
-                WebServiceAPIs.getCheckCode(mHttpHandler, mETPhoneNum.getText().toString(), 1);
+                WebServiceAPIs.getSmsCode(mHttpHandler, mETPhoneNum.getText().toString(), true);
                 break;
             case R.id.button_reset:
                 if(!mETPhoneNum.getText().toString().matches(GCV.RegExp_cell)){
@@ -80,10 +83,10 @@ public class ResetPasswordActivity extends AppCompatActivity implements
     @Override
     public void onMsgHandler(Message msg) {
         switch (msg.what){
-            case WebServiceAPIs.MSG_CHECK_NUM:
-                if(msg.arg1 == WebServiceAPIs.HTTP_OK)
+            case WebServiceAPIs.MSG_SMS_CODE:
+                if(msg.arg1 == HTTP_OK)
                     break;
-                if(msg.arg1 == WebServiceAPIs.HTTP_NETWORK_ERROR)
+                if(msg.arg1 == HttpRunnable.HTTP_NETWORK_ERR)
                     FreeToast.makeText(this, "发送验证码失败，请确认已打开手机网络连接。",
                             Toast.LENGTH_SHORT).show();
                 else
@@ -91,7 +94,7 @@ public class ResetPasswordActivity extends AppCompatActivity implements
                 mHttpHandler.stopWait();
                 break;
             case WebServiceAPIs.MSG_RESET_PWD:
-                if(msg.arg1 == WebServiceAPIs.HTTP_OK){
+                if(msg.arg1 == HTTP_OK){
                     mUser.setPhoneNum(mETPhoneNum.getText().toString());
                     mUser.setPassword(mETPasswd.getText().toString());
                     mUser.setAutoLogin(false);
@@ -99,7 +102,7 @@ public class ResetPasswordActivity extends AppCompatActivity implements
                     finish();
                     return;
                 }
-                if(msg.arg1 == WebServiceAPIs.HTTP_NETWORK_ERROR)
+                if(msg.arg1 == HttpRunnable.HTTP_NETWORK_ERR)
                     FreeToast.makeText(this, "重置密码失败，请确认已打开手机网络连接。",
                             Toast.LENGTH_SHORT).show();
                 else if(msg.arg1 == -13)

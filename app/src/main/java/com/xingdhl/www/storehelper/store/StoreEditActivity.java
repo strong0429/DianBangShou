@@ -42,6 +42,8 @@ import java.io.IOException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static java.net.HttpURLConnection.HTTP_OK;
+
 public class StoreEditActivity extends AppCompatActivity implements View.OnClickListener,
         HttpHandler.handlerCallback, AMapLocationListener, QueryDialog.QueryDlgListener{
     private final int SET_STORE_PHOTO = 1;
@@ -85,8 +87,8 @@ public class StoreEditActivity extends AppCompatActivity implements View.OnClick
     public void onMsgHandler(Message msg) {
         switch (msg.what){
             case WebServiceAPIs.MSG_UPLOAD_FILE:
-                if(msg.arg1 == WebServiceAPIs.HTTP_OK){
-                    mStore.setPhoto(true);
+                if(msg.arg1 == HTTP_OK){
+                    //mStore.setPhoto(true); 2020-03-14
                     //String path = getExternalFilesDir(Environment.DIRECTORY_PICTURES).getAbsolutePath();
                     File storePhoto = new File(mPhotoTmp.getAbsolutePath() + mStore.getId() + ".jpg");
                     if(storePhoto.exists())
@@ -99,7 +101,7 @@ public class StoreEditActivity extends AppCompatActivity implements View.OnClick
                 }
                 break;
             case WebServiceAPIs.MSG_STORE_UPDATE:
-                if(msg.arg1 != WebServiceAPIs.HTTP_OK){
+                if(msg.arg1 != HTTP_OK){
                     FreeToast.makeText(this, "更新店铺信息失败！", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -415,7 +417,7 @@ public class StoreEditActivity extends AppCompatActivity implements View.OnClick
             public void afterTextChanged(Editable s) {
             }
         });
-
+        /* 2020-03-14
         if(mStore.isSetPhoto()){
             String imgPath = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
                     .getAbsolutePath() + "/store_" + mStore.getId() + ".jpg";
@@ -424,7 +426,7 @@ public class StoreEditActivity extends AppCompatActivity implements View.OnClick
                 Bitmap imgStore = BitmapFactory.decodeFile(imgPath);
                 ((CircleImageView)findViewById(R.id.store_photo)).setImageBitmap(imgStore);
             }
-        }
+        }*/
         findViewById(R.id.store_photo).setOnClickListener(this);
     }
 

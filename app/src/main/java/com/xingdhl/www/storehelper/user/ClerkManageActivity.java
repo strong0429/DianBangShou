@@ -24,6 +24,8 @@ import com.xingdhl.www.storehelper.webservice.WebServiceAPIs;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.net.HttpURLConnection.HTTP_OK;
+
 public class ClerkManageActivity extends AppCompatActivity implements
         HttpHandler.handlerCallback, OnItemClickListener{
     private final int REQ_CODE_EDIT = 1;
@@ -50,7 +52,7 @@ public class ClerkManageActivity extends AppCompatActivity implements
     public void onMsgHandler(Message msg) {
         if(msg.what != WebServiceAPIs.MSG_GET_CLERKS_INFO)
             return;
-        if(msg.arg1 != WebServiceAPIs.HTTP_OK)
+        if(msg.arg1 != HTTP_OK)
             return;
         mClerkRecyclerView.getAdapter().notifyDataSetChanged();
     }

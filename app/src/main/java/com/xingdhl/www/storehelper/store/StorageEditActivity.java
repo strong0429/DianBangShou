@@ -18,6 +18,8 @@ import com.xingdhl.www.storehelper.webservice.WebServiceAPIs;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.net.HttpURLConnection.HTTP_OK;
+
 public class StorageEditActivity extends AppCompatActivity implements HttpHandler.handlerCallback{
     public static final int MSG_STORAGE_MODIFIED = -100;
     private ViewPager mStoragePager;
@@ -38,7 +40,7 @@ public class StorageEditActivity extends AppCompatActivity implements HttpHandle
             return;
         }
         if(msg.what == WebServiceAPIs.MSG_UPDATE_STORAGE){
-            if(msg.arg1 == WebServiceAPIs.HTTP_OK){
+            if(msg.arg1 == HTTP_OK){
                 mUpdateItemId.add(msg.arg2);
             }
             if(mFinish)

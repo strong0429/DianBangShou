@@ -30,6 +30,8 @@ import com.xingdhl.www.storehelper.webservice.WebServiceAPIs;
 
 import java.util.List;
 
+import static java.net.HttpURLConnection.HTTP_OK;
+
 public class StorageManageActivity extends AppCompatActivity implements
         HttpHandler.handlerCallback, OnItemClickListener, View.OnClickListener {
     private RecyclerView mListView;
@@ -162,14 +164,14 @@ public class StorageManageActivity extends AppCompatActivity implements
                     WebServiceAPIs.getPageStorages(mHttpHandler, mStoreGoods, mStoreId,
                             msg.arg2 + 1, GCV.STORAGE_PAGE_SIZE);
                     mListView.getAdapter().notifyDataSetChanged();
-                }else if(msg.arg1 != WebServiceAPIs.HTTP_OK){
+                }else if(msg.arg1 != HTTP_OK){
                     mStoreGoods.clear();
                     FreeToast.makeText(this, "查询库存商品失败，请稍后重试", Toast.LENGTH_SHORT).show();
                 }
                 mListView.getAdapter().notifyDataSetChanged();
                 break;
             case WebServiceAPIs.MSG_GET_CATEGORY:
-                if(msg.arg1 != WebServiceAPIs.HTTP_OK)
+                if(msg.arg1 != HTTP_OK)
                     Log.i("XDB_MSG", "Get goods category failed. error code: " + msg.arg1);
                 break;
             default:

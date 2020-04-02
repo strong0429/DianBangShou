@@ -504,12 +504,14 @@
     <string name="hint_addr_street">XX街道</string>
     <string name="hint_chknum">请输入验证码</string>
     <string name="hint_password">请输入登录密码</string>
-    <string name="hint_phone">请输入手机号码</string>
+    <string name="hint_phone">请输入手机号</string>
+    <string name="hint_pwd_again">请再次输入登录密码</string>
     <string name="hint_scancode">请对准条码扫描</string>
     <string name="hint_shop_desc">输入不超过128字的描述信息</string>
     <string name="hint_shop_name">请输入店铺名称</string>
     <string name="hint_shop_phone">请输入店铺联系电话</string>
     <string name="hint_shop_type">请选择经营类别</string>
+    <string name="hint_username">请输入用户名</string>
     <string name="image_text">使用店帮手，开店再无忧</string>
     <string name="passwd_review">密码确认</string>
     <string name="password_toggle_content_description">Toggle password visibility</string>

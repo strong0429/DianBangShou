@@ -37,6 +37,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import static java.net.HttpURLConnection.HTTP_OK;
+
 public class PurchaseActivity extends AppCompatActivity implements View.OnClickListener,
         QueryDialog.QueryDlgListener, HttpHandler.handlerCallback{
     private EditText mBarcode, mGoodsName, mGoodsSpec;
@@ -82,7 +84,7 @@ public class PurchaseActivity extends AppCompatActivity implements View.OnClickL
     public void onMsgHandler(Message msg) {
         switch (msg.what){
             case WebServiceAPIs.MSG_GET_SUPPLIER:
-                if(msg.arg1 != WebServiceAPIs.HTTP_OK)
+                if(msg.arg1 != HTTP_OK)
                     break;
                 List<String> spinnerText = new ArrayList<>();
                 spinnerText.add("--选择供货商--");
@@ -95,7 +97,7 @@ public class PurchaseActivity extends AppCompatActivity implements View.OnClickL
                 mSpinner.setAdapter(adapter);
                 break;
             case WebServiceAPIs.MSG_GET_GOODS:
-                if(msg.arg1 == WebServiceAPIs.HTTP_OK){
+                if(msg.arg1 == HTTP_OK){
                     Goods goods = (Goods)msg.getData().getSerializable("goods");
                     mGoodsName.setText(goods.getName());
                     mGoodsSpec.setText(goods.getRemark());
@@ -114,7 +116,7 @@ public class PurchaseActivity extends AppCompatActivity implements View.OnClickL
                 if(!mBarcode.isEnabled())
                     mScanBarcodeUtil.startScan(1000);
 
-                if(msg.arg1 == WebServiceAPIs.HTTP_OK){
+                if(msg.arg1 == HTTP_OK){
                     if(mDetailStorage != null){
                         //新商品，添加到库存列表中；
                         mStoreGoods.add(mDetailStorage);

@@ -18,7 +18,7 @@ import com.xingdhl.www.storehelper.CustomStuff.QueryDialog;
 import com.xingdhl.www.storehelper.ObjectDefine.Categories;
 import com.xingdhl.www.storehelper.ObjectDefine.DetailStorage;
 import com.xingdhl.www.storehelper.R;
-import com.xingdhl.www.storehelper.Trading.CalenderActivity;
+import com.xingdhl.www.storehelper.trading.CalenderActivity;
 import com.xingdhl.www.storehelper.webservice.HttpHandler;
 
 import java.sql.Timestamp;

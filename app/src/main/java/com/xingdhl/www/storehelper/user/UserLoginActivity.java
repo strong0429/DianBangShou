@@ -19,7 +19,10 @@ import com.xingdhl.www.storehelper.ObjectDefine.User;
 import com.xingdhl.www.storehelper.R;
 import com.xingdhl.www.storehelper.store.CreateStoreActivity;
 import com.xingdhl.www.storehelper.webservice.HttpHandler;
+import com.xingdhl.www.storehelper.webservice.HttpRunnable;
 import com.xingdhl.www.storehelper.webservice.WebServiceAPIs;
+
+import static java.net.HttpURLConnection.HTTP_OK;
 
 public class UserLoginActivity extends AppCompatActivity implements
         HttpHandler.handlerCallback, QueryDialog.QueryDlgListener, View.OnClickListener{
@@ -78,32 +81,22 @@ public class UserLoginActivity extends AppCompatActivity implements
         if(msg.what != WebServiceAPIs.MSG_USER_LOGIN)
             return;
 
-        switch (msg.arg1){
-            case WebServiceAPIs.HTTP_OK:
-                mUser.saveInfo();
-                Intent intent;
-                if (mUser.getStaffStatus() == GCV.OWNER) { //店主，获取其所有店铺信息；
-                    intent = new Intent(this, StoreOwnerActivity.class);
-                } else if (mUser.getStaffStatus() == GCV.CLERK) {  //店员，获取其所在店铺信息；
-                    intent = new Intent(this, StoreOwnerActivity.class);
-                } else {
-                    new QueryDialog(this, "您还没有注册店铺!\n\n\t‘是’注册新店铺\n\t‘否’退出程序").show();
-                    return;
-                }
-                startActivity(intent);
-                finish();
-                break;
-            case WebServiceAPIs.HTTP_NETWORK_ERROR:
-                FreeToast.makeText(this, "无法连接网络！请确认已打开手机网络链接", Toast.LENGTH_SHORT).show();
-                break;
-            case WebServiceAPIs.HTTP_NO_EXIST:
-                FreeToast.makeText(this, "该号码未注册，请注册后重新登录。", Toast.LENGTH_SHORT).show();
-                break;
-            case WebServiceAPIs.HTTP_DATA_INVALID:
-                FreeToast.makeText(this, "密码不匹配，请输入正确的密码。", Toast.LENGTH_SHORT).show();
-                break;
-            default:
-                FreeToast.makeText(this, "登录失败！请稍后重新登录", Toast.LENGTH_SHORT).show();
+        if(msg.arg1 == HTTP_OK) {
+            mUser.saveInfo();
+            Intent intent;
+            if (mUser.getStores().size() > 0) {
+                intent = new Intent(this, StoreOwnerActivity.class);
+            } else {
+                new QueryDialog(this, "您还没有注册店铺! 现在注册？\n\n\t‘是’注册新店铺。\n\t‘否’退出程序。").show();
+                return;
+            }
+            startActivity(intent);
+            finish();
+        } else if(msg.arg1 >= HttpRunnable.HTTP_NETWORK_ERR) {
+            String err_msg = msg.getData().getString("message");
+            FreeToast.makeText(this, err_msg, Toast.LENGTH_SHORT).show();
+        } else {
+            FreeToast.makeText(this, "登录失败！用户名不存在或密码错误。", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -121,7 +114,7 @@ public class UserLoginActivity extends AppCompatActivity implements
             mTextPasswd.setText(mUser.getPassword());
 
         mTextUserName = (EditText)findViewById(R.id.user_name);
-        mTextUserName.setText(mUser.getPhoneNum());
+        mTextUserName.setText(mUser.getUserName());
 
         mAutoLogin = (CheckBox)findViewById(R.id.remember_pwd);
         mAutoLogin.setChecked(mUser.isAutoLogin());
@@ -144,6 +137,6 @@ public class UserLoginActivity extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
 
-        mTextUserName.setText(mUser.getPhoneNum());
+        mTextUserName.setText(mUser.getUserName());
     }
 }

@@ -23,6 +23,8 @@ import com.xingdhl.www.storehelper.webservice.WebServiceAPIs;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.net.HttpURLConnection.HTTP_OK;
+
 public class UserInfomationActivity extends AppCompatActivity implements View.OnClickListener,
         HttpHandler.handlerCallback, QueryDialog.QueryDlgListener{
     private EditText mEtPhone, mEtName, mEtIdcard, mEtEmail;
@@ -38,13 +40,13 @@ public class UserInfomationActivity extends AppCompatActivity implements View.On
     public void onMsgHandler(Message msg) {
         switch (msg.what){
             case WebServiceAPIs.MSG_MODIFY_PWD:
-                if(msg.arg1 != WebServiceAPIs.HTTP_OK)
+                if(msg.arg1 != HTTP_OK)
                     FreeToast.makeText(this, "更改密码失败!", Toast.LENGTH_SHORT).show();
                 else
                     FreeToast.makeText(this, "更改密码成功！", Toast.LENGTH_SHORT).show();
                 break;
             case WebServiceAPIs.MSG_UPDATE_USER:
-                if(msg.arg1 != WebServiceAPIs.HTTP_OK){
+                if(msg.arg1 != HTTP_OK){
                     FreeToast.makeText(this, "更新用户信息失败!", Toast.LENGTH_SHORT).show();
                     break;
                 }

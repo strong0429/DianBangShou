@@ -23,6 +23,8 @@ import com.xingdhl.www.storehelper.webservice.WebServiceAPIs;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.net.HttpURLConnection.HTTP_OK;
+
 public class SupplierManageActivity extends AppCompatActivity implements
         HttpHandler.handlerCallback, OnItemClickListener{
     private final int NEW_SUPPLIER = 1;
@@ -52,7 +54,7 @@ public class SupplierManageActivity extends AppCompatActivity implements
     public void onMsgHandler(Message msg) {
         switch (msg.what) {
             case WebServiceAPIs.MSG_GET_SUPPLIER:
-                if (msg.arg1 != WebServiceAPIs.HTTP_OK) {
+                if (msg.arg1 != HTTP_OK) {
                     Toast.makeText(this, "获取供应商信息失败，请稍后重试", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -66,7 +68,7 @@ public class SupplierManageActivity extends AppCompatActivity implements
                 mSupplierListView.getAdapter().notifyDataSetChanged();
                 break;
             case WebServiceAPIs.MSG_DEL_SUPPLIER:
-                if (msg.arg1 != WebServiceAPIs.HTTP_OK) {
+                if (msg.arg1 != HTTP_OK) {
                     Toast.makeText(this, "获取供应商信息失败，请稍后重试", Toast.LENGTH_SHORT).show();
                     return;
                 }

@@ -3,8 +3,10 @@ package com.xingdhl.www.storehelper;
 import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +21,8 @@ import com.xingdhl.www.storehelper.user.UserLoginActivity;
 import com.xingdhl.www.storehelper.webservice.HttpHandler;
 import com.xingdhl.www.storehelper.webservice.UpdateService;
 import com.xingdhl.www.storehelper.webservice.WebServiceAPIs;
+
+import static java.net.HttpURLConnection.HTTP_OK;
 
 public class WelcomeActivity extends AppCompatActivity implements
         HttpHandler.handlerCallback, QueryDialog.QueryDlgListener{
@@ -48,28 +52,29 @@ public class WelcomeActivity extends AppCompatActivity implements
 
     @Override
     public void onMsgHandler(Message msg) {
+        Intent intent;
         switch (msg.what){
-            case WebServiceAPIs.MSG_GET_APP_VER:
-                if(msg.arg1 == WebServiceAPIs.HTTP_OK && msg.arg2 > getLocalVersion()){
+            case WebServiceAPIs.MSG_GET_TOKEN:
+                if( msg.arg1 == HTTP_OK){
+                    mUser.setToken(msg.getData().getString("token"));
                     String verTxt = msg.getData().getString("ver_txt");
                     String verDate = msg.getData().getString("date_pub");
                     String verDesc = msg.getData().getString("detail");
-                    QueryDialog dialog = new QueryDialog(this,
-                        "发现新版本：" + verTxt +
-                        "\n发布日期：" + verDate +
-                        "\n更新信息：\n\t" + verDesc +
-                        "\n\n是否升级到新版本？");
-                    dialog.show();
+                    if(msg.arg2 > getLocalVersion()){
+                        QueryDialog dialog = new QueryDialog(this,
+                                "发现新版本：" + verTxt +
+                                        "\n发布日期：" + verDate +
+                                        "\n更新信息：\n\t" + verDesc +
+                                        "\n\n是否升级到新版本？");
+                        dialog.show();
+                    }else{
+                        mHttpHandler.justWait(500,3);
+                    }
                 }else {
-                    mHttpHandler.justWait(500,3);
-                }
-                break;
-            case WebServiceAPIs.MSG_GET_TOKEN:
-                if( msg.arg1 == WebServiceAPIs.HTTP_OK){
-                    mUser.setToken(msg.getData().getString("token"));
-                    WebServiceAPIs.getAppVersion(mHttpHandler);
-                } else {
-                    Intent intent = new Intent(WelcomeActivity.this, UserLoginActivity.class);
+                    String err_msg;
+                    err_msg = msg.getData().getString("message");
+                    FreeToast.makeText(WelcomeActivity.this, err_msg, Toast.LENGTH_SHORT).show();
+                    intent = new Intent(WelcomeActivity.this, UserLoginActivity.class);
                     startActivity(intent);
                     finish();
                 }
@@ -77,14 +82,14 @@ public class WelcomeActivity extends AppCompatActivity implements
             case HttpHandler.JUST_WAITING:
                 if(msg.arg1 > 0)
                     break;
-                Intent intent = new Intent(WelcomeActivity.this, UserLoginActivity.class);
+                intent = new Intent(WelcomeActivity.this, UserLoginActivity.class);
                 startActivity(intent);
                 finish();
         }
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if(requestCode == 101) {
             if(grantResults[0] != 0 || grantResults[1] != 0){
@@ -93,7 +98,8 @@ public class WelcomeActivity extends AppCompatActivity implements
                 finish();
             }else{
                 // WebServiceAPIs.getAppVersion(mHttpHandler);
-                WebServiceAPIs.getToken(mHttpHandler);
+                String appName = this.getPackageName();
+                WebServiceAPIs.getToken(mHttpHandler, appName);
             }
         }
     }
@@ -118,8 +124,8 @@ public class WelcomeActivity extends AppCompatActivity implements
                             Manifest.permission.READ_EXTERNAL_STORAGE}, 101);//自定义的code
         }else{
             //获取服务器版本；
-            //WebServiceAPIs.getAppVersion(mHttpHandler);
-            WebServiceAPIs.getToken(mHttpHandler);
+            String appName = this.getPackageName();
+            WebServiceAPIs.getToken(mHttpHandler, appName);
         }
     }
 
@@ -127,8 +133,11 @@ public class WelcomeActivity extends AppCompatActivity implements
         int versionCode = 0;
         try {
             //获取软件版本号，对应AndroidManifest.xml下android:versionCode
-            versionCode = this.getPackageManager().
-                    getPackageInfo(this.getPackageName(), 0).versionCode;
+            PackageManager packageManager = this.getPackageManager();
+            String packageName = this.getPackageName();
+            PackageInfo packageInfo= packageManager.getPackageInfo(packageName, 0);
+            versionCode = packageInfo.versionCode;
+            //versionCode = packageInfo.versionCodeMajor;
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }

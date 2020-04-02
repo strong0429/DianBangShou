@@ -89,12 +89,12 @@ public class StorePagerFragment extends Fragment {
                 getActivity().startActivityForResult(intent, 2);
             }
         });
-
+        /* 2020-03-14
         if(!mStore.isSetPhoto()) {
             mStoreImgView.setImageResource(R.drawable.store_default);
             return view;
         }
-
+        */
         String imgPath = getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
                 .getAbsolutePath() + "/store_" + mStore.getId() + ".jpg";
         File imgFile = new File(imgPath);

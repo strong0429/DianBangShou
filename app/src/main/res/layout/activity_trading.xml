@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.xingdhl.www.storehelper.Trading.TradingActivity">
+    tools:context="com.xingdhl.www.storehelper.trading.TradingActivity">
 
     <android.support.design.widget.TabLayout
         android:id="@+id/tablayout_title"

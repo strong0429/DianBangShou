@@ -26,11 +26,11 @@ public class User {
     private String mFirstName;
     private String mIdCard;
     private String mRegDate;
+    private String mMobile;
     private String mWechat;
     private String mEmail;
-    //private String mAddr;
+    private String mPhoto;
 
-    //private int mPhotoId;
     private boolean mAutoLogin;
 
     private List<Store> mStores;
@@ -55,12 +55,13 @@ public class User {
 
     private User(Context context) {
         mContext = context;
+        mToken = null;
 
         SharedPreferences preferences = mContext.getSharedPreferences("user_info", Context.MODE_PRIVATE);
         mPassword = preferences.getString("password", "");
         mUserName = preferences.getString("username", "");
         mAutoLogin = preferences.getBoolean("rem_passwd", false);
-        //mPhotoId = preferences.getInt("photo_id", -1);
+        mPhoto = preferences.getString("photo", null);
 
         mMap = new HashMap<String, Object>();
         mStores = new ArrayList<>();
@@ -81,7 +82,7 @@ public class User {
         editor.putString("password", mPassword);
         editor.putString("username", mUserName);
         editor.putBoolean("rem_passwd", mAutoLogin);
-        //editor.putInt("photo_id", mPhotoId);
+        editor.putString("photo", mPhoto);
 
         //editor.commit();
         editor.apply();
@@ -92,34 +93,50 @@ public class User {
         setUserName(jsonObject);
         setFirstName(jsonObject);
         setIdCard(jsonObject);
+        setMobile(jsonObject);
         setEmail(jsonObject);
         setWechat(jsonObject);
-        //setAddr(jsonObject);
-        //setPhotoId(jsonObject);
+        setPhoto(jsonObject);
     }
 
     public List<DetailStorage> getGoodsList(){
         return mGoodsList;
     }
-    /*
-    public String getAddr() {
-        return mAddr;
+
+    public String getPhoto() {
+        return mPhoto;
     }
 
-    public void setAddr(String addr) {
-        mAddr = addr;
+    public void setPhoto(String photo) {
+        this.mPhoto = photo;
     }
 
-    public void setAddr(JSONObject jsonObject) {
-        try{
-            mAddr = jsonObject.getString("address");
-        }catch (JSONException je) {
-            mAddr = null;
+    public void setPhoto(JSONObject jsonObject){
+        try {
+            this.mPhoto = jsonObject.getString("photo");
+        }catch (JSONException je){
+            je.printStackTrace();
         }
     }
-    */
+
     public String getWechat() {
         return mWechat;
+    }
+
+    public String getMobile(){
+        return mMobile;
+    }
+
+    public void setMobile(String mobile){
+        mMobile = mobile;
+    }
+
+    public void setMobile(JSONObject jsonObject){
+        try{
+            mMobile = jsonObject.getString("mobile");
+        }catch (JSONException je){
+            mMobile = null;
+        }
     }
 
     public void setWechat(String wechat) {
@@ -149,23 +166,7 @@ public class User {
             mFirstName = null;
         }
     }
-    /*
-    public int getPhotoId() {
-        return mPhotoId;
-    }
 
-    public void setPhotoId(int photoId) {
-        mPhotoId = photoId;
-    }
-
-    public void setPhotoId(JSONObject jsonObject) {
-        try{
-            mPhotoId = jsonObject.getInt("photoId");
-        }catch (JSONException je) {
-            mPhotoId = -1;
-        }
-    }
-    */
     public String getToken() {
         return mToken;
     }
@@ -216,7 +217,7 @@ public class User {
 
     public void setIdCard(JSONObject jsonObject) {
         try{
-            mIdCard = jsonObject.getString("idCard");
+            mIdCard = jsonObject.getString("id_card");
         }catch (JSONException je) {
             mIdCard = null;
         }
@@ -272,5 +273,13 @@ public class User {
 
     public void setAutoLogin(boolean autoLogin) {
         mAutoLogin = autoLogin;
+    }
+
+    public void setRole(byte role){
+
+    }
+
+    public int getStaffStatus(){
+        return 0;
     }
 }

@@ -33,8 +33,11 @@ import com.xingdhl.www.storehelper.ObjectDefine.User;
 import com.xingdhl.www.storehelper.R;
 import com.xingdhl.www.storehelper.user.StoreOwnerActivity;
 import com.xingdhl.www.storehelper.webservice.HttpHandler;
+import com.xingdhl.www.storehelper.webservice.HttpRunnable;
 import com.xingdhl.www.storehelper.webservice.WebServiceAPIs;
 import com.xingdhl.www.zxinglibrary.encoding.EncodingUtils;
+
+import static java.net.HttpURLConnection.HTTP_OK;
 
 /**
  * Created by Strong on 17/11/14.
@@ -75,26 +78,23 @@ public class CreateStoreActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     public void onMsgHandler(Message msg) {
-        switch (msg.what){
-            case WebServiceAPIs.MSG_STORE_REGISTER:
-                if(msg.arg1 == WebServiceAPIs.HTTP_OK) {
-                    mUser.setRole((byte)GCV.OWNER);
-                    mUser.getStores().add(mStore);
-                    if ("null".equals(this.getIntent().getStringExtra("Parent"))) {
-                        startActivity(new Intent(this, StoreOwnerActivity.class));
-                    }
-                    setResult(RESULT_OK);
-                    this.finish();
-                    return;
-                }
-                if(msg.arg1 == WebServiceAPIs.HTTP_NETWORK_ERROR)
-                    FreeToast.makeText(this,"无法链接网络，请确认已打开手机网络连接", Toast.LENGTH_SHORT).show();
-                else if(msg.arg1 == -7) //超出允许注册店铺数量
-                    FreeToast.makeText(this, "每个用户最多允许注册 2 个店铺！", Toast.LENGTH_SHORT).show();
-                else
-                    FreeToast.makeText(this,"注册店铺失败！请确认输入数据正确", Toast.LENGTH_SHORT).show();
-                break;
+        if(msg.what != WebServiceAPIs.MSG_STORE_CREATE)
+            return;
+
+        if(msg.arg1 == HTTP_OK) {
+            mStore.setPosition("OW");
+            mUser.getStores().add(mStore);
+            if ("null".equals(this.getIntent().getStringExtra("Parent"))) {
+                startActivity(new Intent(this, StoreOwnerActivity.class));
+            }
+            setResult(RESULT_OK);
+            this.finish();
+            return;
         }
+        if(msg.arg1 == HttpRunnable.HTTP_NETWORK_ERR)
+            FreeToast.makeText(this,"无法链接网络！请确认已打开手机网络连接。", Toast.LENGTH_SHORT).show();
+        else
+            FreeToast.makeText(this, msg.getData().getString("message"), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -359,7 +359,7 @@ public class CreateStoreActivity extends AppCompatActivity implements View.OnCli
         mStore.setWxCode(mCCodeWx.getText().toString());
         mStore.setAliCode(mCCodeAli.getText().toString());
 
-        WebServiceAPIs.storeRegister(mHttpHandler, mStore);
+        WebServiceAPIs.createStore(mHttpHandler, mStore);
     }
 
     @Override

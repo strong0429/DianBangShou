@@ -9,6 +9,7 @@ import org.json.JSONObject;
  */
 
 public class Store {
+    private int mId;
     private String mName;
     private String mPhone;
     private String mProvince;
@@ -16,35 +17,78 @@ public class Store {
     private String mDistrict;
     private String mStreet;
     private String mAddress;
-    private String mPayDate;
     private String mRegDate;
     private String mWxCode;
     private String mAliCode;
+    private String mLogo;
 
-    private int mId;
-    private byte mPhoto;
-    private byte mPayMode;
+    private String mExpDate;
 
-    private float mPaySum;
+    private String mPosition;
 
     public Store() {
+        mId = 0;
+        mName = null;
+        mPhone = null;
+        mProvince = null;
+        mCity = null;
+        mDistrict = null;
+        mStreet = null;
+        mAddress = null;
+        mRegDate = null;
+        mWxCode = null;
+        mAliCode = null;
+        mLogo = null;
+        mExpDate = null;
+        mPosition = null;
     }
 
     public String toString(){
         return mName;
     }
 
-    public boolean isSetPhoto() {
-        return mPhoto == 1;
+    public String getPosition() {
+        return mPosition;
     }
 
-    public void setPhoto(boolean isSet) {
-        mPhoto = (byte)(isSet ? 1 : 0);
+    public void setPosition(String mPosition) {
+        this.mPosition = mPosition;
     }
 
-    public void setPhoto(JSONObject jsonObject){
+    public void setPosition(JSONObject jsonObject){
         try {
-            mPhoto = (byte)jsonObject.getInt("photo");
+            mPosition = jsonObject.getString("position");
+        } catch (JSONException je) {
+            je.printStackTrace();
+        }
+    }
+
+    public String getExpDate() {
+        return mExpDate;
+    }
+
+    public void setExpDate(String mExpDate) {
+        this.mExpDate = mExpDate;
+    }
+
+    public void setmExpDate(JSONObject jsonObject){
+        try {
+            mExpDate = jsonObject.getString("exp_date");
+        } catch (JSONException je) {
+            je.printStackTrace();
+        }
+    }
+    public boolean isSetLogo() {
+        return mLogo != null;
+    }
+
+    public void setLogo(String logo) {
+        mLogo = logo;
+    }
+
+    public void setLogo(JSONObject jsonObject){
+        try {
+            mLogo = jsonObject.getString("logo");
         }catch (JSONException je){
             je.printStackTrace();
         }
@@ -53,6 +97,7 @@ public class Store {
     public Store(JSONObject jsonObject){
         setId(jsonObject);
         setName(jsonObject);
+        setPosition(jsonObject);
         setPhone(jsonObject);
         setRegDate(jsonObject);
         setProvince(jsonObject);
@@ -60,10 +105,7 @@ public class Store {
         setDistrict(jsonObject);
         setStreet(jsonObject);
         setAddress(jsonObject);
-        setPayMode(jsonObject);
-        setPayDate(jsonObject);
-        setPaySum(jsonObject);
-        setPhoto(jsonObject);
+        setLogo(jsonObject);
         setWxCode(jsonObject);
         setAliCode(jsonObject);
     }
@@ -78,7 +120,7 @@ public class Store {
 
     public void setWxCode(JSONObject jsonObject){
         try{
-            mWxCode = jsonObject.getString("codeWx");
+            mWxCode = jsonObject.getString("paycode_wec");
         }catch (JSONException je){
             je.printStackTrace();
         }
@@ -94,39 +136,7 @@ public class Store {
 
     public void setAliCode(JSONObject jsonObject){
         try{
-            mAliCode = jsonObject.getString("codeAli");
-        }catch (JSONException je){
-            je.printStackTrace();
-        }
-    }
-
-    public float getPaySum() {
-        return mPaySum;
-    }
-
-    public void setPaySum(float paySum) {
-        mPaySum = paySum;
-    }
-
-    public void setPaySum(JSONObject jsonObject){
-        try {
-            mPaySum = (float)jsonObject.getDouble("paySum");
-        }catch (JSONException je){
-            je.printStackTrace();
-        }
-    }
-
-    public byte getPayMode() {
-        return mPayMode;
-    }
-
-    public void setPayMode(byte payMode) {
-        mPayMode = payMode;
-    }
-
-    public void setPayMode(JSONObject jsonObject){
-        try {
-            mPayMode = (byte)jsonObject.getInt("payMode");
+            mAliCode = jsonObject.getString("paycode_ali");
         }catch (JSONException je){
             je.printStackTrace();
         }
@@ -142,23 +152,7 @@ public class Store {
 
     public void setRegDate(JSONObject jsonObject){
         try {
-            mRegDate = jsonObject.getString("regDate");
-        }catch (JSONException je){
-            je.printStackTrace();
-        }
-    }
-
-    public String getPayDate() {
-        return mPayDate;
-    }
-
-    public void setPayDate(String payDate) {
-        mPayDate = payDate;
-    }
-
-    public void setPayDate(JSONObject jsonObject){
-        try {
-            mPayDate = jsonObject.getString("payDay");
+            mRegDate = jsonObject.getString("reg_date");
         }catch (JSONException je){
             je.printStackTrace();
         }
@@ -176,7 +170,7 @@ public class Store {
         try {
             mPhone = jsonObject.getString("phone");
         } catch (JSONException je) {
-            mPhone = null;
+            je.printStackTrace();
         }
     }
 
@@ -190,9 +184,9 @@ public class Store {
 
     public void setStreet(JSONObject jsonObject) {
         try {
-            mStreet = jsonObject.getString("addrStreet");
+            mStreet = jsonObject.getString("addr_street");
         } catch (JSONException je) {
-            mStreet = null;
+            je.printStackTrace();
         }
     }
 
@@ -206,9 +200,9 @@ public class Store {
 
     public void setCity(JSONObject jsonObject) {
         try {
-            mCity = jsonObject.getString("addrCity");
+            mCity = jsonObject.getString("addr_city");
         } catch (JSONException je) {
-            mCity = null;
+            je.printStackTrace();
         }
     }
 
@@ -222,9 +216,9 @@ public class Store {
 
     public void setDistrict(JSONObject jsonObject) {
         try {
-            mDistrict = jsonObject.getString("addrDistrict");
+            mDistrict = jsonObject.getString("addr_district");
         } catch (JSONException je) {
-            mDistrict = null;
+            je.printStackTrace();
         }
     }
 
@@ -240,7 +234,7 @@ public class Store {
         try {
             mId = jsonObject.getInt("id");
         } catch (JSONException je) {
-            mId = -1;
+            je.printStackTrace();
         }
     }
 
@@ -256,7 +250,7 @@ public class Store {
         try {
             mName = jsonObject.getString("name");
         } catch (JSONException je) {
-            mName = null;
+            je.printStackTrace();
         }
     }
 
@@ -270,9 +264,9 @@ public class Store {
 
     public void setProvince(JSONObject jsonObject) {
         try {
-            mProvince = jsonObject.getString("addrProvince");
+            mProvince = jsonObject.getString("addr_province");
         } catch (JSONException je) {
-            mProvince = null;
+            je.printStackTrace();
         }
     }
 
@@ -286,9 +280,9 @@ public class Store {
 
     public void setAddress(JSONObject jsonObject) {
         try {
-            mAddress = jsonObject.getString("addrDetail");
+            mAddress = jsonObject.getString("addr_detail");
         } catch (JSONException je) {
-            mAddress = null;
+            je.printStackTrace();
         }
     }
 }

@@ -17,7 +17,7 @@ import com.xingdhl.www.storehelper.CustomStuff.FreeToast;
 import com.xingdhl.www.storehelper.ObjectDefine.Purchase;
 import com.xingdhl.www.storehelper.ObjectDefine.Supplier;
 import com.xingdhl.www.storehelper.R;
-import com.xingdhl.www.storehelper.Trading.CalenderActivity;
+import com.xingdhl.www.storehelper.trading.CalenderActivity;
 import com.xingdhl.www.storehelper.webservice.HttpHandler;
 import com.xingdhl.www.storehelper.webservice.WebServiceAPIs;
 
