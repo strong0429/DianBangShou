@@ -2,11 +2,7 @@ package com.xingdhl.www.storehelper.store;
 
 import android.content.Intent;
 import android.os.Message;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -17,18 +13,26 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.xingdhl.www.storehelper.CustomStuff.FreeToast;
 import com.xingdhl.www.storehelper.ObjectDefine.Categories;
-import com.xingdhl.www.storehelper.ObjectDefine.DetailStorage;
+import com.xingdhl.www.storehelper.ObjectDefine.StockGoods;
 import com.xingdhl.www.storehelper.ObjectDefine.GCV;
 import com.xingdhl.www.storehelper.ObjectDefine.OnItemClickListener;
+import com.xingdhl.www.storehelper.ObjectDefine.Store;
 import com.xingdhl.www.storehelper.ObjectDefine.User;
 import com.xingdhl.www.storehelper.R;
 import com.xingdhl.www.storehelper.utility.PinyinUtil;
 import com.xingdhl.www.storehelper.webservice.HttpHandler;
 import com.xingdhl.www.storehelper.webservice.WebServiceAPIs;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static java.net.HttpURLConnection.HTTP_OK;
 
@@ -38,7 +42,7 @@ public class StorageManageActivity extends AppCompatActivity implements
     private EditText mGoodsName;
 
     private HttpHandler mHttpHandler;
-    private List<DetailStorage> mStoreGoods;
+    private Map<String, StockGoods> mStoreGoods;
     private int mStoreId;
 
     private class GoodsViewHolder extends RecyclerView.ViewHolder{
@@ -54,15 +58,15 @@ public class StorageManageActivity extends AppCompatActivity implements
             mPromDate = (TextView)itemView.findViewById(R.id.prom_date);
         }
 
-        private void Bind(DetailStorage goods, boolean isSelected){
+        private void Bind(StockGoods goods, boolean isSelected){
             if(isSelected){
                 itemView.setBackgroundColor(GCV.COLOR_SELECTED);
             }else{
                 itemView.setBackgroundColor(0);
             }
             mName.setText(goods.getName());
-            mSpec.setText(goods.getRemark());
-            mCount.setText(getString(R.string.format_float, goods.getCount()));
+            mSpec.setText(goods.getSpec());
+            mCount.setText(getString(R.string.format_float, goods.getCount_C()));
             String strPrice = getString(R.string.format_price, goods.getPrice(), goods.getUnit());
             if(goods.getDiscount() < 1.0f){
                 mPrice.setTextColor(0xFF0000FF);
@@ -78,10 +82,10 @@ public class StorageManageActivity extends AppCompatActivity implements
 
     private class GoodsListAdapter extends RecyclerView.Adapter<GoodsViewHolder>{
         private OnItemClickListener mOnClickListener;
-        private List<DetailStorage> mGoodsList;
+        private List<StockGoods> mGoodsList;
         private int mSelectedItem;
 
-        private GoodsListAdapter(List<DetailStorage> goodsList){
+        private GoodsListAdapter(List<StockGoods> goodsList){
             mGoodsList = goodsList;
             mSelectedItem = -1;
         }
@@ -105,7 +109,7 @@ public class StorageManageActivity extends AppCompatActivity implements
             mOnClickListener = onClickListener;
         }
 
-        public DetailStorage getItem(int position){
+        public StockGoods getItem(int position){
             return mGoodsList.get(position);
         }
 
@@ -159,10 +163,10 @@ public class StorageManageActivity extends AppCompatActivity implements
     @Override
     public void onMsgHandler(Message msg) {
         switch (msg.what){
-            case WebServiceAPIs.MSG_GET_PAGE_STORAGES:
+            case WebServiceAPIs.MSG_GET_STOCK:
                 if(msg.arg1 == WebServiceAPIs.HTTP_CONTINUE){
-                    WebServiceAPIs.getPageStorages(mHttpHandler, mStoreGoods, mStoreId,
-                            msg.arg2 + 1, GCV.STORAGE_PAGE_SIZE);
+                    WebServiceAPIs.getStockGoods(mHttpHandler, mStoreGoods, mStoreId,
+                            msg.arg2 + 1, GCV.PAGE_SIZE);
                     mListView.getAdapter().notifyDataSetChanged();
                 }else if(msg.arg1 != HTTP_OK){
                     mStoreGoods.clear();
@@ -185,25 +189,26 @@ public class StorageManageActivity extends AppCompatActivity implements
 
         mHttpHandler = new HttpHandler(this);
         int storeNo = getIntent().getIntExtra("store_No", -1);
-        mStoreId = User.getUser(null).getStore(storeNo).getId();
+        Store store = User.getUser(null).getStore(storeNo);
+        mStoreId = store.getId();
 
         if(Categories.getGoodsCategories().size() == 0)
             WebServiceAPIs.getGoodsCategories(mHttpHandler);
 
         //获取库存商品信息；
-        mStoreGoods = User.getUser(null).getGoodsList();
+        mStoreGoods = store.getGoodsList();
         mStoreGoods.clear();
-        WebServiceAPIs.getPageStorages(mHttpHandler, mStoreGoods, mStoreId, 0,  GCV.STORAGE_PAGE_SIZE);
+        WebServiceAPIs.getStockGoods(mHttpHandler, mStoreGoods, mStoreId, 0,  GCV.PAGE_SIZE);
 
-        GoodsListAdapter adapter = new GoodsListAdapter(mStoreGoods);
+        GoodsListAdapter adapter = new GoodsListAdapter(new ArrayList<>(mStoreGoods.values()));
         adapter.setOnItemClickListener(this);
-        mListView = (RecyclerView)findViewById(R.id.goods_list);
+        mListView = findViewById(R.id.goods_list);
         mListView.setLayoutManager(new LinearLayoutManager(this));
         mListView.setAdapter(adapter);
         mListView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
 
         findViewById(R.id.button_clear).setOnClickListener(this);
-        mGoodsName = (EditText)findViewById(R.id.find_editbox);
+        mGoodsName = findViewById(R.id.find_editbox);
         mGoodsName.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {

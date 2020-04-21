@@ -37,8 +37,6 @@ public class User {
     private List<UserGroup> mUserGroups;
     private List<UserPermission> mUserPermissions;
 
-    private List<DetailStorage> mGoodsList;
-
     private String mToken;
 
     private Map<String, Object> mMap;
@@ -65,7 +63,6 @@ public class User {
 
         mMap = new HashMap<String, Object>();
         mStores = new ArrayList<>();
-        mGoodsList = new ArrayList<>();
         mUserGroups = new ArrayList<>();
         mUserPermissions = new ArrayList<>();
     }
@@ -97,10 +94,6 @@ public class User {
         setEmail(jsonObject);
         setWechat(jsonObject);
         setPhoto(jsonObject);
-    }
-
-    public List<DetailStorage> getGoodsList(){
-        return mGoodsList;
     }
 
     public String getPhoto() {

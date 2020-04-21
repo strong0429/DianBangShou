@@ -5,24 +5,26 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.xingdhl.www.storehelper.CustomStuff.FreeToast;
 import com.xingdhl.www.storehelper.CustomStuff.QueryDialog;
 import com.xingdhl.www.storehelper.ObjectDefine.Categories;
-import com.xingdhl.www.storehelper.ObjectDefine.DetailStorage;
+import com.xingdhl.www.storehelper.ObjectDefine.StockGoods;
 import com.xingdhl.www.storehelper.R;
 import com.xingdhl.www.storehelper.trading.CalenderActivity;
 import com.xingdhl.www.storehelper.webservice.HttpHandler;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -34,7 +36,7 @@ public class StorageEditFragment extends Fragment {
     private final int DATE_PICKER = 1;
 
     private static HttpHandler mHttpHandler;
-    private static List<DetailStorage> mStorageList;
+    private static List<StockGoods> mStorageList;
 
     private EditText mPrice;
     private EditText mDiscount;
@@ -43,9 +45,9 @@ public class StorageEditFragment extends Fragment {
     private boolean mFinished;
     private int mItemId;
 
-    private DetailStorage mStorage;
+    private StockGoods mStockGoods;
 
-    public static StorageEditFragment instantiate(HttpHandler httpHandler, List<DetailStorage> storageList){
+    public static StorageEditFragment instantiate(HttpHandler httpHandler, List<StockGoods> storageList){
         mHttpHandler = httpHandler;
         mStorageList = storageList;
 
@@ -57,7 +59,7 @@ public class StorageEditFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         mItemId = getArguments().getInt("item_id");
-        mStorage = mStorageList.get(mItemId);
+        mStockGoods = mStorageList.get(mItemId);
     }
 
     @Nullable
@@ -67,30 +69,24 @@ public class StorageEditFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_storage_edit, container, false);
 
-        ((EditText)view.findViewById(R.id.goods_barcode)).setText(mStorage.getBarcode());
-        for(Categories.Category category : Categories.getGoodsCategories()){
-            if(category.getId() != mStorage.getCategoryId())
-                continue;
-            ((EditText)view.findViewById(R.id.goods_category)).setText(category.getName());
-        }
-        ((EditText)view.findViewById(R.id.goods_name)).setText(mStorage.getName());
-        ((EditText)view.findViewById(R.id.goods_spec)).setText(mStorage.getRemark());
-        ((EditText)view.findViewById(R.id.goods_manuf)).setText(mStorage.getName_M());
-        ((EditText) view.findViewById(R.id.goods_supplier)).setText(mStorage.getSupplier());
+        ((EditText)view.findViewById(R.id.goods_barcode)).setText(mStockGoods.getBarcode());
+        ((EditText)view.findViewById(R.id.goods_name)).setText(mStockGoods.getName());
+        ((EditText)view.findViewById(R.id.goods_spec)).setText(mStockGoods.getSpec());
+        ((EditText) view.findViewById(R.id.goods_supplier)).setText(mStockGoods.getSupplierId());
 
         /*最后编辑的操作人和日期*/
-        ((EditText) view.findViewById(R.id.edit_operator)).setText(mStorage.getEditor());
-        ((EditText) view.findViewById(R.id.edit_date)).setText(mStorage.getEditTime());
+        ((EditText) view.findViewById(R.id.edit_operator)).setText(mStockGoods.getEditor());
+        ((EditText) view.findViewById(R.id.edit_date)).setText(mStockGoods.getEditDate());
 
-        String price = String.format(Locale.CHINA, "%.2f", mStorage.getPrice());
+        String price = String.format(Locale.CHINA, "%.2f", mStockGoods.getPrice());
         mPrice = (EditText)view.findViewById(R.id.goods_price);
         mPrice.setText(price);
-        String discount = String.format(Locale.CHINA, "%.2f", mStorage.getDiscount());
+        String discount = String.format(Locale.CHINA, "%.2f", mStockGoods.getDiscount());
         mDiscount = (EditText)view.findViewById(R.id.goods_discount);
         mDiscount.setText(discount);
         mPromptDate = (EditText) view.findViewById(R.id.prompt_date);
         mPromptDate.setText(getString(R.string.storage_prom_date,
-                mStorage.getStartDate(), mStorage.getEndDate()));
+                mStockGoods.getStartDate(), mStockGoods.getEndDate()));
 
         mPromptDate.setFocusable(false);
         mPromptDate.setOnClickListener(new View.OnClickListener() {
@@ -98,8 +94,8 @@ public class StorageEditFragment extends Fragment {
             public void onClick(View v) {
                 //打开日期选择Activity
                 Intent intent = new Intent(getActivity(), CalenderActivity.class);
-                intent.putExtra("start_time", mStorage.getStartDate_L());
-                intent.putExtra("end_time", mStorage.getEndDate_L());
+                intent.putExtra("start_time", mStockGoods.getStartDate());
+                intent.putExtra("end_time", mStockGoods.getEndDate());
                 startActivityForResult(intent, DATE_PICKER);
             }
         });
@@ -138,11 +134,11 @@ public class StorageEditFragment extends Fragment {
         String startDate = mPromptDate.getText().toString().substring(0, 10);
         String endDate = mPromptDate.getText().toString().substring(14, 24);
 
-        if(price != mStorage.getPrice() || discount != mStorage.getDiscount() ||
-                !mStorage.getStartDate().equals(startDate) ||
-                !mStorage.getEndDate().equals(endDate)){
+        if(price != mStockGoods.getPrice() || discount != mStockGoods.getDiscount() ||
+                !mStockGoods.getStartDate().equals(startDate) ||
+                !mStockGoods.getEndDate().equals(endDate)){
             QueryDialog dlg = new QueryDialog(getActivity(), String.format(
-                    "你已调整了商品(%s)售价，是否需要保存？", mStorage.getBarcode()), mDlgListener);
+                    "你已调整了商品(%s)售价，是否需要保存？", mStockGoods.getBarcode()), mDlgListener);
             dlg.show();
         }else if(mFinished){
             getActivity().finish();
@@ -178,11 +174,13 @@ public class StorageEditFragment extends Fragment {
                 return;
             }
 
-            mStorage.setPrice(price);
-            mStorage.setDiscount(discount);
-            mStorage.setStartDate(startTime);
-            mStorage.setEndDate(endTime);
-            mStorage.setEditTime(System.currentTimeMillis());
+            mStockGoods.setPrice(price);
+            mStockGoods.setDiscount(discount);
+            mStockGoods.setStartDate(startDate);
+            mStockGoods.setEndDate(endDate);
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.CHINA);
+            mStockGoods.setEditDate(sdf.format(new Date(System.currentTimeMillis())));
 
             Message msg = mHttpHandler.obtainMessage();
             msg.what = StorageEditActivity.MSG_STORAGE_MODIFIED;
@@ -197,10 +195,10 @@ public class StorageEditFragment extends Fragment {
                 return;
             }
 
-            mPrice.setText(String.format(Locale.CHINA, "%.2f", mStorage.getPrice()));
-            mDiscount.setText(String.format(Locale.CHINA, "%.2f", mStorage.getDiscount()));
+            mPrice.setText(String.format(Locale.CHINA, "%.2f", mStockGoods.getPrice()));
+            mDiscount.setText(String.format(Locale.CHINA, "%.2f", mStockGoods.getDiscount()));
             mPromptDate.setText(getString(R.string.storage_prom_date,
-                    mStorage.getStartDate(), mStorage.getEndDate()));
+                    mStockGoods.getStartDate(), mStockGoods.getEndDate()));
         }
     };
 

@@ -14,49 +14,33 @@ import java.io.Serializable;
 public class Goods implements Serializable{
     private String mBarcode;
     private String mName;
-    private String mName_M;
-    private String mRemark;
-    private Categories.Category mCategory;
-    private int mPhotoId;
+    private String mSpec;
+    private int mCategoryId1;
+    private int mCategoryId2;
 
     public Goods(){
     }
 
     public Goods(JSONObject jsonObject){
-        initGoods(jsonObject);
-    }
-
-    public void initGoods(JSONObject jsonObject){
         try {
             mBarcode = jsonObject.getString("barcode");
         }catch (JSONException je) {
-            je.printStackTrace();
+            mBarcode = null;
         }
         try {
             mName = jsonObject.getString("name");
         }catch (JSONException je) {
-            je.printStackTrace();
+            mName = null;
         }
         try {
-            mName_M = jsonObject.getString("manufacture");
+            mSpec = jsonObject.getString("spec");
         }catch (JSONException je) {
-            je.printStackTrace();
+            mSpec = null;
         }
         try {
-            mRemark = jsonObject.getString("remark");
+            mCategoryId2 = jsonObject.getInt("id");
         }catch (JSONException je) {
-            je.printStackTrace();
-        }
-        try {
-            JSONObject category = jsonObject.getJSONObject("goodsCategory");
-            mCategory = new Categories.Category(category);
-        }catch (JSONException je) {
-            je.printStackTrace();
-        }
-        try {
-            mPhotoId = jsonObject.getInt("photoId");
-        }catch (JSONException je) {
-            je.printStackTrace();
+            mCategoryId2 = -1;
         }
     }
 
@@ -76,35 +60,27 @@ public class Goods implements Serializable{
         mName = name;
     }
 
-    public Categories.Category getCategory() {
-        return mCategory;
+    public int getCategoryId1() {
+        return mCategoryId1;
     }
 
-    public void setCategory(Categories.Category category) {
-        mCategory = category;
+    public void setCategoryId1(int categoryId1) {
+        mCategoryId1 = categoryId1;
     }
 
-    public String getRemark() {
-        return mRemark;
+    public int getCategoryId2() {
+        return mCategoryId2;
     }
 
-    public void setRemark(String remark) {
-        mRemark = remark;
+    public void setCategoryId2(int categoryId2) {
+        mCategoryId2 = categoryId2;
     }
 
-    public String getName_M() {
-        return mName_M;
+    public String getSpec() {
+        return mSpec;
     }
 
-    public void setName_M(String name_M) {
-        mName_M = name_M;
-    }
-
-    public int getPhotoId() {
-        return mPhotoId;
-    }
-
-    public void setPhotoId(int photoId) {
-        mPhotoId = photoId;
+    public void setSpec(String spec) {
+        mSpec = spec;
     }
 }

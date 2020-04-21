@@ -1,34 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.percent.PercentRelativeLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <ImageView
+        android:id="@+id/imageView2"
         android:layout_width="match_parent"
         android:layout_height="120dp"
-        android:scaleType="fitXY"
-        android:src="@drawable/title_bg_shape"/>
+        android:src="@drawable/title_bg_shape"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:contentDescription="@string/image_view_description" />
+
     <ImageView
         android:id="@+id/title_icon"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_marginTop="70dp"
-        android:layout_centerHorizontal="true"
+        android:scaleType="fitXY"
         android:src="@drawable/title_icon"
-        android:scaleType="fitXY"/>
+        app:layout_constraintEnd_toEndOf="@+id/imageView2"
+        app:layout_constraintStart_toStartOf="@+id/imageView2"
+        app:layout_constraintTop_toTopOf="@+id/imageView2"
+        android:contentDescription="@string/image_view_description" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/title_icon"
-        android:layout_above="@id/button_register"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:gravity="center_vertical"
-        android:layout_margin="8dp"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp">
+        app:layout_constraintBottom_toTopOf="@+id/button_register"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title_icon">
 
         <EditText
             android:id="@+id/edit_name"
@@ -36,10 +45,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:layout_marginBottom="4dp"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
             android:hint="@string/hint_username"
-            android:inputType="text"/>
+            android:inputType="text"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -48,8 +58,8 @@
             android:layout_marginTop="8dp"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
-            android:textColor="@color/colorPrimary"
-            android:text="用户名"/>
+            android:text="用户名"
+            android:textColor="@color/colorPrimary" />
 
         <EditText
             android:id="@+id/edit_phone"
@@ -57,12 +67,13 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/edit_name"
             android:layout_alignStart="@id/edit_name"
-            android:layout_marginBottom="4dp"
             android:layout_marginTop="4dp"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
+            android:layout_marginBottom="4dp"
             android:hint="@string/hint_phone"
-            android:inputType="phone"/>
+            android:inputType="phone"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -71,8 +82,8 @@
             android:layout_marginTop="8dp"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
-            android:textColor="@color/colorPrimary"
-            android:text="手机号码"/>
+            android:text="手机号码"
+            android:textColor="@color/colorPrimary" />
 
         <EditText
             android:id="@+id/edit_chknum"
@@ -87,6 +98,7 @@
             android:inputType="number"
             android:paddingStart="8dp"
             android:paddingEnd="8dp" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -95,8 +107,8 @@
             android:layout_marginTop="8dp"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
-            android:textColor="@color/colorPrimary"
-            android:text="验证码"/>
+            android:text="验证码"
+            android:textColor="@color/colorPrimary" />
 
         <Button
             android:id="@+id/button_chknum"
@@ -104,22 +116,23 @@
             android:layout_height="wrap_content"
             android:layout_alignEnd="@id/edit_phone"
             android:layout_alignBottom="@id/edit_chknum"
-            android:background="@drawable/button_bg_s"
             android:layout_marginStart="16dp"
             android:layout_marginBottom="4dp"
-            android:text="@string/button_chknum"/>
+            android:background="@drawable/button_bg_s"
+            android:text="@string/button_chknum" />
 
         <EditText
             android:id="@+id/edit_passward"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/edit_chknum"
-            android:layout_marginBottom="4dp"
             android:layout_marginTop="4dp"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
+            android:layout_marginBottom="4dp"
             android:hint="@string/hint_password"
-            android:inputType="textPassword"/>
+            android:inputType="textPassword"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -128,20 +141,21 @@
             android:layout_marginTop="8dp"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
-            android:textColor="@color/colorPrimary"
-            android:text="登录密码"/>
+            android:text="登录密码"
+            android:textColor="@color/colorPrimary" />
 
         <EditText
             android:id="@+id/edit_pwdrev"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/edit_passward"
-            android:layout_marginBottom="4dp"
             android:layout_marginTop="4dp"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
+            android:layout_marginBottom="4dp"
             android:hint="@string/hint_pwd_again"
-            android:inputType="textPassword"/>
+            android:inputType="textPassword"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -150,18 +164,19 @@
             android:layout_marginTop="8dp"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
-            android:textColor="@color/colorPrimary"
-            android:text="密码确认"/>
+            android:text="密码确认"
+            android:textColor="@color/colorPrimary" />
 
         <CheckBox
             android:id="@+id/chkbox_protocol"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toStartOf="@+id/button_protocol"
             android:layout_below="@+id/edit_pwdrev"
             android:layout_margin="8dp"
-            android:text="@string/user_protocol"
-            android:checked="true"/>
+            android:layout_toStartOf="@+id/button_protocol"
+            android:checked="true"
+            android:text="@string/user_protocol" />
+
         <Button
             android:id="@+id/button_protocol"
             style="@style/Base.Widget.AppCompat.ButtonBar"
@@ -170,18 +185,33 @@
             android:layout_below="@+id/edit_pwdrev"
             android:layout_alignParentEnd="true"
             android:text="@string/button_protocol"
-            android:textColor="@color/colorAccent"/>
+            android:textColor="@color/colorAccent" />
     </RelativeLayout>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/left_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintGuide_percent=".2"
+        android:orientation="vertical" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/right_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent=".8"/>
 
     <Button
         android:id="@+id/button_register"
-        app:layout_widthPercent="70%"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        app:layout_marginBottomPercent="5%"
-        android:background="@drawable/selector_button_bg"
         style="@style/Button_Text"
-        android:text="@string/button_register"/>
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/selector_button_bg"
+        android:text="@string/button_register"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/right_guideline"
+        app:layout_constraintStart_toStartOf="@id/left_guideline" />
 
-</android.support.percent.PercentRelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -11,247 +11,342 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <android.support.percent.PercentRelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/capture_container"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_alignParentTop="true">
+        android:layout_height="240dp">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/top_guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent=".15"/>
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/bottom_guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent=".85"/>
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/left_guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent=".15"/>
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/right_guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent=".85"/>
 
         <ImageView
             android:id="@+id/capture_mask_top"
-            android:layout_width="match_parent"
-            app:layout_heightPercent="15%"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:background="@drawable/shadow"/>
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/shadow"
+            app:layout_constraintBottom_toTopOf="@+id/top_guideline"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/capture_mask_left"
-            app:layout_widthPercent="20%"
-            app:layout_heightPercent="70%"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@id/capture_mask_top"
-            android:background="@drawable/shadow"/>
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/shadow"
+            app:layout_constraintBottom_toTopOf="@+id/bottom_guideline"
+            app:layout_constraintEnd_toStartOf="@+id/left_guideline"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/top_guideline" />
 
         <RelativeLayout
             android:id="@+id/capture_crop_view"
-            app:layout_widthPercent="60%"
-            app:layout_heightPercent="70%"
-            android:layout_toRightOf="@id/capture_mask_left"
-            android:layout_toEndOf="@id/capture_mask_left"
-            android:layout_below="@id/capture_mask_top"
-            android:background="@drawable/zxing_code_bg">
+            android:layout_height="0dp"
+            android:layout_width="0dp"
+            android:background="@drawable/zxing_code_bg"
+            app:layout_constraintBottom_toTopOf="@+id/bottom_guideline"
+            app:layout_constraintEnd_toStartOf="@+id/right_guideline"
+            app:layout_constraintStart_toStartOf="@+id/left_guideline"
+            app:layout_constraintTop_toTopOf="@+id/top_guideline">
+
             <ImageView
                 android:id="@+id/capture_scan_line"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
-                android:layout_marginBottom="5dp"
                 android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
                 android:contentDescription="@null"
-                android:src="@drawable/zxing_line"/>
+                android:src="@drawable/zxing_line" />
         </RelativeLayout>
 
         <ImageView
             android:id="@+id/capture_mask_right"
-            app:layout_widthPercent="20%"
-            app:layout_heightPercent="70%"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_below="@id/capture_mask_top"
-            android:background="@drawable/shadow"/>
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/shadow"
+            app:layout_constraintBottom_toTopOf="@+id/bottom_guideline"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/right_guideline"
+            app:layout_constraintTop_toTopOf="@+id/top_guideline"/>
 
         <ImageView
             android:id="@+id/capture_mask_bottom"
-            android:layout_width="match_parent"
-            android:layout_below="@id/capture_crop_view"
-            android:layout_alignParentBottom="true"
-            android:background="@drawable/shadow"/>
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/shadow"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/bottom_guideline" />
 
         <Button
             android:id="@+id/flash_switch"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:layout_margin="8dp"
-            android:layout_toEndOf="@id/capture_crop_view"
+            android:layout_marginStart="8dp"
             android:background="@drawable/flash_on"
-            android:tag="off"/>
+            android:tag="off"
+            app:layout_constraintStart_toStartOf="@+id/right_guideline"
+            app:layout_constraintTop_toTopOf="@id/top_guideline" />
 
-    </android.support.percent.PercentRelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <android.support.percent.PercentRelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorBackground"
         android:layout_below="@id/capture_container"
         android:layout_above="@id/button_layout"
-        android:padding="12dp"
-        android:gravity="center_vertical">
+        android:padding="16dp">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/mid_guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent=".5"/>
 
         <EditText
             android:id="@+id/goods_barcode"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:enabled="false"
             android:gravity="center_horizontal"
-            android:textSize="16sp"
             android:inputType="number"
             android:singleLine="true"
-            android:enabled="false"/>
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <TextView
+            android:id="@+id/textView20"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignTop="@id/goods_barcode"
-            android:layout_marginTop="8dp"
+            android:text="商品条码"
             android:textColor="@color/colorPrimary"
-            android:text="商品条码"/>
+            app:layout_constraintBottom_toBottomOf="@+id/goods_barcode"
+            app:layout_constraintStart_toStartOf="@id/goods_barcode"
+            app:layout_constraintTop_toTopOf="@+id/goods_barcode" />
+
         <Button
             android:id="@+id/key_input"
             android:layout_width="36dp"
             android:layout_height="28dp"
-            android:layout_alignEnd="@id/goods_barcode"
-            android:layout_alignRight="@id/goods_barcode"
-            android:background="@drawable/keyboard"/>
+            android:background="@drawable/keyboard"
+            app:layout_constraintBottom_toBottomOf="@+id/goods_barcode"
+            app:layout_constraintEnd_toEndOf="@+id/goods_barcode"
+            app:layout_constraintTop_toTopOf="@+id/goods_barcode" />
 
         <EditText
             android:id="@+id/goods_name"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_below="@id/goods_barcode"
+            android:layout_marginTop="8dp"
+            android:enabled="false"
             android:gravity="center_horizontal"
-            android:textSize="16sp"
             android:singleLine="true"
-            android:enabled="false"/>
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/goods_barcode" />
+
         <TextView
             android:id="@+id/title_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignTop="@id/goods_name"
-            android:layout_marginTop="8dp"
+            android:text="商品名称"
             android:textColor="@color/colorPrimary"
-            android:text="商品名称"/>
+            app:layout_constraintBottom_toBottomOf="@+id/goods_name"
+            app:layout_constraintStart_toStartOf="@+id/goods_name"
+            app:layout_constraintTop_toTopOf="@+id/goods_name" />
 
         <EditText
             android:id="@+id/goods_spec"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_below="@id/goods_name"
+            android:layout_marginTop="8dp"
+            android:enabled="false"
             android:gravity="center_horizontal"
-            android:textSize="16sp"
             android:singleLine="true"
-            android:enabled="false"/>
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/goods_name" />
+
         <TextView
+            android:id="@+id/textView19"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignTop="@id/goods_spec"
-            android:layout_marginTop="8dp"
+            android:text="商品规格"
             android:textColor="@color/colorPrimary"
-            android:text="商品规格"/>
+            app:layout_constraintBottom_toBottomOf="@+id/goods_spec"
+            app:layout_constraintStart_toStartOf="@+id/goods_spec"
+            app:layout_constraintTop_toTopOf="@+id/goods_spec" />
 
         <EditText
             android:id="@+id/goods_count"
-            android:layout_below="@id/goods_spec"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
             android:gravity="center_horizontal"
             android:inputType="numberDecimal"
-            app:layout_widthPercent="48%"
+            android:singleLine="true"
             android:textSize="16sp"
-            android:singleLine="true"/>
+            app:layout_constraintEnd_toStartOf="@+id/mid_guideline"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/goods_spec" />
+
         <TextView
+            android:id="@+id/textView18"
             android:layout_width="wrap_content"
-            android:layout_alignTop="@id/goods_count"
-            android:layout_marginTop="8dp"
+            android:layout_height="wrap_content"
+            android:text="数量"
             android:textColor="@color/colorPrimary"
-            android:text="数量"/>
+            app:layout_constraintBottom_toBottomOf="@+id/goods_count"
+            app:layout_constraintStart_toStartOf="@+id/goods_count"
+            app:layout_constraintTop_toTopOf="@+id/goods_count" />
 
         <EditText
             android:id="@+id/goods_unit"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_below="@id/goods_spec"
-            android:layout_toEndOf="@id/goods_count"
-            android:layout_toRightOf="@id/goods_count"
-            app:layout_marginLeftPercent="4%"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
             android:gravity="center_horizontal"
             android:singleLine="true"
+            android:text="个"
             android:textSize="16sp"
-            android:text="个"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/mid_guideline"
+            app:layout_constraintTop_toBottomOf="@+id/goods_spec" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@id/goods_unit"
-            android:layout_alignStart="@id/goods_unit"
-            android:layout_alignTop="@id/goods_unit"
-            android:layout_marginTop="8dp"
+            android:text="单位"
             android:textColor="@color/colorPrimary"
-            android:text="单位"/>
+            app:layout_constraintBottom_toBottomOf="@+id/goods_unit"
+            app:layout_constraintStart_toStartOf="@+id/goods_unit"
+            app:layout_constraintTop_toTopOf="@+id/goods_unit" />
 
         <EditText
             android:id="@+id/buy_price"
-            app:layout_widthPercent="48%"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_below="@id/goods_count"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
             android:gravity="center_horizontal"
             android:inputType="numberDecimal"
+            android:singleLine="true"
             android:textSize="16sp"
-            android:singleLine="true"/>
+            app:layout_constraintEnd_toStartOf="@+id/mid_guideline"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/goods_count"/>
+
         <TextView
+            android:id="@+id/textView21"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignTop="@id/buy_price"
-            android:layout_marginTop="8dp"
+            android:text="购价"
             android:textColor="@color/colorPrimary"
-            android:text="购价"/>
+            app:layout_constraintBottom_toBottomOf="@+id/buy_price"
+            app:layout_constraintStart_toStartOf="@+id/buy_price"
+            app:layout_constraintTop_toTopOf="@+id/buy_price" />
 
         <EditText
             android:id="@+id/goods_price"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_below="@id/goods_unit"
-            android:layout_toEndOf="@id/buy_price"
-            android:layout_toRightOf="@id/buy_price"
-            app:layout_marginLeftPercent="4%"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
             android:gravity="center_horizontal"
             android:inputType="numberDecimal"
+            android:singleLine="true"
             android:textSize="16sp"
-            android:singleLine="true"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/mid_guideline"
+            app:layout_constraintTop_toBottomOf="@+id/goods_unit"/>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@id/goods_price"
-            android:layout_alignStart="@id/goods_price"
-            android:layout_alignTop="@id/goods_price"
-            android:layout_marginTop="8dp"
+            android:text="售价"
             android:textColor="@color/colorPrimary"
-            android:text="售价"/>
+            app:layout_constraintBottom_toBottomOf="@+id/goods_price"
+            app:layout_constraintStart_toStartOf="@+id/goods_price"
+            app:layout_constraintTop_toTopOf="@+id/goods_price" />
 
         <Spinner
             android:id="@+id/spinner_supp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/goods_price"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="8dp"
             android:padding="4dp"
-            android:spinnerMode="dialog"/>
+            android:spinnerMode="dialog"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/goods_price" />
 
-    </android.support.percent.PercentRelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <android.support.percent.PercentRelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/button_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:paddingBottom="8dp"
         android:background="@color/colorBackground">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/left_button_guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent=".2"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/right_button_guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent=".8"/>
+
         <Button
             android:id="@+id/button_ok"
-            android:layout_centerInParent="true"
-            android:layout_height="wrap_content"
-            app:layout_widthPercent="70%"
-            android:background="@drawable/selector_button_bg"
             style="@style/Button_Text"
-            android:text="@string/button_ok"/>
-    </android.support.percent.PercentRelativeLayout>
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/selector_button_bg"
+            android:text="@string/button_ok"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/right_button_guideline"
+            app:layout_constraintStart_toStartOf="@+id/left_button_guideline" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </RelativeLayout>

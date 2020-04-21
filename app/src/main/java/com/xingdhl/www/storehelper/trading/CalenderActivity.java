@@ -1,10 +1,11 @@
 package com.xingdhl.www.storehelper.trading;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.DatePicker;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.xingdhl.www.storehelper.R;
 

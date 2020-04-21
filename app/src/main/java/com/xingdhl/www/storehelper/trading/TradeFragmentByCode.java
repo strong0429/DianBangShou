@@ -3,9 +3,6 @@ package com.xingdhl.www.storehelper.trading;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Message;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.SurfaceView;
 import android.view.View;
@@ -18,6 +15,10 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.zxing.Result;
 import com.xingdhl.www.storehelper.CustomStuff.FreeToast;

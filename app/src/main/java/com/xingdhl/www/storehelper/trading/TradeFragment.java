@@ -2,8 +2,6 @@ package com.xingdhl.www.storehelper.trading;
 
 import android.graphics.Color;
 import android.os.Message;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -13,7 +11,10 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.xingdhl.www.storehelper.ObjectDefine.DetailStorage;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.xingdhl.www.storehelper.ObjectDefine.StockGoods;
 import com.xingdhl.www.storehelper.ObjectDefine.GCV;
 import com.xingdhl.www.storehelper.ObjectDefine.Sales;
 import com.xingdhl.www.storehelper.R;
@@ -28,7 +29,7 @@ import java.util.Locale;
  */
 
 public abstract class TradeFragment extends Fragment {
-    protected static List<DetailStorage> mGoodsList = null;
+    protected static List<StockGoods> mGoodsList = null;
     protected static List<Sales> mSalesList = null;
     protected static List<Integer> mGoodsId = null;
     protected static HttpHandler mHttpHandler = null;
@@ -41,7 +42,7 @@ public abstract class TradeFragment extends Fragment {
 
     public abstract void updateItem(Integer position);
 
-    public static void init(List<DetailStorage> goodsList, List<Sales> salesList,
+    public static void init(List<StockGoods> goodsList, List<Sales> salesList,
                             List<Integer> goodsId, HttpHandler httpHandler, int storeId){
         mGoodsList = goodsList;
         mSalesList = salesList;
@@ -170,14 +171,14 @@ public abstract class TradeFragment extends Fragment {
             });
         }
 
-        private void Bind(DetailStorage storage, float count, boolean selected){
+        private void Bind(StockGoods storage, float count, boolean selected){
             if(selected){
                 mView.setBackgroundColor(GCV.COLOR_SELECTED);
             }else {
                 mView.setBackgroundColor(0);
             }
             mName.setText(storage.getName());
-            mSpec.setText(storage.getRemark());
+            mSpec.setText(storage.getSpec());
             if(storage.getDiscount() < 0.999){
                 mPrice.setTextColor(Color.RED);
             }else{
@@ -247,16 +248,16 @@ public abstract class TradeFragment extends Fragment {
 
             float count = (salesId == -1) ? 0f : mSalesList.get(salesId).getCount();
 
-            DetailStorage storage = mGoodsList.get(goodsId);
-            if(storage.getEndDate_L() < System.currentTimeMillis() ||
-                    storage.getStartDate_L() > System.currentTimeMillis()) {
-                storage.setDiscount(1.0f);
+            StockGoods goods = mGoodsList.get(goodsId);
+            if(goods.getEndDate_L() < System.currentTimeMillis() ||
+                    goods.getStartDate_L() > System.currentTimeMillis()) {
+                goods.setDiscount(1.0f);
             }
 
             if(position == mSelectedItem)
-                holder.Bind(storage, count, true);
+                holder.Bind(goods, count, true);
             else
-                holder.Bind(storage, count, false);
+                holder.Bind(goods, count, false);
         }
     }
 

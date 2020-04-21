@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.percent.PercentRelativeLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -8,155 +8,200 @@
     android:background="@color/colorBackground">
 
     <View
-        android:layout_width="match_parent"
+        android:id="@+id/view"
+        android:layout_width="0dp"
         android:layout_height="120dp"
-        android:background="@drawable/title_bg_shape"/>
+        android:background="@drawable/title_bg_shape"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/clerk_photo"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_margin="8dp"
         android:src="@drawable/photo_default"
-        android:layout_centerHorizontal="true"/>
+        app:layout_constraintBottom_toBottomOf="@+id/view"
+        app:layout_constraintEnd_toEndOf="@+id/view"
+        app:layout_constraintStart_toStartOf="@+id/view"
+        app:layout_constraintTop_toTopOf="@+id/view" />
 
-    <android.support.percent.PercentRelativeLayout
-        android:layout_width="match_parent"
+    <EditText
+        android:id="@+id/clerk_name"
+        style="@style/EditText"
+        android:layout_width="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="8dp"
+        android:hint="输入店员姓名"
+        android:paddingStart="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/view" />
+
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/clerk_photo"
-        android:layout_above="@id/button_submit"
-        android:gravity="center_vertical"
-        android:layout_margin="8dp">
+        android:layout_marginEnd="8dp"
+        android:text="姓名"
+        android:textColor="@color/colorPrimary"
+        app:layout_constraintBottom_toBottomOf="@+id/clerk_name"
+        app:layout_constraintEnd_toEndOf="@+id/clerk_name"
+        app:layout_constraintTop_toTopOf="@+id/clerk_name" />
 
-        <EditText
-            android:id="@+id/clerk_name"
-            android:layout_width="match_parent"
-            style="@style/EditText"
-            android:paddingStart="8dp"
-            android:hint="输入店员姓名"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@id/clerk_name"
-            android:layout_alignEnd="@id/clerk_name"
-            android:layout_margin="8dp"
-            android:textColor="@color/colorPrimary"
-            android:text="姓名"/>
+    <EditText
+        android:id="@+id/clerk_tel"
+        style="@style/EditText"
+        android:layout_width="0dp"
+        android:layout_below="@id/clerk_name"
+        android:layout_margin="8dp"
+        android:hint="输入店员手机号"
+        android:inputType="phone"
+        android:paddingStart="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/clerk_name" />
 
-        <EditText
-            android:id="@+id/clerk_tel"
-            android:layout_width="match_parent"
-            android:layout_below="@id/clerk_name"
-            style="@style/EditText"
-            android:paddingStart="8dp"
-            android:inputType="phone"
-            android:hint="输入店员手机号"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@id/clerk_tel"
-            android:layout_alignEnd="@id/clerk_tel"
-            android:layout_margin="8dp"
-            android:textColor="@color/colorPrimary"
-            android:text="手机号码"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/clerk_tel"
+        android:layout_alignEnd="@id/clerk_tel"
+        android:layout_margin="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="手机号码"
+        android:textColor="@color/colorPrimary"
+        app:layout_constraintBottom_toBottomOf="@+id/clerk_tel"
+        app:layout_constraintEnd_toEndOf="@+id/clerk_tel"
+        app:layout_constraintTop_toTopOf="@+id/clerk_tel" />
 
-        <EditText
-            android:id="@+id/clerk_idcard"
-            android:layout_width="match_parent"
-            android:layout_below="@id/clerk_tel"
-            android:paddingStart="8dp"
-            style="@style/EditText"
-            android:inputType="phone"
-            android:hint="18位数字，字母以*号代替"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@id/clerk_idcard"
-            android:layout_alignEnd="@id/clerk_idcard"
-            android:layout_margin="8dp"
-            android:textColor="@color/colorPrimary"
-            android:text="身份证"/>
+    <EditText
+        android:id="@+id/clerk_idcard"
+        style="@style/EditText"
+        android:layout_width="0dp"
+        android:layout_below="@id/clerk_tel"
+        android:layout_margin="8dp"
+        android:hint="18位数字，字母以*号代替"
+        android:inputType="phone"
+        android:paddingStart="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/clerk_tel" />
 
-        <EditText
-            android:id="@+id/clerk_passwd"
-            android:layout_width="match_parent"
-            android:layout_below="@id/clerk_idcard"
-            android:paddingStart="8dp"
-            style="@style/EditText"
-            android:inputType="textPassword"
-            android:hint="输入4~8位密码"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@id/clerk_passwd"
-            android:layout_alignEnd="@id/clerk_passwd"
-            android:layout_margin="8dp"
-            android:textColor="@color/colorPrimary"
-            android:text="登录密码"/>
+    <TextView
+        android:id="@+id/textView14"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="身份证"
+        android:textColor="@color/colorPrimary"
+        app:layout_constraintBottom_toBottomOf="@+id/clerk_idcard"
+        app:layout_constraintEnd_toEndOf="@+id/clerk_idcard"
+        app:layout_constraintTop_toTopOf="@+id/clerk_idcard" />
 
-        <EditText
-            android:id="@+id/register_date"
-            android:layout_width="match_parent"
-            android:layout_below="@id/clerk_passwd"
-            android:paddingStart="8dp"
-            style="@style/EditText"
-            android:inputType="date"
-            tools:text="2018-02-21"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@id/register_date"
-            android:layout_alignEnd="@id/register_date"
-            android:layout_margin="8dp"
-            android:textColor="@color/colorPrimary"
-            android:text="入职时间"/>
+    <EditText
+        android:id="@+id/clerk_passwd"
+        style="@style/EditText"
+        android:layout_width="0dp"
+        android:layout_below="@id/clerk_idcard"
+        android:layout_margin="8dp"
+        android:hint="输入4~8位密码"
+        android:inputType="textPassword"
+        android:paddingStart="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/clerk_idcard" />
 
-        <EditText
-            android:id="@+id/clerk_address"
-            android:layout_width="match_parent"
-            android:layout_below="@id/register_date"
-            android:paddingStart="8dp"
-            style="@style/EditText"
-            android:maxLines="2"
-            android:hint="输入店员住址"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@id/clerk_address"
-            android:layout_alignEnd="@id/clerk_address"
-            android:layout_margin="8dp"
-            android:textColor="@color/colorPrimary"
-            android:text="居住地址"/>
+    <TextView
+        android:id="@+id/textView15"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="登录密码"
+        android:textColor="@color/colorPrimary"
+        app:layout_constraintBottom_toBottomOf="@+id/clerk_passwd"
+        app:layout_constraintEnd_toEndOf="@+id/clerk_passwd"
+        app:layout_constraintTop_toTopOf="@+id/clerk_passwd" />
 
-        <Spinner
-            android:id="@+id/store_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/clerk_address"
-            android:layout_marginTop="16dp"
-            android:padding="4dp"/>
-    </android.support.percent.PercentRelativeLayout>
+    <EditText
+        android:id="@+id/register_date"
+        style="@style/EditText"
+        android:layout_width="0dp"
+        android:layout_margin="8dp"
+        android:inputType="date"
+        android:paddingStart="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/clerk_passwd"
+        tools:text="2018-02-21" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="入职时间"
+        android:textColor="@color/colorPrimary"
+        app:layout_constraintBottom_toBottomOf="@+id/register_date"
+        app:layout_constraintEnd_toEndOf="@+id/register_date"
+        app:layout_constraintTop_toTopOf="@+id/register_date" />
+
+    <EditText
+        android:id="@+id/clerk_address"
+        style="@style/EditText"
+        android:layout_width="0dp"
+        android:layout_below="@id/register_date"
+        android:layout_margin="8dp"
+        android:hint="输入店员住址"
+        android:maxLines="2"
+        android:paddingStart="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/register_date" />
+
+    <TextView
+        android:id="@+id/textView16"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="居住地址"
+        android:textColor="@color/colorPrimary"
+        app:layout_constraintBottom_toBottomOf="@+id/clerk_address"
+        app:layout_constraintEnd_toEndOf="@+id/clerk_address"
+        app:layout_constraintTop_toTopOf="@+id/clerk_address" />
+
+    <Spinner
+        android:id="@+id/store_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:padding="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/clerk_address" />
 
     <Button
         android:id="@+id/button_delete"
-        android:layout_alignParentBottom="true"
-        android:layout_height="wrap_content"
-        android:background="@drawable/selector_button_bg_s"
-        android:layout_marginBottom="16dp"
-        app:layout_widthPercent="35%"
-        app:layout_marginLeftPercent="10%"
         style="@style/Button_Text"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/selector_button_bg_s"
         android:onClick="onClick_Delete"
-        android:text="注销"/>
+        android:text="注销"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/clerk_photo"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <Button
         android:id="@+id/button_submit"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:background="@drawable/selector_button_bg"
-        android:layout_marginBottom="16dp"
-        app:layout_marginRightPercent="10%"
-        app:layout_widthPercent="35%"
         style="@style/Button_Text"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/selector_button_bg"
         android:onClick="onClick_Update"
-        android:text="保存"/>
-</android.support.percent.PercentRelativeLayout>
+        android:text="保存"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/clerk_photo" />
+</androidx.constraintlayout.widget.ConstraintLayout>

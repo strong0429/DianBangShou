@@ -3,21 +3,22 @@ package com.xingdhl.www.storehelper.trading;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Message;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+
+import com.google.android.material.tabs.TabLayout;
 import com.xingdhl.www.storehelper.CustomStuff.FreeToast;
 import com.xingdhl.www.storehelper.CustomStuff.QueryDialog;
 import com.xingdhl.www.storehelper.Database.DbSchemaXingDB;
-import com.xingdhl.www.storehelper.ObjectDefine.DetailStorage;
+import com.xingdhl.www.storehelper.ObjectDefine.StockGoods;
 import com.xingdhl.www.storehelper.ObjectDefine.GCV;
 import com.xingdhl.www.storehelper.ObjectDefine.Sales;
 import com.xingdhl.www.storehelper.ObjectDefine.User;
@@ -27,6 +28,7 @@ import com.xingdhl.www.storehelper.webservice.WebServiceAPIs;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static java.net.HttpURLConnection.HTTP_OK;
 
@@ -37,7 +39,7 @@ public class TradingActivity extends AppCompatActivity implements HttpHandler.ha
     private TextView mTotalMoney;
 
     private List<TradeFragment> mFragments;
-    private List<DetailStorage> mStoreGoods;
+    private Map<String, StockGoods> mStoreGoods;
     private List<Integer> mGoodsId;
     private List<Sales> mSales;
 
@@ -49,7 +51,7 @@ public class TradingActivity extends AppCompatActivity implements HttpHandler.ha
     @Override
     public void onMsgHandler(Message msg) {
         Sales sales = null;
-        DetailStorage storage = null;
+        StockGoods storage = null;
 
         switch (msg.what){
             case GCV.MSG_SALE_ADD:
@@ -98,10 +100,10 @@ public class TradingActivity extends AppCompatActivity implements HttpHandler.ha
                 mFragments.get(1).updateItem(msg.arg1);
                 mTotalMoney.setText(getString(R.string.trade_total, mSaleSum));
                 break;
-            case WebServiceAPIs.MSG_GET_PAGE_STORAGES:
+            case WebServiceAPIs.MSG_GET_STOCK:
                 if(msg.arg1 == WebServiceAPIs.HTTP_CONTINUE){
-                    WebServiceAPIs.getPageStorages(mHttpHandler, mStoreGoods, mStoreId,
-                            msg.arg2 + 1, GCV.STORAGE_PAGE_SIZE);
+                    WebServiceAPIs.getStockGoods(mHttpHandler, mStoreGoods, mStoreId,
+                            msg.arg2 + 1, GCV.PAGE_SIZE);
                 }else if(msg.arg1 != HTTP_OK) {
                     mStoreGoods.clear();
                     FreeToast.makeText(this, "查询库存商品信息失败，请稍后重试", Toast.LENGTH_SHORT).show();
@@ -158,14 +160,14 @@ public class TradingActivity extends AppCompatActivity implements HttpHandler.ha
         mStoreId = user.getStore(storeNo).getId();
         mCodeAli = user.getStore(storeNo).getAliCode();
         mCodeWx = user.getStore(storeNo).getWxCode();
-        mStoreGoods = user.getGoodsList();
+        mStoreGoods = user.getStore(storeNo).getGoodsList();
 
         mGoodsId = new ArrayList<>();
         mSales = new ArrayList<>();
 
         mHttpHandler = new HttpHandler(this);
 
-        TradeFragment.init(mStoreGoods, mSales, mGoodsId, mHttpHandler, mStoreId);
+        TradeFragment.init(new ArrayList<>(mStoreGoods.values()), mSales, mGoodsId, mHttpHandler, mStoreId);
         mFragments = new ArrayList<>();
         mFragments.add(TradeFragmentByCode.instance());
         mFragments.add(TradeFragmentByName.instance());
@@ -214,10 +216,10 @@ public class TradingActivity extends AppCompatActivity implements HttpHandler.ha
         //结算流程处理：弹出窗口选择支付方式并确认金额；
         findViewById(R.id.button_submit).setOnClickListener(this);
 
-        if(mStoreGoods.size() == 0 || mStoreGoods.get(0).getStoreId() != mStoreId){
+        if(mStoreGoods.size() == 0){
             //数据库获取库存商品信息；
             mStoreGoods.clear();
-            WebServiceAPIs.getPageStorages(mHttpHandler, mStoreGoods, mStoreId, 0, GCV.STORAGE_PAGE_SIZE);
+            WebServiceAPIs.getStockGoods(mHttpHandler, mStoreGoods, mStoreId, 0, GCV.PAGE_SIZE);
         }
 
         mTotalMoney = (TextView)findViewById(R.id.total_money);

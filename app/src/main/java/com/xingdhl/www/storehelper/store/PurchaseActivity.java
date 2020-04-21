@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Message;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.SurfaceView;
 import android.view.View;
@@ -18,24 +17,27 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.zxing.Result;
 import com.xingdhl.www.storehelper.CustomStuff.FreeToast;
 import com.xingdhl.www.storehelper.CustomStuff.QueryDialog;
-import com.xingdhl.www.storehelper.ObjectDefine.DetailStorage;
+import com.xingdhl.www.storehelper.ObjectDefine.StockGoods;
 import com.xingdhl.www.storehelper.ObjectDefine.GCV;
 import com.xingdhl.www.storehelper.ObjectDefine.Goods;
 import com.xingdhl.www.storehelper.ObjectDefine.Purchase;
+import com.xingdhl.www.storehelper.ObjectDefine.Store;
 import com.xingdhl.www.storehelper.ObjectDefine.Supplier;
 import com.xingdhl.www.storehelper.ObjectDefine.User;
 import com.xingdhl.www.storehelper.R;
 import com.xingdhl.www.storehelper.utility.ScanBarcodeUtil;
 import com.xingdhl.www.storehelper.webservice.HttpHandler;
 import com.xingdhl.www.storehelper.webservice.WebServiceAPIs;
-import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import static java.net.HttpURLConnection.HTTP_OK;
 
@@ -50,9 +52,9 @@ public class PurchaseActivity extends AppCompatActivity implements View.OnClickL
     private ScanBarcodeUtil mScanBarcodeUtil;
 
     private List<Supplier> mSuppliers;
-    private List<DetailStorage> mStoreGoods;
-    private DetailStorage mDetailStorage;
+    private Map<String, StockGoods> mStockGoodsMap;
 
+    private StockGoods mStockGoods;
     private int mStoreId;
     //private int mGoodsId;   //记录入库商品在列表中的索引号；
 
@@ -99,11 +101,12 @@ public class PurchaseActivity extends AppCompatActivity implements View.OnClickL
             case WebServiceAPIs.MSG_GET_GOODS:
                 if(msg.arg1 == HTTP_OK){
                     Goods goods = (Goods)msg.getData().getSerializable("goods");
+                    assert goods != null;
                     mGoodsName.setText(goods.getName());
-                    mGoodsSpec.setText(goods.getRemark());
+                    mGoodsSpec.setText(goods.getSpec());
 
                     //首次入库，创建库存记录；
-                    mDetailStorage = new DetailStorage(mStoreId).init(goods);
+                    mStockGoods = new StockGoods(goods);
                 } else if(msg.arg1 == WebServiceAPIs.HTTP_NO_EXIST){
                     //弹出对话框确认是否要添加新商品；
                     QueryDialog.whoIs = 1;
@@ -117,10 +120,11 @@ public class PurchaseActivity extends AppCompatActivity implements View.OnClickL
                     mScanBarcodeUtil.startScan(1000);
 
                 if(msg.arg1 == HTTP_OK){
-                    if(mDetailStorage != null){
+                    if(mStockGoods != null){
                         //新商品，添加到库存列表中；
-                        mStoreGoods.add(mDetailStorage);
-                        mDetailStorage = null;
+                        //mStockGoodsMap.add(mStockGoods);
+                        mStockGoodsMap.put(mStockGoods.getBarcode(), mStockGoods);
+                        mStockGoods = null;
                     }
                     //提交成功，清除GoodsInfo数据；
                     //mSpinner.setSelection(0);
@@ -138,10 +142,10 @@ public class PurchaseActivity extends AppCompatActivity implements View.OnClickL
                             Toast.LENGTH_SHORT).show();
                 }
                 break;
-            case WebServiceAPIs.MSG_GET_PAGE_STORAGES:
-                if(msg.arg1 == WebServiceAPIs.HTTP_CONTINUE){
-                    WebServiceAPIs.getPageStorages(mHttpHandler, mStoreGoods, mStoreId,
-                            msg.arg2 + 1, GCV.STORAGE_PAGE_SIZE);
+            case WebServiceAPIs.MSG_GET_STOCK:
+                String next = msg.getData().getString("next");
+                if(next != null && !next.equals("null")){
+                    WebServiceAPIs.getStockGoods(mHttpHandler, next, mStockGoodsMap);
                 }
         }
     }
@@ -153,21 +157,20 @@ public class PurchaseActivity extends AppCompatActivity implements View.OnClickL
         setContentView(R.layout.activity_goods_purchase);
 
         int storeNo = getIntent().getIntExtra("store_No", -1); //这里是店铺在列表中的序号，非店铺id；
-        mStoreId = User.getUser(null).getStore(storeNo).getId();
+        Store store = User.getUser(null).getStore(storeNo);
+        mStoreId = store.getId();
 
         mHttpHandler = new HttpHandler(this);
-        mDetailStorage = null;
 
-        //获取当前店铺的库存商品信息；
-        mStoreGoods = User.getUser(null).getGoodsList();
-        if(mStoreGoods.size() == 0 || mStoreGoods.get(0).getStoreId() != mStoreId){
-            mStoreGoods.clear();
-            WebServiceAPIs.getPageStorages(mHttpHandler, mStoreGoods, mStoreId, 0, GCV.STORAGE_PAGE_SIZE);
+        //获取当前店铺的商品价格表；
+        mStockGoodsMap = store.getGoodsList();
+        if(mStockGoodsMap.size() == 0){
+            WebServiceAPIs.getStockGoods(mHttpHandler, mStockGoodsMap, mStoreId, 0, GCV.PAGE_SIZE);
         }
 
         //远端获取供应商信息;
         mSuppliers = new ArrayList<>();
-        mSpinner = (Spinner)findViewById(R.id.spinner_supp);
+        mSpinner = findViewById(R.id.spinner_supp);
         WebServiceAPIs.getSuppliers(mHttpHandler, mSuppliers, mStoreId);
 
         //创建条码扫描功能对象；
@@ -273,6 +276,7 @@ public class PurchaseActivity extends AppCompatActivity implements View.OnClickL
                     mUnit.setEnabled(true);
                     mBarcode.requestFocus();
                     InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    assert imm != null;
                     imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
 
                     //关闭相机扫描条码；
@@ -309,28 +313,29 @@ public class PurchaseActivity extends AppCompatActivity implements View.OnClickL
                 Purchase purchaseRd = new Purchase();
                 purchaseRd.setStoreId(mStoreId);
                 purchaseRd.setBarcode(barcode);
-                purchaseRd.setPrice(Float.valueOf(mBuyPrice.getText().toString()));
-                purchaseRd.setCount(Float.valueOf(mCount.getText().toString()));
-                purchaseRd.setSellPrice(Float.valueOf(mPrice.getText().toString()));
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.CHINA);
-                purchaseRd.setDateTime(dateFormat.format(new Date(System.currentTimeMillis())));
+                purchaseRd.setPrice(Float.parseFloat(mBuyPrice.getText().toString()));
+                purchaseRd.setCount(Float.parseFloat(mCount.getText().toString()));
+                purchaseRd.setSellPrice(Float.parseFloat(mPrice.getText().toString()));
+                //SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.CHINA);
+                //purchaseRd.setDateTime(dateFormat.format(new Date(System.currentTimeMillis())));
                 purchaseRd.setUnit(mUnit.getText().toString());
                 if(select > 0) {
                     purchaseRd.setSupplierId(mSuppliers.get(select - 1).getId());
                 }
 
                 //填充库存记录数据；
-                if(mDetailStorage != null){
-                    mDetailStorage.setCount(purchaseRd.getCount());
-                    mDetailStorage.setUnit(purchaseRd.getUnit());
-                    mDetailStorage.setPrice(purchaseRd.getSellPrice());
-                    mDetailStorage.setDiscount(1.0f);
-                    mDetailStorage.setEditor(User.getUser(null).getPhoneNum());
-                    mDetailStorage.setEditTime(System.currentTimeMillis());
+/*
+                if(mGoodsPrice != null){
+                    mGoodsPrice.setCount(purchaseRd.getCount());
+                    mGoodsPrice.setUnit(purchaseRd.getUnit());
+                    mGoodsPrice.setPrice(purchaseRd.getSellPrice());
+                    mGoodsPrice.setDiscount(1.0f);
+                    mGoodsPrice.setEditor(User.getUser(null).getPhoneNum());
+                    mGoodsPrice.setEditTime(System.currentTimeMillis());
                     if(select > 0)
-                        mDetailStorage.setSupplier(mSuppliers.get(select - 1).getName());
+                        mGoodsPrice.setSupplier(mSuppliers.get(select - 1).getName());
                 }
-
+*/
                 WebServiceAPIs.addPurchase(mHttpHandler, purchaseRd, purchaseRd.getSellPrice());
         }
     }
@@ -346,10 +351,10 @@ public class PurchaseActivity extends AppCompatActivity implements View.OnClickL
             Bundle bundle = data.getBundleExtra("goods");
             Goods goods = (Goods)bundle.getSerializable("goods");
             mGoodsName.setText(goods.getName());
-            mGoodsSpec.setText(goods.getRemark());
+            mGoodsSpec.setText(goods.getSpec());
 
             //新商品，生成入库记录；
-            mDetailStorage = new DetailStorage(mStoreId).init(goods);
+            mStockGoods = new StockGoods(goods);
         }
     }
 
@@ -359,27 +364,20 @@ public class PurchaseActivity extends AppCompatActivity implements View.OnClickL
 
         //库存列表中查询该条码对应的商品信息；
         mSpinner.setSelection(0, true);
-        for(DetailStorage goods : mStoreGoods){
-            if(!goods.getBarcode()/*.substring(0, barcode.length())*/.equals(barcode))
-                continue;
-            for(int i = 0; i < mSuppliers.size(); i++){
-                if(mSuppliers.get(i).getName().equals(goods.getSupplier())) {
-                    mSpinner.setSelection(i + 1, true);
-                    break;
-                }
-            }
-            mGoodsName.setText(goods.getName());
-            mGoodsSpec.setText(goods.getRemark());
-            mPrice.setText(String.format(Locale.CHINA, "%.2f", goods.getPrice()));
-            mUnit.setText(goods.getUnit());
-            mPrice.setEnabled(false);
-            mUnit.setEnabled(false);
-            return true;
+        StockGoods goods = mStockGoodsMap.get(barcode);
+        if(null == goods) {
+            //未找到条码对应商品；
+            mPrice.setEnabled(true);
+            mUnit.setEnabled(true);
+            return false;
         }
-        //未找到条码对应商品；
-        mPrice.setEnabled(true);
-        mUnit.setEnabled(true);
-        return false;
+        mGoodsName.setText(goods.getName());
+        mGoodsSpec.setText(goods.getSpec());
+        mPrice.setText(String.format(Locale.CHINA, "%.2f", goods.getPrice()));
+        mUnit.setText(goods.getUnit());
+        mPrice.setEnabled(false);
+        mUnit.setEnabled(false);
+        return true;
     }
 
     @Override

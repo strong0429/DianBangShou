@@ -3,11 +3,6 @@ package com.xingdhl.www.storehelper.trading;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.RadioButton;
@@ -15,6 +10,12 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.viewpager.widget.ViewPager;
+
+import com.google.android.material.tabs.TabLayout;
 import com.xingdhl.www.storehelper.CustomStuff.FreeToast;
 import com.xingdhl.www.storehelper.CustomStuff.QueryDialog;
 import com.xingdhl.www.storehelper.CustomStuff.ViewPagerAdapter;
@@ -102,23 +103,23 @@ public class SalesAnalysisActivity extends AppCompatActivity implements
 
         FragmentManager fm = getSupportFragmentManager();
         mSalesPager = (ViewPager)findViewById(R.id.pager_sale_calc);
-        mSalesPager.setAdapter(new ViewPagerAdapter(fm) {
-            @Override
-            public int getCurrentPosition() {
-                return mSalesPager.getCurrentItem();
-            }
-
-            @Override
-            public Fragment getItem(int position) {
-                mPagerFragments.get(position).setObjectList(mSaleDataList);
-                return mPagerFragments.get(position);
-            }
-
-            @Override
-            public int getCount() {
-                return mPagerFragments.size();
-            }
-        });
+//        mSalesPager.setAdapter(new ViewPagerAdapter(fm) {
+//            @Override
+//            public int getCurrentPosition() {
+//                return mSalesPager.getCurrentItem();
+//            }
+//
+//            @Override
+//            public Fragment getItem(int position) {
+//                mPagerFragments.get(position).setObjectList(mSaleDataList);
+//                return mPagerFragments.get(position);
+//            }
+//
+//            @Override
+//            public int getCount() {
+//                return mPagerFragments.size();
+//            }
+//        });
 
         mTabLayout = (TabLayout)findViewById(R.id.tab_sale_calc);
         mTabLayout.setTabMode(TabLayout.MODE_FIXED);
@@ -132,24 +133,25 @@ public class SalesAnalysisActivity extends AppCompatActivity implements
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(resultCode != RESULT_OK || requestCode != DATE_PICKER){
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode != RESULT_OK || requestCode != DATE_PICKER) {
             return;
         }
         long startTime = data.getLongExtra("start_time", -1);
-        long endTime  = data.getLongExtra("end_time", -1);
+        long endTime = data.getLongExtra("end_time", -1);
 
         //判断日期是否正确；
-        if(startTime >= endTime){
+        if (startTime >= endTime) {
             QueryDialog.showAlertMsg(this, "开始日期不能晚于结束日期，请重新选择日期！");
             return;
         }
         //判断日期是否改变；
-        if(mStartTime == startTime && mEndTime == endTime){
+        if (mStartTime == startTime && mEndTime == endTime) {
             return;
         }
 
         //取消RadioButton checked状态；
-        ((RadioGroup)findViewById(R.id.radio_group)).clearCheck();
+        ((RadioGroup) findViewById(R.id.radio_group)).clearCheck();
 
         //清除远数据，重新加载指定日期内的销售数据；
         mStartTime = startTime;

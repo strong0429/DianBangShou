@@ -2,7 +2,6 @@ package com.xingdhl.www.storehelper.webservice;
 
 import android.os.Bundle;
 import android.os.Message;
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.xingdhl.www.storehelper.ObjectDefine.*;
@@ -16,11 +15,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import static java.net.HttpURLConnection.HTTP_OK;
@@ -31,15 +27,18 @@ import static java.net.HttpURLConnection.HTTP_OK;
  */
 
 public class WebServiceAPIs {
-    private static final String URL_HOST = "http://192.168.0.109:8000/xing/";
-    //private static final String URL_HOST = "http://111.230.153.117/dbs/";
+    private static final String URL_HOST = "http://192.168.0.105:8000/xing/";
 
     private static final String URL_TOKEN = URL_HOST + "token/";
     private static final String URL_USER_LOGIN = URL_HOST + "login/";
     private static final String URL_USER_REGISTER = URL_HOST + "register/";
     private static final String URL_SMS_CODE = URL_HOST + "sms/";
     private static final String URL_STORES = URL_HOST + "stores/";  //店铺创建、查询、更新等；
-    private static final String URL_GET_SELLS_SUMMARY = URL_HOST + "stores/%d/sales/sum/";
+    private static final String URL_SELLS_SUMMARY = URL_HOST + "stores/%d/sales/sum/";
+    private static final String URL_PURCHASE = URL_HOST + "stores/%d/purchases/";
+    private static final String URL_STOCKS = URL_HOST + "stores/%d/stocks/";
+    private static final String URL_GOODS_CATEGORIES = URL_HOST + "goods/categories";
+    private static final String URL_GOODS = URL_HOST + "goods/";
 
     public static final String URL_GET_APP = URL_HOST + "file/app/download";
     public static final String URL_POST_FILE_IMG = URL_HOST + "file/img/upload";
@@ -53,18 +52,15 @@ public class WebServiceAPIs {
     private static final String URL_GET_SHOP_TYPE = URL_HOST + "stores/category";
     private static final String URL_GET_SHOPS = URL_HOST + "store_default/list/";
     private static final String URL_SUPPLIER = URL_HOST + "stores/supplier";
-    private static final String URL_PURCHASE = URL_HOST + "stores/purchase";
     private static final String URL_GET_PURCHASE = URL_HOST + "stores/purchase/%d";
     private static final String URL_ADD_SELL = URL_HOST + "sales";
     private static final String URL_GET_SELLS_DAYSUM = URL_HOST + "sales/days_sum";
     private static final String URL_GET_SELLS_DETAIL = URL_HOST + "sales/detail";
     private static final String URL_STORE_STORAGE = URL_HOST + "stores/%d/storage/%s";
-    private static final String URL_GET_PAGE_STORAGES = URL_HOST + "stores/%d/storages/%d";
-    private static final String URL_ADD_GOODS = URL_HOST + "goods";
     private static final String URL_GET_GOODS_BARCODE = URL_HOST + "goods/%s";
-    private static final String URL_GET_GOODS_CATEGORY = URL_HOST + "goods/category";
 
     private static final String KEY_ERR_MSG = "err_msg";
+
     private static final String KEY_ERR_CODE = "err_code";
 
     public static final int HTTP_CONTINUE = 1;
@@ -93,9 +89,8 @@ public class WebServiceAPIs {
     public static final int MSG_GET_GOODS = -1014;
     public static final int MSG_ADD_PURCHASE = -1015;
     public static final int MSG_ADD_GOODS = -1016;
-    public static final int MSG_GET_STORAGE = -1017;
+    public static final int MSG_GET_STOCK = -1017;
     public static final int MSG_ADD_SELL = -1018;
-    public static final int MSG_GET_PAGE_STORAGES = -1019;
     public static final int MSG_ADD_STORAGE = -1020;
     public static final int MSG_UPDATE_STORAGE = -1021;
     public static final int MSG_GET_SELL_SUM = -1022;
@@ -120,8 +115,7 @@ public class WebServiceAPIs {
         return code;
     }
 
-    private static int getErrorMessage(@NonNull Bundle data,
-                                       @NonNull JSONObject jsonObject) throws JSONException {
+    private static int getErrorMessage(Bundle data, JSONObject jsonObject) throws JSONException {
         data.putString("field", jsonObject.getString("field"));
         data.putString("message", jsonObject.getString("message"));
         return jsonObject.getInt("code");
@@ -167,7 +161,7 @@ public class WebServiceAPIs {
         new Thread(httpRunnable).start();
     }
 
-    public static void userLogin(@NonNull final HttpHandler httpHandler) {
+    public static void userLogin(final HttpHandler httpHandler) {
         final User user = User.getUser(null);
 
         HttpRunnable httpRunnable = new HttpRunnable(URL_USER_LOGIN) {
@@ -254,7 +248,7 @@ public class WebServiceAPIs {
         new Thread(httpRunnable).start();
     }
 
-    public static void userRegister(@NonNull final HttpHandler httpHandler, final String smsCode) {
+    public static void userRegister(final HttpHandler httpHandler, final String smsCode) {
         final User user = User.getUser(null);
 
         HttpRunnable httpRunnable = new HttpRunnable(URL_USER_REGISTER) {
@@ -293,7 +287,7 @@ public class WebServiceAPIs {
         new Thread(httpRunnable).start();
     }
 
-    public static void createStore(@NonNull final HttpHandler httpHandler, final Store store) {
+    public static void createStore(final HttpHandler httpHandler, final Store store) {
         HttpRunnable httpRunnable = new HttpRunnable(URL_STORES) {
             @Override
             public void run() {
@@ -342,11 +336,11 @@ public class WebServiceAPIs {
 
     public static void getSalesSummary(final HttpHandler httpHandler, final int id) {
         final User user = User.getUser(null);
-        HttpRunnable httpRunnable = new HttpRunnable(URL_GET_SELLS_SUMMARY ) {
+        HttpRunnable httpRunnable = new HttpRunnable(URL_SELLS_SUMMARY) {
             @Override
             public void run() {
                 addPathParams(user.getStore(id).getId());
-                byte[] urlData = httpRequest(null, "GET", CONTENT_TYPE_JSON, user.getToken());
+                byte[] urlData = httpRequest(user.getToken());
 
                 Message msg = httpHandler.obtainMessage();
                 msg.what = MSG_GET_SELL_SUM;
@@ -385,6 +379,228 @@ public class WebServiceAPIs {
             }
         };
         httpHandler.showDlg(MSG_GET_SELL_SUM);
+        new Thread(httpRunnable).start();
+    }
+
+    public static void getStockGoods(final HttpHandler httpHandler, String url,
+                                     final Map<String, StockGoods> goodsList) {
+        final User user = User.getUser(null);
+        //请求成功，则返回LocalStorage 列表；
+        HttpRunnable httpRunnable = new HttpRunnable(url) {
+            @Override
+            public void run() {
+                byte[] urlData = httpRequest(user.getToken());
+
+                Message msg = httpHandler.obtainMessage();
+                msg.what = MSG_GET_STOCK;
+                msg.arg1 = getHttpCode();
+
+                JSONArray jsonArray;
+                JSONObject jsonObject;
+                Bundle data = new Bundle();
+                String jsonString = new String(urlData);
+                try {
+                    jsonObject = new JSONObject(jsonString);
+                    if(HTTP_OK == msg.arg1){
+                        msg.arg2 = jsonObject.getInt("count");
+                        data.putString("next", jsonObject.getString("next"));
+                        data.putString("previous", jsonObject.getString("previous"));
+                        if(msg.arg2 > 0) {
+                            jsonArray = jsonObject.getJSONArray("result");
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                jsonObject = jsonArray.getJSONObject(i);
+                                StockGoods stockGoods = new StockGoods(jsonObject);
+                                assert stockGoods.getBarcode() != null;
+                                goodsList.put(stockGoods.getBarcode(), stockGoods);
+                            }
+                        }
+                    }else{
+                        msg.arg1 = getErrorMessage(data, jsonObject);
+                    }
+                } catch (JSONException je) {
+                    Log.d(GCV.D_TAG, "getGoodsList()--->output data error: " + jsonString);
+                    msg.arg1 = HttpRunnable.HTTP_RESP_ERROR;
+                    data.putString("field", "no_field_errors");
+                    data.putString("message", "数据解析错误。");
+                }
+                msg.setData(data);
+                httpHandler.sendMessage(msg);
+            }
+        };
+        //httpHandler.showDlg(MSG_GET_STORAGE);
+        new Thread(httpRunnable).start();
+    }
+
+    public static void getStockGoods(final HttpHandler httpHandler, final Map<String, StockGoods> goodsList,
+                                     final int storeId, final Integer pageNo, final Integer pageSize) {
+        final User user = User.getUser(null);
+        //请求成功，则返回LocalStorage 列表；
+        HttpRunnable httpRunnable = new HttpRunnable(URL_STOCKS) {
+            @Override
+            public void run() {
+                addPathParams(storeId);
+                addQueryParams("page", pageNo.toString());
+                addQueryParams("size", pageSize.toString());
+                byte[] urlData = httpRequest(user.getToken());
+
+                Message msg = httpHandler.obtainMessage();
+                msg.what = MSG_GET_STOCK;
+                msg.arg1 = getHttpCode();
+
+                JSONArray jsonArray;
+                JSONObject jsonObject;
+                Bundle data = new Bundle();
+                String jsonString = new String(urlData);
+                try {
+                    jsonObject = new JSONObject(jsonString);
+                    if(HTTP_OK == msg.arg1){
+                        msg.arg2 = jsonObject.getInt("count");
+                        data.putString("next", jsonObject.getString("next"));
+                        data.putString("previous", jsonObject.getString("previous"));
+                        if(msg.arg2 > 0) {
+                            jsonArray = jsonObject.getJSONArray("result");
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                jsonObject = jsonArray.getJSONObject(i);
+                                StockGoods stockGoods = new StockGoods(jsonObject);
+                                assert stockGoods.getBarcode() != null;
+                                goodsList.put(stockGoods.getBarcode(), stockGoods);
+                            }
+                        }
+                    }else{
+                        msg.arg1 = getErrorMessage(data, jsonObject);
+                    }
+                } catch (JSONException je) {
+                    Log.d(GCV.D_TAG, "getGoodsList()--->output data error: " + jsonString);
+                    msg.arg1 = HttpRunnable.HTTP_RESP_ERROR;
+                    data.putString("field", "no_field_errors");
+                    data.putString("message", "数据解析错误。");
+                }
+                msg.setData(data);
+                httpHandler.sendMessage(msg);
+            }
+        };
+        //httpHandler.showDlg(MSG_GET_STORAGE);
+        new Thread(httpRunnable).start();
+    }
+
+    public static void addPurchase(final HttpHandler httpHandler, final Purchase record, final Float sellPrice) {
+        HttpRunnable httpRunnable = new HttpRunnable(URL_PURCHASE) {
+            @Override
+            public void run() {
+                Map<String, Object> dataMap = new HashMap<>();
+                dataMap.put("barcode", record.getBarcode());
+                dataMap.put("supplierId", record.getSupplierId());
+                dataMap.put("price", record.getPrice());
+                dataMap.put("count", record.getCount());
+                dataMap.put("unit", record.getUnit());
+                dataMap.put("sale_price", sellPrice);
+                addPathParams(record.getStoreId());
+
+                byte[] urlData = httpRequest(dataMap, User.getUser(null).getToken());
+
+                Message msg = httpHandler.obtainMessage();
+                msg.what = MSG_ADD_PURCHASE;
+                msg.arg1 = getHttpCode();
+
+                JSONObject jsonObject;
+                Bundle data = new Bundle();
+                String jsonString = new String(urlData);
+                try {
+                    jsonObject = new JSONObject(jsonString);
+                    if(HTTP_OK != msg.arg1){
+                        msg.arg1 = getErrorMessage(data, jsonObject);
+                    }
+                } catch (JSONException je) {
+                    Log.d(GCV.D_TAG, "addPurchase()--->output data error: " + jsonString);
+                    msg.arg1 = HttpRunnable.HTTP_RESP_ERROR;
+                    data.putString("field", "no_field_errors");
+                    data.putString("message", "数据解析错误。");
+                }
+                msg.setData(data);
+                httpHandler.sendMessage(msg);
+            }
+        };
+        httpHandler.showDlg(MSG_ADD_PURCHASE);
+        new Thread(httpRunnable).start();
+    }
+
+    public static void getGoodsCategories(final HttpHandler httpHandler) {
+        final User user = User.getUser(null);
+
+        HttpRunnable httpRunnable = new HttpRunnable(URL_GOODS_CATEGORIES) {
+            @Override
+            public void run() {
+                byte[] urlData = httpRequest(user.getToken());
+
+                Message msg = httpHandler.obtainMessage();
+                msg.what = MSG_GET_CATEGORY;
+                msg.arg1 = getHttpCode();
+
+                Bundle data = new Bundle();
+                String jsonString = new String(urlData);
+                List<Categories.Category> categories = Categories.getGoodsCategories();
+                categories.clear();
+                //categories.add(new Categories.Category((short)-1,"-- 选择商品类别 --"));
+                try {
+                    if(msg.arg1 == HTTP_OK){
+                        JSONArray jsonArray = new JSONArray(jsonString);
+                        for(int i = 0; i < jsonArray.length(); i++) {
+                            categories.add(new Categories.Category(jsonArray.getJSONObject(i)));
+                        }
+                    }else {
+                        JSONObject jsonObject = new JSONObject(jsonString);
+                        msg.arg1 = getErrorMessage(data, jsonObject);
+                    }
+                } catch (JSONException je) {
+                    Log.d(GCV.D_TAG, "getGoodsCategories()--->output data error: " + jsonString);
+                    msg.arg1 = HttpRunnable.HTTP_RESP_ERROR;
+                    data.putString("field", "no_field_errors");
+                    data.putString("message", "数据解析错误。");
+                }
+                msg.setData(data);
+                httpHandler.sendMessage(msg);
+            }
+        };
+        //httpHandler.showDlg(MSG_GET_CATEGORY);
+        new Thread(httpRunnable).start();
+    }
+
+    public static void addGoods(final HttpHandler httpHandler, final Goods goods) {
+        final User user = User.getUser(null);
+
+        HttpRunnable httpRunnable = new HttpRunnable(URL_GOODS) {
+            @Override
+            public void run() {
+                Map<String, Object> dataMap = new HashMap<>();
+                dataMap.put("name", goods.getName());
+                dataMap.put("barcode", goods.getBarcode());
+                dataMap.put("spec", goods.getSpec());
+                dataMap.put("category", goods.getCategoryId2());
+                byte[] urlData = httpRequest(dataMap, user.getToken());
+
+                Message msg = httpHandler.obtainMessage();
+                msg.what = MSG_ADD_GOODS;
+                msg.arg1 = getHttpCode();
+
+                JSONObject jsonObject;
+                Bundle data = new Bundle();
+                String jsonString = new String(urlData);
+                try {
+                    jsonObject = new JSONObject(jsonString);
+                    if(HTTP_OK != msg.arg1){
+                        msg.arg1 = getErrorMessage(data, jsonObject);
+                    }
+                } catch (JSONException je) {
+                    Log.d(GCV.D_TAG, "addGoods()--->output data error: " + jsonString);
+                    msg.arg1 = HttpRunnable.HTTP_RESP_ERROR;
+                    data.putString("field", "no_field_errors");
+                    data.putString("message", "数据解析错误。");
+                }
+                msg.setData(data);
+                httpHandler.sendMessage(msg);
+            }
+        };
+        httpHandler.showDlg(MSG_ADD_GOODS);
         new Thread(httpRunnable).start();
     }
 
@@ -647,20 +863,20 @@ public class WebServiceAPIs {
         new Thread(httpRunnable).start();
     }
 
-    public static void updateStorage(final HttpHandler httpHandler, final Storage record, final int itemId) {
+    public static void updateStorage(final HttpHandler httpHandler, final StockGoods record, final int itemId) {
         final User user = User.getUser(null);
 
         HttpRunnable httpRunnable = new HttpRunnable(URL_STORE_STORAGE) {
             @Override
             public void run() {
-                addPathParams(record.getStoreId(), record.getBarcode());
+                //addPathParams(record.getStoreId(), record.getBarcode());
                 addJsonParams("price", record.getPrice());
                 addJsonParams("discount", record.getDiscount());
 
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.CHINA);
-                addJsonParams("startDate", sdf.format(new Timestamp(record.getStartDate())));
-                addJsonParams("endDate", sdf.format(new Timestamp(record.getEndDate())));
-                addJsonParams("editDate", sdf.format(new Timestamp(record.getEditDate())));
+                //SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.CHINA);
+                addJsonParams("startDate", record.getStartDate());
+                addJsonParams("endDate", record.getEndDate());
+                addJsonParams("editDate", record.getEditDate());
 
                 byte[] urlData = httpRequest("PUT", "CONTENT_TYPE_JSON");
 
@@ -697,27 +913,27 @@ public class WebServiceAPIs {
         new Thread(httpRunnable).start();
     }
 
-    public static void addStorage(final HttpHandler httpHandler, final Storage record) {
+    public static void addStorage(final HttpHandler httpHandler, final StockGoods record) {
         final User user = User.getUser(null);
 
         HttpRunnable httpRunnable = new HttpRunnable(URL_STORE_STORAGE) {
             @Override
             public void run() {
-                addPathParams(record.getStoreId(), record.getBarcode());
-                addJsonParams("storeId", record.getStoreId());
+                //addPathParams(record.getStoreId(), record.getBarcode());
+                //addJsonParams("storeId", record.getStoreId());
                 addJsonParams("barcode", record.getBarcode());
-                addJsonParams("count", record.getCount());
+                //addJsonParams("count", record.getCount());
                 addJsonParams("price", record.getPrice());
                 addJsonParams("discount", record.getDiscount());
                 //addJsonParams("editorId", record.getEditorId());
 
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.CHINA);
-                Timestamp date = new Timestamp(record.getStartDate());
-                addJsonParams("startDate", sdf.format(date));
-                date.setTime(record.getEndDate());
-                addJsonParams("endDate", sdf.format(date));
-                date.setTime(record.getEditDate());
-                addJsonParams("editDate", sdf.format(date));
+                //SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.CHINA);
+                //Timestamp date = new Timestamp(record.getStartDate());
+                addJsonParams("startDate", record.getStartDate());
+                //date.setTime(record.getEndDate());
+                addJsonParams("endDate", record.getEndDate());
+                //date.setTime(record.getEditDate());
+                addJsonParams("editDate", record.getEditDate());
 
                 byte[] urlData = httpRequest("POST", "CONTENT_TYPE_JSON");
 
@@ -753,59 +969,6 @@ public class WebServiceAPIs {
         new Thread(httpRunnable).start();
     }
 
-    public static void getPageStorages(final HttpHandler httpHandler, final List<DetailStorage> goodsList,
-            final Integer storeId, final Integer pageNo, final Integer pageSize) {
-        final User user = User.getUser(null);
-        //请求成功，则返回LocalStorage 列表；
-        HttpRunnable httpRunnable = new HttpRunnable(URL_GET_PAGE_STORAGES) {
-            @Override
-            public void run() {
-                addPathParams(storeId, pageNo);
-                addQueryParams("page_size", pageSize.toString());
-
-                byte[] urlData = httpRequest("GET", "CONTENT_TYPE_JSON");
-
-                Message msg = httpHandler.obtainMessage();
-                msg.what = MSG_GET_PAGE_STORAGES;
-                if((msg.arg1 = transHttpCode(getHttpCode())) != HTTP_OK){
-                    httpHandler.sendMessage(msg);
-                    return;
-                }
-
-                String errMsg;
-                JSONObject jsonObject;
-                JSONArray jsonArray;
-                String jsonString = new String(urlData);
-                try {
-                    jsonObject = new JSONObject(jsonString);
-                    errMsg = jsonObject.getString(KEY_ERR_MSG);
-                    if(HTTP_OK == (msg.arg1 = jsonObject.getInt(KEY_ERR_CODE))){
-                        msg.arg2 = jsonObject.getInt("page_no");
-                        int count = jsonObject.getInt("page_size");
-                        if(count > 0) {
-                            jsonArray = jsonObject.getJSONArray("result");
-                            for (int i = 0; i < count; i++) {
-                                jsonObject = jsonArray.getJSONObject(i);
-                                goodsList.add(new DetailStorage(jsonObject));
-                            }
-                            if(count == pageSize)
-                                msg.arg1 = HTTP_CONTINUE;
-                        }
-                    }else{
-                        Log.d(GCV.D_TAG, "getGoodsList()--->Error message: " + errMsg);
-                        //msg.arg1 = HTTP_NO_EXIST;
-                    }
-                } catch (JSONException je) {
-                    Log.d(GCV.D_TAG, "getGoodsList()--->output data error: " + jsonString);
-                    msg.arg1 = HttpRunnable.HTTP_RESP_ERROR;
-                }
-                httpHandler.sendMessage(msg);
-            }
-        };
-        //httpHandler.showDlg(MSG_GET_PAGE_STORAGES);
-        new Thread(httpRunnable).start();
-    }
-
     public static void getStorage(final HttpHandler httpHandler, final Integer storeId, final String barcode) {
         final User user = User.getUser(null);
         //请求成功，则返回 DetailStorage；
@@ -816,7 +979,7 @@ public class WebServiceAPIs {
                 byte[] urlData = httpRequest("GET", "");
 
                 Message msg = httpHandler.obtainMessage();
-                msg.what = MSG_GET_STORAGE;
+                msg.what = MSG_GET_STOCK;
                 if((msg.arg1 = getHttpCode()) != HTTP_OK){
                     httpHandler.sendMessage(msg);
                     return;
@@ -830,7 +993,7 @@ public class WebServiceAPIs {
                     returnDetail = jsonObject.getString(KEY_ERR_MSG);
                     if(HTTP_OK == (msg.arg1 = jsonObject.getInt(KEY_ERR_CODE))){
                         jsonObject = jsonObject.getJSONObject("result");
-                        DetailStorage storage = new DetailStorage(jsonObject);
+                        StockGoods storage = new StockGoods(jsonObject);
                         Bundle bundle = new Bundle();
                         bundle.putSerializable("goods_input", storage);
                         msg.setData(bundle);
@@ -845,7 +1008,7 @@ public class WebServiceAPIs {
                 httpHandler.sendMessage(msg);
             }
         };
-        httpHandler.showDlg(MSG_GET_STORAGE);
+        httpHandler.showDlg(MSG_GET_STOCK);
         new Thread(httpRunnable).start();
     }
 
@@ -1077,51 +1240,6 @@ public class WebServiceAPIs {
         new Thread(httpRunnable).start();
     }
 
-    public static void addPurchase(final HttpHandler httpHandler, final Purchase record, final Float sellPrice) {
-        final User user = User.getUser(null);
-
-        HttpRunnable httpRunnable = new HttpRunnable(URL_PURCHASE) {
-            @Override
-            public void run() {
-                addJsonParams("storeId", record.getStoreId());
-                addJsonParams("barcode", record.getBarcode());
-                addJsonParams("supplierId", record.getSupplierId());
-                addJsonParams("price", record.getPrice());
-                addJsonParams("count", record.getCount());
-                addJsonParams("date", record.getDateTime());
-                addJsonParams("unit", record.getUnit());
-
-                addQueryParams("sp", sellPrice.toString());
-
-                byte[] urlData = httpRequest("POST", "CONTENT_TYPE_JSON");
-
-                Message msg = httpHandler.obtainMessage();
-                msg.what = MSG_ADD_PURCHASE;
-                if((msg.arg1 = transHttpCode(getHttpCode())) != HTTP_OK){
-                    httpHandler.sendMessage(msg);
-                    return;
-                }
-
-                String errMsg;
-                JSONObject jsonObject;
-                String jsonString = new String(urlData);
-                try {
-                    jsonObject = new JSONObject(jsonString);
-                    errMsg = jsonObject.getString(KEY_ERR_MSG);
-                    if((msg.arg1 = jsonObject.getInt(KEY_ERR_CODE)) != HTTP_OK){
-                        Log.d(GCV.D_TAG, "addPurchase()--->Error message: " + errMsg);
-                    }
-                } catch (JSONException je) {
-                    Log.d(GCV.D_TAG, "addPurchase()--->output data error: " + jsonString);
-                    msg.arg1 = HttpRunnable.HTTP_RESP_ERROR;
-                }
-                httpHandler.sendMessage(msg);
-            }
-        };
-        httpHandler.showDlg(MSG_ADD_PURCHASE);
-        new Thread(httpRunnable).start();
-    }
-
     public static void getGoods(final HttpHandler httpHandler, final String barcode) {
         final User user = User.getUser(null);
         HttpRunnable httpRunnable = new HttpRunnable(URL_GET_GOODS_BARCODE) {
@@ -1159,97 +1277,6 @@ public class WebServiceAPIs {
                 httpHandler.sendMessage(msg);
             }
         };
-        new Thread(httpRunnable).start();
-    }
-
-    public static void addGoods(final HttpHandler httpHandler, final Goods goods) {
-        final User user = User.getUser(null);
-
-        HttpRunnable httpRunnable = new HttpRunnable(URL_ADD_GOODS) {
-            @Override
-            public void run() {
-                addJsonParams("barcode", goods.getBarcode());
-                addJsonParams("name", goods.getName());
-                addJsonParams("manufacture", goods.getName_M());
-                addJsonParams("remark", goods.getRemark());
-                addJsonParams("classId", goods.getCategory().getId());
-
-                byte[] urlData = httpRequest("POST", "CONTENT_TYPE_JSON");
-
-                Message msg = httpHandler.obtainMessage();
-                msg.what = MSG_ADD_GOODS;
-                if((msg.arg1 = getHttpCode()) != HTTP_OK){
-                    httpHandler.sendMessage(msg);
-                    return;
-                }
-
-                String returnDetail;
-                JSONObject jsonObject;
-                String jsonString = new String(urlData);
-                try {
-                    jsonObject = new JSONObject(jsonString);
-                    returnDetail = jsonObject.getString(KEY_ERR_MSG);
-                    if(HTTP_OK != (msg.arg1 = jsonObject.getInt(KEY_ERR_CODE))){
-                        Log.d(GCV.D_TAG, "addGoods()--->Error message: " + returnDetail);
-                        msg.arg1 = HTTP_NO_EXIST;
-                    }
-                } catch (JSONException je) {
-                    Log.d(GCV.D_TAG, "addGoods()--->output data error: " + jsonString);
-                    msg.arg1 = HttpRunnable.HTTP_RESP_ERROR;
-                }
-                httpHandler.sendMessage(msg);
-            }
-        };
-        httpHandler.showDlg(MSG_ADD_GOODS);
-        new Thread(httpRunnable).start();
-    }
-
-    public static void getGoodsCategories(final HttpHandler httpHandler) {
-        final User user = User.getUser(null);
-
-        HttpRunnable httpRunnable = new HttpRunnable(URL_GET_GOODS_CATEGORY ) {
-            @Override
-            public void run() {
-                byte[] urlData = httpRequest("GET", "CONTENT_TYPE_JSON");
-
-                Message msg = httpHandler.obtainMessage();
-
-                msg.what = MSG_GET_CATEGORY;
-                if((msg.arg1 = getHttpCode()) != HTTP_OK){
-                    httpHandler.sendMessage(msg);
-                    return;
-                }
-
-                String msgDetail;
-                JSONArray jsonArray;
-                JSONObject jsonObject;
-                String jsonString = new String(urlData);
-                List<Categories.Category> categories = Categories.getGoodsCategories();
-                categories.clear();
-                categories.add(new Categories.Category((short)-1,"-- 选择商品类别 --"));
-
-                try {
-                    jsonObject = new JSONObject(jsonString);
-                    msgDetail = jsonObject.getString(KEY_ERR_MSG);
-                    if((msg.arg1 = jsonObject.getInt(KEY_ERR_CODE)) == HTTP_OK){
-                        jsonArray = jsonObject.getJSONArray("goods_category");
-                        for(int i = 0; i < jsonArray.length(); i++) {
-                            categories.add(new Categories.Category(jsonArray.getJSONObject(i)));
-                        }
-                    }else {
-                        Log.d(GCV.D_TAG, "getGoodsCategory()--->Error message: " + msgDetail);
-                        msg.arg1 = HttpRunnable.HTTP_RESP_ERROR;
-                    }
-                } catch (JSONException je) {
-                    Log.d(GCV.D_TAG, "getGoodsCategory()--->output data error: " + jsonString);
-                    msg.arg1 = HttpRunnable.HTTP_RESP_ERROR;
-                    httpHandler.sendMessage(msg);
-                    return;
-                }
-                httpHandler.sendMessage(msg);
-            }
-        };
-        //httpHandler.showDlg(MSG_GET_CATEGORY);
         new Thread(httpRunnable).start();
     }
 

@@ -5,12 +5,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.fragment.app.Fragment;
 
 import com.xingdhl.www.storehelper.ObjectDefine.GCV;
 import com.xingdhl.www.storehelper.ObjectDefine.Store;
@@ -29,21 +30,15 @@ import java.util.Locale;
  */
 
 public class StorePagerFragment extends Fragment {
-    private static final String ARG_PAGER_POSITION = "CARD_POSITION";
-
     private static HttpHandler mHttpHandler;
     private ImageView mStoreImgView;
     private Store mStore;
     private int mPageNo;
 
-    public static StorePagerFragment newInstance(int position, HttpHandler httpHandler){
-        Bundle args = new Bundle();
-        args.putInt(ARG_PAGER_POSITION, position);
-
-        StorePagerFragment fragment = new StorePagerFragment();
-        fragment.setArguments(args);
+    public StorePagerFragment(HttpHandler httpHandler, Integer position){
         mHttpHandler = httpHandler;
-        return fragment;
+        mPageNo = position;
+        mStore = User.getUser(null).getStores().get(mPageNo);
     }
 
     public void setShopImg(Bitmap storeImg){
@@ -61,14 +56,6 @@ public class StorePagerFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        mPageNo =  getArguments().getInt(ARG_PAGER_POSITION);
-        mStore = User.getUser(null).getStores().get(mPageNo);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
@@ -77,7 +64,7 @@ public class StorePagerFragment extends Fragment {
         ((TextView)view.findViewById(R.id.shop_addr)).setText(String.format(Locale.PRC, "%s%s%s%s",
                 mStore.getCity(), mStore.getDistrict(), mStore.getStreet(), mStore.getAddress()));
         ((TextView)view.findViewById(R.id.shop_phone)).setText(mStore.getPhone());
-        mStoreImgView = (ImageView)view.findViewById(R.id.shop_photo);
+        mStoreImgView = view.findViewById(R.id.shop_photo);
         mStoreImgView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -89,12 +76,10 @@ public class StorePagerFragment extends Fragment {
                 getActivity().startActivityForResult(intent, 2);
             }
         });
-        /* 2020-03-14
-        if(!mStore.isSetPhoto()) {
+        if(!mStore.isSetLogo()) {
             mStoreImgView.setImageResource(R.drawable.store_default);
             return view;
         }
-        */
         String imgPath = getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
                 .getAbsolutePath() + "/store_" + mStore.getId() + ".jpg";
         File imgFile = new File(imgPath);

@@ -1,15 +1,15 @@
 package com.xingdhl.www.storehelper.store;
 
 import android.os.Message;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.xingdhl.www.storehelper.ObjectDefine.DetailStorage;
-import com.xingdhl.www.storehelper.ObjectDefine.Storage;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+
+import com.xingdhl.www.storehelper.ObjectDefine.StockGoods;
 import com.xingdhl.www.storehelper.ObjectDefine.User;
 import com.xingdhl.www.storehelper.R;
 import com.xingdhl.www.storehelper.webservice.HttpHandler;
@@ -24,7 +24,7 @@ public class StorageEditActivity extends AppCompatActivity implements HttpHandle
     public static final int MSG_STORAGE_MODIFIED = -100;
     private ViewPager mStoragePager;
 
-    private List<DetailStorage> mStorageList;
+    private List<StockGoods> mStorageList;
     private List<Integer> mUpdateItemId;
 
     private FragmentStatePagerAdapter mAdapter;
@@ -35,8 +35,8 @@ public class StorageEditActivity extends AppCompatActivity implements HttpHandle
     @Override
     public void onMsgHandler(Message msg) {
         if(msg.what == MSG_STORAGE_MODIFIED){
-            Storage storage = mStorageList.get(msg.arg1).getStorage();
-            WebServiceAPIs.updateStorage(mHttpHandler, storage, msg.arg1);
+            StockGoods stockGoods = mStorageList.get(msg.arg1);
+            WebServiceAPIs.updateStorage(mHttpHandler, stockGoods, msg.arg1);
             return;
         }
         if(msg.what == WebServiceAPIs.MSG_UPDATE_STORAGE){
@@ -56,7 +56,7 @@ public class StorageEditActivity extends AppCompatActivity implements HttpHandle
         mHttpHandler = new HttpHandler(this);
 
         int itemId = getIntent().getIntExtra("item_id", -1);
-        mStorageList = (List<DetailStorage>) User.getUser(null).getData("goods_list");
+        mStorageList = (List<StockGoods>) User.getUser(null).getData("goods_list");
 
         mUpdateItemId = new ArrayList<>();
         User.getUser(null).putData("update_item", mUpdateItemId);

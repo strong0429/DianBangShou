@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Message;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -12,9 +11,10 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.xingdhl.www.storehelper.CustomStuff.FreeToast;
 import com.xingdhl.www.storehelper.CustomStuff.QueryDialog;
-import com.xingdhl.www.storehelper.ObjectDefine.GCV;
 import com.xingdhl.www.storehelper.ObjectDefine.User;
 import com.xingdhl.www.storehelper.R;
 import com.xingdhl.www.storehelper.store.CreateStoreActivity;
@@ -109,18 +109,18 @@ public class UserLoginActivity extends AppCompatActivity implements
         mHttpHandler = new HttpHandler(this);
         mUser = User.getUser(getApplicationContext());
 
-        mTextPasswd = (EditText)findViewById(R.id.user_passward);
+        mTextPasswd = findViewById(R.id.user_passward);
         if(mUser.isAutoLogin()) //是否填充密码；
             mTextPasswd.setText(mUser.getPassword());
 
-        mTextUserName = (EditText)findViewById(R.id.user_name);
+        mTextUserName = findViewById(R.id.user_name);
         mTextUserName.setText(mUser.getUserName());
 
-        mAutoLogin = (CheckBox)findViewById(R.id.remember_pwd);
+        mAutoLogin = findViewById(R.id.remember_pwd);
         mAutoLogin.setChecked(mUser.isAutoLogin());
 
-        Button buttonLog = (Button)findViewById(R.id.button_login);
-        Button buttonReg = (Button)findViewById(R.id.button_register);
+        Button buttonLog = findViewById(R.id.button_login);
+        Button buttonReg = findViewById(R.id.button_register);
         if(mUser.getPhoneNum() == null || mUser.getPhoneNum().isEmpty()){
             buttonLog.setBackgroundResource(R.drawable.selector_button_bg_s);
             buttonReg.setBackgroundResource(R.drawable.selector_button_bg);

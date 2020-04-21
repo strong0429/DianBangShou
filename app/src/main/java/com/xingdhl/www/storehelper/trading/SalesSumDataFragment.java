@@ -27,12 +27,12 @@ public class SalesSumDataFragment extends SalesSumFragment {
 
         View view = inflater.inflate(R.layout.pager_sell_calc, container, false);
 
-        mDaySum = (TextView)view.findViewById(R.id.sale_today);
-        mDayRaise = (TextView)view.findViewById(R.id.sale_yesterday);
-        mWeekSum = (TextView)view.findViewById(R.id.sale_week);
-        mWeekRaise = (TextView)view.findViewById(R.id.sale_last_week);
-        mMonthSum = (TextView)view.findViewById(R.id.sale_month);
-        mMontRaise = (TextView)view.findViewById(R.id.sale_last_month);
+        mDaySum = view.findViewById(R.id.sale_today);
+        mDayRaise = view.findViewById(R.id.sale_yesterday);
+        mWeekSum = view.findViewById(R.id.sale_week);
+        mWeekRaise = view.findViewById(R.id.sale_last_week);
+        mMonthSum = view.findViewById(R.id.sale_month);
+        mMontRaise = view.findViewById(R.id.sale_last_month);
 
         return view;
     }

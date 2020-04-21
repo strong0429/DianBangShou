@@ -15,7 +15,7 @@ public final class GCV {
     public static final int COLOR_SELECTED = 0xaaaaaaaa;
 
     public static final int CUSTOM_BARCODE_LEN = 4;
-    public static final int STORAGE_PAGE_SIZE = 10;
+    public static final int PAGE_SIZE = 20;
 
     public static final String RegExp_phone = "^(0[1-9]{2,3}\\-)?([2-9][0-9]{6,7})+(\\-[0-9]{1,4})?$";
     public static final String RegExp_cell = "^[1][3,5,7,8][0-9]{9}$";

@@ -3,6 +3,9 @@ package com.xingdhl.www.storehelper.ObjectDefine;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by Strong on 17/11/15.
  *
@@ -21,10 +24,11 @@ public class Store {
     private String mWxCode;
     private String mAliCode;
     private String mLogo;
-
     private String mExpDate;
-
+    //当前用户在该店铺的角色：O，店主；M，经理；C，店员
     private String mPosition;
+    //店铺库存商品信息；
+    private Map<String, StockGoods> mGoodsList;
 
     public Store() {
         mId = 0;
@@ -41,10 +45,23 @@ public class Store {
         mLogo = null;
         mExpDate = null;
         mPosition = null;
+        mGoodsList = new HashMap<>();
     }
 
     public String toString(){
         return mName;
+    }
+
+    public Map<String, StockGoods> getGoodsList(){
+        return mGoodsList;
+    }
+
+    public StockGoods getGoods(String barcode){
+        return mGoodsList.get(barcode);
+    }
+
+    public void addGoods(StockGoods stockGoods){
+        mGoodsList.put(stockGoods.getBarcode(), stockGoods);
     }
 
     public String getPosition() {

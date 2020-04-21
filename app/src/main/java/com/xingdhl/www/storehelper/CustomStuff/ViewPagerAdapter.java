@@ -1,35 +1,68 @@
 package com.xingdhl.www.storehelper.CustomStuff;
 
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+
+import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Leeyc on 2018/3/22.
  *
  */
 
-public abstract class ViewPagerAdapter extends FragmentStatePagerAdapter {
-    private int mUpdatePosition;
+public class ViewPagerAdapter extends FragmentStateAdapter {
+    private int mItemCount;
+    private Class mClass;
+    private List<Object> mFragments;
+    private Object[] mInitParams;
 
-    public abstract int getCurrentPosition();
+    public ViewPagerAdapter(@NonNull FragmentActivity fragmentActivity,
+                            Class fragmentClass, int itemCount, Object ... initParams) {
+        super(fragmentActivity);
 
-    public ViewPagerAdapter(FragmentManager fm){
-        super(fm);
+        mItemCount = itemCount;
+        mClass = fragmentClass;
+        mInitParams = initParams;
+        mFragments = new ArrayList<>();
     }
 
+    @NonNull
     @Override
-    public void notifyDataSetChanged() {
-        mUpdatePosition = 0;
-        super.notifyDataSetChanged();
-    }
-
-    @Override
-    public int getItemPosition(Object object) {
-        if(mUpdatePosition == getCurrentPosition()){
-            return POSITION_NONE;
+    public Fragment createFragment(int position) {
+        Fragment fragment = null;
+        Constructor constructor = null;
+        try {
+            if(mInitParams == null || mInitParams.length == 0){
+                constructor = mClass.getConstructor();
+            }else {
+                Class[] classes = new Class[mInitParams.length];
+                for (int i = 0; i < classes.length; i++)
+                    classes[i] = mInitParams[i].getClass();
+                constructor = mClass.getConstructor(classes);
+            }
+            fragment = (Fragment) constructor.newInstance(mInitParams);
+            if(mFragments.size() > position){
+                mFragments.set(position, fragment);
+            }else {
+                mFragments.add(fragment);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
+        return fragment;
+    }
 
-        mUpdatePosition += 1;
-        return super.getItemPosition(object);
+    @Override
+    public int getItemCount() {
+        return mItemCount;
+    }
+
+    public List<Object> getFragments(){
+        return mFragments;
     }
 }

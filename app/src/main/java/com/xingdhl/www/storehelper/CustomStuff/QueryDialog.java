@@ -2,7 +2,8 @@ package com.xingdhl.www.storehelper.CustomStuff;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.support.v7.app.AlertDialog;
+
+import androidx.appcompat.app.AlertDialog;
 
 /**
  * Created by Strong on 17/12/24.

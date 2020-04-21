@@ -87,14 +87,14 @@ public abstract class HttpRunnable implements Runnable{
     private void writeRequestData(Map<?, ?> dataMap, OutputStream outputStream, String contentType) throws IOException{
         if(dataMap == null || dataMap.isEmpty() || outputStream == null)
             return;
-
+        /*
         if(contentType.equals(CONTENT_TYPE_JSON)){
             JSONObject jsonObject;
             jsonObject = new JSONObject(dataMap);
             outputStream.write(jsonObject.toString().getBytes());
             return;
         }
-
+        */
         StringBuilder dataString = new StringBuilder(1024);
 
         if(contentType.equals(CONTENT_TYPE_FORM)) {
@@ -288,8 +288,16 @@ public abstract class HttpRunnable implements Runnable{
         return null;
     }
 
+    byte[] httpRequest(String token){
+        return httpRequest(null, "GET", CONTENT_TYPE_JSON, token);
+    }
+
     byte[] httpRequest(Map<?,?> dataRequest, String token){
         return httpRequest(dataRequest, "POST", CONTENT_TYPE_FORM, token);
+    }
+
+    byte[] httpRequest(Map<?,?> dataRequest, String contentType, String token){
+        return httpRequest(dataRequest, "POST", contentType, token);
     }
 
     byte[] httpRequest(Map<?,?> dataRequest, String method, String contentType, String token) {
