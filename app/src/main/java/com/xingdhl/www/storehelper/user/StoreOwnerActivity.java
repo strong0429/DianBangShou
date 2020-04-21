@@ -7,18 +7,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Message;
-import android.support.annotation.NonNull;
-import android.support.design.widget.NavigationView;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -26,6 +14,18 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
+
+import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 import com.xingdhl.www.storehelper.AboutActivity;
 import com.xingdhl.www.storehelper.CustomStuff.FreeToast;
 import com.xingdhl.www.storehelper.CustomStuff.QueryDialog;
@@ -36,7 +36,6 @@ import com.xingdhl.www.storehelper.ObjectDefine.User;
 import com.xingdhl.www.storehelper.R;
 import com.xingdhl.www.storehelper.trading.SalesAnalysisActivity;
 import com.xingdhl.www.storehelper.trading.SalesSumDataFragment;
-import com.xingdhl.www.storehelper.trading.SalesSumFragment;
 import com.xingdhl.www.storehelper.trading.TradingActivity;
 import com.xingdhl.www.storehelper.store.CreateStoreActivity;
 import com.xingdhl.www.storehelper.store.PurchaseActivity;
@@ -49,9 +48,8 @@ import com.xingdhl.www.storehelper.webservice.WebServiceAPIs;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
+import java.util.Objects;
 
 import static java.net.HttpURLConnection.HTTP_OK;
 
@@ -60,12 +58,11 @@ public class StoreOwnerActivity extends AppCompatActivity implements
         View.OnClickListener, NavigationView.OnNavigationItemSelectedListener{
     private final int ACCESS_LOCATION_REQUEST_CODE = 1000;
 
-    private ViewPager mStorePager, mSellCalcPager;
-    private TabLayout mTabLayout;
+    private ViewPager2 mSellCalcPager;
+    private ViewPager2 mStorePager;
+
     private DrawerLayout mDrawer;
     private TextView mTitle;
-
-    private List<SalesSumFragment> mSaleSumFragments;
 
     private List<SaleSummary> mSaleSummaries;
     private HttpHandler mHttpHandler;
@@ -80,8 +77,8 @@ public class StoreOwnerActivity extends AppCompatActivity implements
                 intent.putExtra("store_No", mStorePager.getCurrentItem());
                 startActivityForResult(intent, 1);
                 break;
-            case R.id.button_purchase: //‘商品入库’
-                if (mUser.getStaffStatus() == GCV.CLERK) {
+            case R.id.button_purchase: //‘商品入库’, 店员无权限
+                if (mUser.getStore(mStorePager.getCurrentItem()).getPosition().equals("C")) {
                     FreeToast.makeText(this, "您未授权，不能执行该操作！", Toast.LENGTH_SHORT).show();
                     break;
                 }
@@ -172,59 +169,13 @@ public class StoreOwnerActivity extends AppCompatActivity implements
                     setSaleSummary(msg.arg2, sumData);
                 }
                 if (msg.arg2 == mStorePager.getCurrentItem()) {
-                    SaleSummary saleSummary = mSaleSummaries.get(msg.arg2);
-                    mSaleSumFragments.get(0).updateText(
-                            saleSummary.getDaySum(), saleSummary.getDayRise(),
-                            saleSummary.getWeekSum(), saleSummary.getWeekRise(),
-                            saleSummary.getMonthSum(), saleSummary.getMonthRise());
-                    mSaleSumFragments.get(1).updateText(
-                            saleSummary.getDayProfit(), saleSummary.getDayProfitRise(),
-                            saleSummary.getWeekProfit(), saleSummary.getWeekProfitRise(),
-                            saleSummary.getMonthProfit(), saleSummary.getMonthProfitRise());
+                    updateSellPager(msg.arg2);
                 }
-                break;
-            case WebServiceAPIs.MSG_GET_SELL_SUM_BY_DAY:
-                if(msg.arg1 != HTTP_OK)
-                    return;
-
-                double[] daysSum = msg.getData().getDoubleArray("sum");
-                double[] cost = msg.getData().getDoubleArray("cost");
-
-                if(daysSum == null || cost == null || daysSum.length == 0){
-                    return;
-                }
-                cost[0] = daysSum[0] - cost[0]; //转换为利润；
-
-                SaleSummary saleSummary = mSaleSummaries.get(msg.arg2);
-
-                daysSum[0] -= saleSummary.getDaySum();
-                saleSummary.setDaySum(saleSummary.getDaySum() + daysSum[0]);
-                saleSummary.setDayRise(saleSummary.getDayRise() + daysSum[0]);
-                saleSummary.setWeekSum(saleSummary.getWeekSum() + daysSum[0]);
-                saleSummary.setWeekRise(saleSummary.getWeekRise() + daysSum[0]);
-                saleSummary.setMonthSum(saleSummary.getMonthSum() + daysSum[0]);
-                saleSummary.setMonthRise(saleSummary.getMonthRise() + daysSum[0]);
-
-                cost[0] -= saleSummary.getDayProfit();  //转换为增长利润；
-                saleSummary.setDayProfit(saleSummary.getDayProfit() + cost[0]);
-                saleSummary.setWeekProfit(saleSummary.getWeekProfit() + cost[0]);
-                saleSummary.setMonthProfit(saleSummary.getMonthProfit() + cost[0]);
-                saleSummary.setDayProfitRise(saleSummary.getDayProfitRise() + cost[0]);
-                saleSummary.setWeekProfitRise(saleSummary.getWeekProfitRise() + cost[0]);
-                saleSummary.setMonthProfitRise(saleSummary.getMonthProfitRise() + cost[0]);
-
-                mSaleSumFragments.get(0).updateText(
-                        saleSummary.getDaySum(), saleSummary.getDayRise(),
-                        saleSummary.getWeekSum(), saleSummary.getWeekRise(),
-                        saleSummary.getMonthSum(), saleSummary.getMonthRise());
-                mSaleSumFragments.get(1).updateText(
-                        saleSummary.getDayProfit(), saleSummary.getDayProfitRise(),
-                        saleSummary.getWeekProfit(), saleSummary.getWeekProfitRise(),
-                        saleSummary.getMonthProfit(), saleSummary.getMonthProfitRise());
                 break;
             case WebServiceAPIs.MSG_DOWNLOAD_FILE:
-                FragmentStatePagerAdapter adapter = (FragmentStatePagerAdapter)mStorePager.getAdapter();
-                StorePagerFragment fragment = (StorePagerFragment)adapter.instantiateItem(mStorePager, msg.arg2);
+                FragmentStateAdapter adapter = (FragmentStateAdapter)mStorePager.getAdapter();
+                //StorePagerFragment fragment = (StorePagerFragment)adapter.instantiateItem(mStorePager, msg.arg2);
+                StorePagerFragment fragment = null; //adapter.mapFragment.get(mStorePager.getCurrentItem());
 
                 String filePath = msg.getData().getString("file_name");
                 if(msg.arg1 == HTTP_OK){
@@ -264,7 +215,7 @@ public class StoreOwnerActivity extends AppCompatActivity implements
             WebServiceAPIs.getSalesSummary(mHttpHandler, i);
         }
 
-        mTitle = (TextView)findViewById(R.id.sell_sum_title);
+        mTitle = findViewById(R.id.sell_sum_title);
         mTitle.setText(getString(R.string.sell_calc_title, mUser.getStore(0).getName()));
 
         findViewById(R.id.button_purchase).setOnClickListener(this);
@@ -272,103 +223,54 @@ public class StoreOwnerActivity extends AppCompatActivity implements
         findViewById(R.id.button_storage).setOnClickListener(this);
         findViewById(R.id.button_more).setOnClickListener(this);
 
-        mDrawer = (DrawerLayout)findViewById(R.id.drawer_layout);
-        NavigationView mMainMenu = (NavigationView)findViewById(R.id.main_menu_view);
+        mDrawer = findViewById(R.id.drawer_layout);
+        NavigationView mMainMenu = findViewById(R.id.main_menu_view);
         //mMainMenu.setCheckedItem(R.id.menu_supplier_manage);
         mMainMenu.setNavigationItemSelectedListener(this);
 
-        FragmentManager fm = getSupportFragmentManager();
+        mSellCalcPager = findViewById(R.id.sell_calc_pager);
+        mSellCalcPager.setAdapter(new ViewPagerAdapter(this, SalesSumDataFragment.class, 2));
 
-        mSaleSumFragments = new ArrayList<>();
-        mSaleSumFragments.add(new SalesSumDataFragment());
-        mSaleSumFragments.add(new SalesSumDataFragment());
+        mStorePager = findViewById(R.id.shop_pager);
+        mStorePager.setAdapter(new ViewPagerAdapter(this, StorePagerFragment.class,
+                mUser.getStores().size(), mHttpHandler, mStorePager.getCurrentItem()));
 
-        mSellCalcPager = (ViewPager)findViewById(R.id.sell_calc_pager);
-        mSellCalcPager.setAdapter(new ViewPagerAdapter(fm) {
-            @Override
-            public int getCurrentPosition() {
-                return mSellCalcPager.getCurrentItem();
-            }
+        TabLayout tabLayout = findViewById(R.id.layout_calc_title);
+        tabLayout.setTabMode(TabLayout.MODE_FIXED);
+        new TabLayoutMediator(tabLayout, mSellCalcPager,
+                new TabLayoutMediator.TabConfigurationStrategy(){
+                    @Override
+                    public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
+                        String[] tabText = {"销售收入", "销售利润"};
+                        tab.setText(tabText[position]);
+                    }
+                }).attach();
 
-            @Override
-            public Fragment getItem(int position) {
-                return mSaleSumFragments.get(position);
-            }
-            @Override
-            public int getCount() {
-                return mSaleSumFragments.size();
-            }
-        });
-
-        mStorePager = (ViewPager)findViewById(R.id.shop_pager);
-        mStorePager.setAdapter(new ViewPagerAdapter(fm) {
-            @Override
-            public int getCurrentPosition() {
-                return mStorePager.getCurrentItem();
-            }
-
-            @Override
-            public Fragment getItem(int position) {
-                return StorePagerFragment.newInstance(position, mHttpHandler);
-            }
-            @Override
-            public int getCount() {
-                return mUser.getStores().size();
-            }
-        });
-        mStorePager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            }
+        mStorePager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
-                SaleSummary saleSummary = mSaleSummaries.get(position);
-                mSaleSumFragments.get(0).updateText(
-                        saleSummary.getDaySum(), saleSummary.getDayRise(),
-                        saleSummary.getWeekSum(), saleSummary.getWeekRise(),
-                        saleSummary.getMonthSum(), saleSummary.getMonthRise());
-                mSaleSumFragments.get(1).updateText(
-                        saleSummary.getDayProfit(), saleSummary.getDayProfitRise(),
-                        saleSummary.getWeekProfit(), saleSummary.getWeekProfitRise(),
-                        saleSummary.getMonthProfit(), saleSummary.getMonthProfitRise());
                 mTitle.setText(getString(R.string.sell_calc_title,
                         mUser.getStore(position).getName()));
-            }
-            @Override
-            public void onPageScrollStateChanged(int state) {
+                updateSellPager(position);
             }
         });
-
-        mTabLayout = (TabLayout)findViewById(R.id.layout_calc_title);
-        mTabLayout.setTabMode(TabLayout.MODE_FIXED);
-        mTabLayout.addTab(mTabLayout.newTab());
-        mTabLayout.addTab(mTabLayout.newTab());
-        mTabLayout.setupWithViewPager(mSellCalcPager);
-        mTabLayout.getTabAt(0).setText("销售收入");
-        mTabLayout.getTabAt(1).setText("销售利润");
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(resultCode == RESULT_OK && requestCode == 0) {  //注册店铺返回
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK && requestCode == 0) {  //注册店铺返回
             mSaleSummaries.add(new SaleSummary());
-            mStorePager.getAdapter().notifyDataSetChanged();
+            Objects.requireNonNull(mStorePager.getAdapter()).notifyDataSetChanged();
             return;
         }
-        if(requestCode == 1){   //商品销售返回
-            Calendar calendar = Calendar.getInstance(Locale.PRC);
-            long endTime = calendar.getTimeInMillis();
-            calendar.set(Calendar.HOUR_OF_DAY, 0);
-            calendar.set(Calendar.MINUTE, 0);
-            calendar.set(Calendar.SECOND, 0);
-            calendar.set(Calendar.MILLISECOND, 0);
-            long startTime = calendar.getTimeInMillis();
-            WebServiceAPIs.getSaleSumByDay(mHttpHandler, mStorePager.getCurrentItem(), startTime, endTime);
+        if (requestCode == 1) {   //商品销售返回
+            WebServiceAPIs.getSalesSummary(mHttpHandler, mStorePager.getCurrentItem());
             return;
         }
-        if(resultCode == RESULT_OK && requestCode == 2){   //更新店铺信息返回
+        if (resultCode == RESULT_OK && requestCode == 2) {   //更新店铺信息返回
             mTitle.setText(getString(R.string.sell_calc_title, mUser.getStore(0).getName()));
-            mStorePager.getAdapter().notifyDataSetChanged();
+            Objects.requireNonNull(mStorePager.getAdapter()).notifyDataSetChanged();
         }
     }
 
@@ -385,6 +287,31 @@ public class StoreOwnerActivity extends AppCompatActivity implements
     @Override
     public void onDialogPositiveClick(DialogInterface dialog, int which) {
         finish();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode == ACCESS_LOCATION_REQUEST_CODE) {
+            if(grantResults[0] != 0 || grantResults[1] != 0){
+                FreeToast.makeText(this, "拒绝位置定位权限申请，将无法自动获取位置信息！", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void updateSellPager(int position){
+        SaleSummary saleSummary = mSaleSummaries.get(position);
+        ViewPagerAdapter adapter = (ViewPagerAdapter)mSellCalcPager.getAdapter();
+        List<Object> fragments = adapter.getFragments();
+        if(fragments.size() < 2) return;
+        ((SalesSumDataFragment)(fragments.get(0))).updateText(
+                saleSummary.getDaySum(), saleSummary.getDayRise(),
+                saleSummary.getWeekSum(), saleSummary.getWeekRise(),
+                saleSummary.getMonthSum(), saleSummary.getMonthRise());
+        ((SalesSumDataFragment)(fragments.get(1))).updateText(
+                saleSummary.getDayProfit(), saleSummary.getDayProfitRise(),
+                saleSummary.getWeekProfit(), saleSummary.getWeekProfitRise(),
+                saleSummary.getMonthProfit(), saleSummary.getMonthProfitRise());
     }
 
     private void setSaleSummary(int id, Bundle sumData){
@@ -413,13 +340,4 @@ public class StoreOwnerActivity extends AppCompatActivity implements
         saleSummary.setMonthProfitRise(saleSummary.getMonthProfit() - sumData.getDouble("lm_pro"));
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(requestCode == ACCESS_LOCATION_REQUEST_CODE) {
-            if(grantResults[0] != 0 || grantResults[1] != 0){
-                FreeToast.makeText(this, "拒绝位置定位权限申请，将无法自动获取位置信息！", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
 }
