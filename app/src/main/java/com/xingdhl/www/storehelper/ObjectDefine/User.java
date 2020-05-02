@@ -22,9 +22,9 @@ public class User {
 
     private String mPhoneNum;
     private String mPassword;
-    private String mUserName;
-    private String mFirstName;
+    private String mAutonym;
     private String mIdCard;
+    private String mNickname;
     private String mRegDate;
     private String mMobile;
     private String mWechat;
@@ -34,8 +34,8 @@ public class User {
     private boolean mAutoLogin;
 
     private List<Store> mStores;
-    private List<UserGroup> mUserGroups;
-    private List<UserPermission> mUserPermissions;
+//    private List<UserGroup> mUserGroups;
+//    private List<UserPermission> mUserPermissions;
 
     private String mToken;
 
@@ -57,14 +57,12 @@ public class User {
 
         SharedPreferences preferences = mContext.getSharedPreferences("user_info", Context.MODE_PRIVATE);
         mPassword = preferences.getString("password", "");
-        mUserName = preferences.getString("username", "");
+        mMobile = preferences.getString("mobile", "");
         mAutoLogin = preferences.getBoolean("rem_passwd", false);
         mPhoto = preferences.getString("photo", null);
 
         mMap = new HashMap<String, Object>();
         mStores = new ArrayList<>();
-        mUserGroups = new ArrayList<>();
-        mUserPermissions = new ArrayList<>();
     }
 
     public static User getUser(Context context) {
@@ -77,7 +75,7 @@ public class User {
     public void saveInfo() {
         SharedPreferences.Editor editor = mContext.getSharedPreferences("user_info", Context.MODE_PRIVATE).edit();
         editor.putString("password", mPassword);
-        editor.putString("username", mUserName);
+        editor.putString("mobile", mMobile);
         editor.putBoolean("rem_passwd", mAutoLogin);
         editor.putString("photo", mPhoto);
 
@@ -86,9 +84,9 @@ public class User {
     }
 
     public void setUser(JSONObject jsonObject){
+        setAutonym(jsonObject);
         setRegDate(jsonObject);
-        setUserName(jsonObject);
-        setFirstName(jsonObject);
+        setNickname(jsonObject);
         setIdCard(jsonObject);
         setMobile(jsonObject);
         setEmail(jsonObject);
@@ -144,19 +142,19 @@ public class User {
         }
     }
 
-    public String getFirstName() {
-        return mFirstName;
+    public String getAutonym() {
+        return mAutonym;
     }
 
-    public void setFirstName(String firstName) {
-        mFirstName = firstName;
+    public void setAutonym(String autonym) {
+        mAutonym = autonym;
     }
 
-    public void setFirstName(JSONObject jsonObject) {
+    public void setAutonym(JSONObject jsonObject) {
         try{
-            mFirstName = jsonObject.getString("first_name");
+            mAutonym = jsonObject.getString("autonym");
         }catch (JSONException je) {
-            mFirstName = null;
+            mAutonym = null;
         }
     }
 
@@ -216,19 +214,19 @@ public class User {
         }
     }
 
-    public String getUserName() {
-        return mUserName;
+    public String getNickname() {
+        return mNickname;
     }
 
-    public void setUserName(String name) {
-        mUserName = name;
+    public void setNickname(String name) {
+        mNickname = name;
     }
 
-    public void setUserName(JSONObject jsonObject) {
+    public void setNickname(JSONObject jsonObject) {
         try{
-            mUserName = jsonObject.getString("username");
+            mNickname = jsonObject.getString("nickname");
         }catch (JSONException je) {
-            mUserName = null;
+            mNickname = null;
         }
     }
 

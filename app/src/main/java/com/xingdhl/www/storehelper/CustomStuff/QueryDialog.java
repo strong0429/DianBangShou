@@ -21,8 +21,25 @@ public class QueryDialog {
     private QueryDlgListener mListener;
 
     public static void showAlertMsg(Context context, String msg){
+        showAlertMsg(context, msg, null);
+    }
+
+    public static void showAlertMsg(Context context, String msg, String txtButton){
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setMessage(msg);
+        if(txtButton != null) {
+            try {
+                final QueryDlgListener listener = (QueryDlgListener) context;
+                builder.setPositiveButton(txtButton, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        listener.onDialogPositiveClick(dialog, which);
+                    }
+                });
+            }catch (ClassCastException cce){
+                builder.setPositiveButton(txtButton, null);
+            }
+        }
         builder.create().show();
     }
 

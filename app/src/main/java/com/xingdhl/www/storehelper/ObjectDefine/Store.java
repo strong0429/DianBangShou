@@ -1,8 +1,17 @@
 package com.xingdhl.www.storehelper.ObjectDefine;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
+import androidx.core.content.FileProvider;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,27 +34,21 @@ public class Store {
     private String mAliCode;
     private String mLogo;
     private String mExpDate;
+
     //当前用户在该店铺的角色：O，店主；M，经理；C，店员
     private String mPosition;
     //店铺库存商品信息；
     private Map<String, StockGoods> mGoodsList;
 
+
     public Store() {
         mId = 0;
-        mName = null;
-        mPhone = null;
-        mProvince = null;
-        mCity = null;
-        mDistrict = null;
-        mStreet = null;
-        mAddress = null;
-        mRegDate = null;
-        mWxCode = null;
-        mAliCode = null;
         mLogo = null;
-        mExpDate = null;
-        mPosition = null;
         mGoodsList = new HashMap<>();
+    }
+
+    public String getLogo(){
+        return mLogo;
     }
 
     public String toString(){
