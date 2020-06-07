@@ -11,6 +11,7 @@ import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -27,7 +28,7 @@ import static java.net.HttpURLConnection.HTTP_OK;
  */
 
 public class WebServiceAPIs {
-    private static final String URL_HOST = "http://192.168.0.105:8000/xing/";
+    private static final String URL_HOST = "http://192.168.0.107:8000/xing/";
 
     private static final String URL_TOKEN = URL_HOST + "token/";
     private static final String URL_USER_LOGIN = URL_HOST + "login/";
@@ -37,8 +38,11 @@ public class WebServiceAPIs {
     private static final String URL_SELLS_SUMMARY = URL_HOST + "stores/%d/sales/sum/";
     private static final String URL_PURCHASE = URL_HOST + "stores/%d/purchases/";
     private static final String URL_STOCKS = URL_HOST + "stores/%d/stocks/";
-    private static final String URL_GOODS_CATEGORIES = URL_HOST + "goods/categories";
+    private static final String URL_CATEGORY_GOODS = URL_HOST + "category/goods/";
     private static final String URL_GOODS = URL_HOST + "goods/";
+    private static final String URL_GOODS_BARCODE = URL_HOST + "goods/%s/";
+    private static final String URL_STORE_LOGO = URL_HOST +"media/store/logo/%s/";
+    private static final String URL_SUPPLIER = URL_HOST + "suppliers/";
 
     public static final String URL_GET_APP = URL_HOST + "file/app/download";
     public static final String URL_POST_FILE_IMG = URL_HOST + "file/img/upload";
@@ -51,13 +55,11 @@ public class WebServiceAPIs {
     private static final String URL_UPDATE_PASSWORD = URL_HOST + "users/password";
     private static final String URL_GET_SHOP_TYPE = URL_HOST + "stores/category";
     private static final String URL_GET_SHOPS = URL_HOST + "store_default/list/";
-    private static final String URL_SUPPLIER = URL_HOST + "stores/supplier";
     private static final String URL_GET_PURCHASE = URL_HOST + "stores/purchase/%d";
     private static final String URL_ADD_SELL = URL_HOST + "sales";
     private static final String URL_GET_SELLS_DAYSUM = URL_HOST + "sales/days_sum";
     private static final String URL_GET_SELLS_DETAIL = URL_HOST + "sales/detail";
     private static final String URL_STORE_STORAGE = URL_HOST + "stores/%d/storage/%s";
-    private static final String URL_GET_GOODS_BARCODE = URL_HOST + "goods/%s";
 
     private static final String KEY_ERR_MSG = "err_msg";
 
@@ -65,10 +67,7 @@ public class WebServiceAPIs {
 
     public static final int HTTP_CONTINUE = 1;
 
-    public static final int HTTP_OVER_RIGHT = -200;
-    public static final int HTTP_HAD_EXIST = -201;
     public static final int HTTP_NO_EXIST = -202;
-    public static final int HTTP_DATA_INVALID = -203;
     public static final int HTTP_FILE_ERROR = -204;
     public static final int HTTP_UPLOAD_FAIL = -205;
 
@@ -95,7 +94,7 @@ public class WebServiceAPIs {
     public static final int MSG_UPDATE_STORAGE = -1021;
     public static final int MSG_GET_SELL_SUM = -1022;
     public static final int MSG_GET_SELL_SUM_BY_DAY = -1023;
-    public static final int MSG_GET_APP_VER = -1024;
+    public static final int MSG_STORE_LOGO = -1024;
     public static final int MSG_UPLOAD_FILE = -1025;
     public static final int MSG_DOWNLOAD_FILE = -1026;
     public static final int MSG_GET_CLERKS_INFO = -1027;
@@ -127,7 +126,7 @@ public class WebServiceAPIs {
             public void run() {
                 Map<String, Object> dataMap = new HashMap<>();
                 dataMap.put("name", appName);
-                byte[] urlData = httpRequest(dataMap, null);
+                byte[] urlData = httpRequest(dataMap, "POST", null);
 
                 Message msg = httpHandler.obtainMessage();
                 msg.what = MSG_GET_TOKEN;
@@ -168,9 +167,9 @@ public class WebServiceAPIs {
             @Override
             public void run() {
                 Map<String, Object> dataMap = new HashMap<>();
-                dataMap.put("username", user.getUserName());
+                dataMap.put("mobile", user.getMobile());
                 dataMap.put("password", user.getPassword());
-                byte[] returnData = httpRequest(dataMap, user.getToken());
+                byte[] returnData = httpRequest(dataMap, "POST", user.getToken());
 
                 Message msg = httpHandler.obtainMessage();
                 msg.what = MSG_USER_LOGIN;
@@ -219,7 +218,7 @@ public class WebServiceAPIs {
                 Map<String, Object> dataMap = new HashMap<>();
                 dataMap.put("mobile", phoneNum);
                 dataMap.put("existed", existed.toString());
-                byte[] urlData = httpRequest(dataMap, user.getToken());
+                byte[] urlData = httpRequest(dataMap, "POST", user.getToken());
 
                 Message msg = httpHandler.obtainMessage();
                 msg.what = MSG_SMS_CODE;
@@ -255,11 +254,10 @@ public class WebServiceAPIs {
             @Override
             public void run() {
                 Map<String, Object> dataMap = new HashMap<>();
-                dataMap.put("username", user.getUserName());
                 dataMap.put("mobile", user.getMobile());
                 dataMap.put("password", user.getPassword());
                 dataMap.put("sms_code", smsCode);
-                byte[] urlData = httpRequest(dataMap, user.getToken());
+                byte[] urlData = httpRequest(dataMap, "POST", user.getToken());
 
                 Message msg = httpHandler.obtainMessage();
                 msg.what = MSG_USER_REGISTER;
@@ -287,60 +285,13 @@ public class WebServiceAPIs {
         new Thread(httpRunnable).start();
     }
 
-    public static void createStore(final HttpHandler httpHandler, final Store store) {
-        HttpRunnable httpRunnable = new HttpRunnable(URL_STORES) {
-            @Override
-            public void run() {
-                Map<String, Object> dataMap = new HashMap<>();
-                dataMap.put("name", store.getName());
-                dataMap.put("phone", store.getPhone());
-                dataMap.put("addr_detail", store.getAddress());
-                dataMap.put("addr_street", store.getStreet());
-                dataMap.put("addr_city", store.getCity());
-                dataMap.put("addr_district", store.getDistrict());
-                dataMap.put("addr_province", store.getProvince());
-                dataMap.put("paycode_wec", store.getWxCode());
-                dataMap.put("paycode_ali", store.getAliCode());
-
-                byte[] urlData = httpRequest(dataMap, User.getUser(null).getToken());
-
-                Message msg = httpHandler.obtainMessage();
-                msg.what = MSG_STORE_CREATE;
-                msg.arg1 = getHttpCode();
-
-                JSONObject jsonObject;
-                Bundle data = new Bundle();
-                String jsonString = new String(urlData);
-                try {
-                    jsonObject = new JSONObject(jsonString);
-                    if(msg.arg1 == HTTP_OK) {
-                        store.setId(jsonObject);
-                        store.setRegDate(jsonObject);
-                    }
-                    else{
-                        msg.arg1 = getErrorMessage(data, jsonObject);
-                    }
-                } catch (JSONException je) {
-                    Log.d(GCV.D_TAG, "storeRegister()--->output data error: " + jsonString);
-                    msg.arg1 = HttpRunnable.HTTP_RESP_ERROR;
-                    data.putString("field", "no_field_errors");
-                    data.putString("message", "数据解析错误。");
-                }
-                msg.setData(data);
-                httpHandler.sendMessage(msg);
-            }
-        };
-        httpHandler.showDlg(MSG_STORE_CREATE);
-        new Thread(httpRunnable).start();
-    }
-
     public static void getSalesSummary(final HttpHandler httpHandler, final int id) {
         final User user = User.getUser(null);
         HttpRunnable httpRunnable = new HttpRunnable(URL_SELLS_SUMMARY) {
             @Override
             public void run() {
                 addPathParams(user.getStore(id).getId());
-                byte[] urlData = httpRequest(user.getToken());
+                byte[] urlData = httpRequest("GET", user.getToken());
 
                 Message msg = httpHandler.obtainMessage();
                 msg.what = MSG_GET_SELL_SUM;
@@ -389,7 +340,7 @@ public class WebServiceAPIs {
         HttpRunnable httpRunnable = new HttpRunnable(url) {
             @Override
             public void run() {
-                byte[] urlData = httpRequest(user.getToken());
+                byte[] urlData = httpRequest("GET", user.getToken());
 
                 Message msg = httpHandler.obtainMessage();
                 msg.what = MSG_GET_STOCK;
@@ -432,16 +383,16 @@ public class WebServiceAPIs {
     }
 
     public static void getStockGoods(final HttpHandler httpHandler, final Map<String, StockGoods> goodsList,
-                                     final int storeId, final Integer pageNo, final Integer pageSize) {
+                                     final int storeId/*, final Integer pageNo, final Integer pageSize*/) {
         final User user = User.getUser(null);
         //请求成功，则返回LocalStorage 列表；
         HttpRunnable httpRunnable = new HttpRunnable(URL_STOCKS) {
             @Override
             public void run() {
                 addPathParams(storeId);
-                addQueryParams("page", pageNo.toString());
-                addQueryParams("size", pageSize.toString());
-                byte[] urlData = httpRequest(user.getToken());
+                //addQueryParams("page", pageNo.toString());
+                //addQueryParams("size", pageSize.toString());
+                byte[] urlData = httpRequest("GET", user.getToken());
 
                 Message msg = httpHandler.obtainMessage();
                 msg.what = MSG_GET_STOCK;
@@ -496,7 +447,7 @@ public class WebServiceAPIs {
                 dataMap.put("sale_price", sellPrice);
                 addPathParams(record.getStoreId());
 
-                byte[] urlData = httpRequest(dataMap, User.getUser(null).getToken());
+                byte[] urlData = httpRequest(dataMap, "POST", User.getUser(null).getToken());
 
                 Message msg = httpHandler.obtainMessage();
                 msg.what = MSG_ADD_PURCHASE;
@@ -524,13 +475,47 @@ public class WebServiceAPIs {
         new Thread(httpRunnable).start();
     }
 
+    public static void getGoods(final HttpHandler httpHandler, final String barcode) {
+        HttpRunnable httpRunnable = new HttpRunnable(URL_GOODS_BARCODE) {
+            @Override
+            public void run() {
+                addPathParams(barcode);
+                byte[] urlData = httpRequest("GET", User.getUser(null).getToken());
+
+                Message msg = httpHandler.obtainMessage();
+                msg.what = MSG_GET_GOODS;
+                msg.arg1 = getHttpCode();
+
+                JSONObject jsonObject;
+                Bundle data = new Bundle();
+                String jsonString = new String(urlData);
+                try {
+                    jsonObject = new JSONObject(jsonString);
+                    if(HTTP_OK == msg.arg1){
+                        data.putSerializable("goods", new Goods(jsonObject));
+                    }else{
+                        msg.arg1 = getErrorMessage(data, jsonObject);
+                    }
+                } catch (JSONException je) {
+                    Log.d(GCV.D_TAG, "getGoods()--->output data error: " + jsonString);
+                    msg.arg1 = HttpRunnable.HTTP_RESP_ERROR;
+                    data.putString("field", "no_field_errors");
+                    data.putString("message", "数据解析错误。");
+                }
+                msg.setData(data);
+                httpHandler.sendMessage(msg);
+            }
+        };
+        new Thread(httpRunnable).start();
+    }
+
     public static void getGoodsCategories(final HttpHandler httpHandler) {
         final User user = User.getUser(null);
 
-        HttpRunnable httpRunnable = new HttpRunnable(URL_GOODS_CATEGORIES) {
+        HttpRunnable httpRunnable = new HttpRunnable(URL_CATEGORY_GOODS) {
             @Override
             public void run() {
-                byte[] urlData = httpRequest(user.getToken());
+                byte[] urlData = httpRequest("GET", user.getToken());
 
                 Message msg = httpHandler.obtainMessage();
                 msg.what = MSG_GET_CATEGORY;
@@ -540,7 +525,8 @@ public class WebServiceAPIs {
                 String jsonString = new String(urlData);
                 List<Categories.Category> categories = Categories.getGoodsCategories();
                 categories.clear();
-                //categories.add(new Categories.Category((short)-1,"-- 选择商品类别 --"));
+                categories.add(new Categories.Category((short)-1,"-- 选择商品大类 --"));
+                categories.get(0).getSubCategories().add(new Categories.Category((short)-1,"-- 选择商品子类 --"));
                 try {
                     if(msg.arg1 == HTTP_OK){
                         JSONArray jsonArray = new JSONArray(jsonString);
@@ -576,7 +562,7 @@ public class WebServiceAPIs {
                 dataMap.put("barcode", goods.getBarcode());
                 dataMap.put("spec", goods.getSpec());
                 dataMap.put("category", goods.getCategoryId2());
-                byte[] urlData = httpRequest(dataMap, user.getToken());
+                byte[] urlData = httpRequest(dataMap, "POST", user.getToken());
 
                 Message msg = httpHandler.obtainMessage();
                 msg.what = MSG_ADD_GOODS;
@@ -601,6 +587,257 @@ public class WebServiceAPIs {
             }
         };
         httpHandler.showDlg(MSG_ADD_GOODS);
+        new Thread(httpRunnable).start();
+    }
+
+    public static void createStore(final HttpHandler httpHandler, final Store store, final File logoFile) {
+        HttpRunnable httpRunnable = new HttpRunnable(URL_STORES) {
+            @Override
+            public void run() {
+                Map<String, Object> dataMap = new HashMap<>();
+                dataMap.put("name", store.getName());
+                dataMap.put("phone", store.getPhone());
+                dataMap.put("addr_detail", store.getAddress());
+                dataMap.put("addr_street", store.getStreet());
+                dataMap.put("addr_city", store.getCity());
+                dataMap.put("addr_district", store.getDistrict());
+                dataMap.put("addr_province", store.getProvince());
+                dataMap.put("paycode_wec", store.getWxCode());
+                dataMap.put("paycode_ali", store.getAliCode());
+                dataMap.put("logo", logoFile);
+
+                byte[] urlData = httpRequest(dataMap, "POST", CONTENT_TYPE_MULTI, User.getUser(null).getToken());
+
+                Message msg = httpHandler.obtainMessage();
+                msg.what = MSG_STORE_CREATE;
+                msg.arg1 = getHttpCode();
+
+                JSONObject jsonObject;
+                Bundle data = new Bundle();
+                String jsonString = new String(urlData);
+                try {
+                    jsonObject = new JSONObject(jsonString);
+                    if(msg.arg1 == HTTP_OK) {
+                        store.setId(jsonObject);
+                        store.setRegDate(jsonObject);
+                        store.setLogo(jsonObject);
+                    }
+                    else{
+                        msg.arg1 = getErrorMessage(data, jsonObject);
+                    }
+                } catch (JSONException je) {
+                    Log.d(GCV.D_TAG, "storeRegister()--->output data error: " + jsonString);
+                    msg.arg1 = HttpRunnable.HTTP_RESP_ERROR;
+                    data.putString("field", "no_field_errors");
+                    data.putString("message", "数据解析错误。");
+                }
+                msg.setData(data);
+                httpHandler.sendMessage(msg);
+            }
+        };
+        httpHandler.showDlg(MSG_STORE_CREATE);
+        new Thread(httpRunnable).start();
+    }
+
+    public static void downloadFile(final HttpHandler httpHandler, final String sour, final File dest) {
+        HttpRunnable httpRunnable = new HttpRunnable(URL_STORE_LOGO) {
+            @Override
+            public void run() {
+                addPathParams(sour);
+                byte[] urlData = httpRequest("GET", User.getUser(null).getToken());
+
+                Message msg = httpHandler.obtainMessage();
+                msg.what = MSG_STORE_LOGO;
+                msg.arg1 = getHttpCode();
+
+                Bundle data = new Bundle();
+                if(msg.arg1 == HTTP_OK){
+                    try {
+                        ByteArrayInputStream bais = new ByteArrayInputStream(urlData);
+                        FileOutputStream fos = new FileOutputStream(dest);
+                        int bytesRead;
+                        byte[] buffer = new byte[1024];
+                        while ((bytesRead = bais.read(buffer)) > 0) {
+                            fos.write(buffer, 0, bytesRead);
+                        }
+                        fos.flush();
+                        fos.close();
+                    }catch (IOException e){
+                        msg.arg1 = HTTP_FILE_ERR;
+                        data.putString("field", "no_field_errors");
+                        data.putString("message", "写入文件失败。");
+                    }
+                }else {
+                    JSONObject jsonObject;
+                    String jsonString = new String(urlData);
+                    try {
+                        jsonObject = new JSONObject(jsonString);
+                        msg.arg1 = getErrorMessage(data, jsonObject);
+                    } catch (JSONException je) {
+                        Log.d(GCV.D_TAG, "storeRegister()--->output data error: " + jsonString);
+                        msg.arg1 = HttpRunnable.HTTP_RESP_ERROR;
+                        data.putString("field", "no_field_errors");
+                        data.putString("message", "数据解析错误。");
+                    }
+                }
+                msg.setData(data);
+                httpHandler.sendMessage(msg);
+            }
+        };
+        httpHandler.showDlg(MSG_STORE_LOGO);
+        new Thread(httpRunnable).start();
+    }
+
+    public static void addSupplier(final HttpHandler httpHandler, final int store_id, final Supplier supplier) {
+        final User user = User.getUser(null);
+
+        HttpRunnable httpRunnable = new HttpRunnable(URL_SUPPLIER) {
+            @Override
+            public void run() {
+                Map<String, Object> dataMap = new HashMap<>();
+                dataMap.put("store", store_id);
+                dataMap.put("name", supplier.getName());
+                dataMap.put("addr", supplier.getAddr());
+                dataMap.put("phone", supplier.getPhone());
+                dataMap.put("contacter", supplier.getContacter());
+                byte[] urlData = httpRequest(dataMap, "POST", user.getToken());
+
+                Message msg = httpHandler.obtainMessage();
+                msg.what = MSG_ADD_SUPPLIER;
+                msg.arg1 = getHttpCode();
+
+                JSONObject jsonObject;
+                Bundle data = new Bundle();
+                String jsonString = new String(urlData);
+                try {
+                    jsonObject = new JSONObject(jsonString);
+                    if(HTTP_OK == msg.arg1){
+                        supplier.setId(jsonObject.getInt("id"));
+                        data.putSerializable("supplier", supplier);
+                    }else{
+                        msg.arg1 = getErrorMessage(data, jsonObject);
+                    }
+                } catch (JSONException je) {
+                    Log.d(GCV.D_TAG, "updateSupplier()--->output data error: " + jsonString);
+                    msg.arg1 = HttpRunnable.HTTP_RESP_ERROR;
+                    data.putString("field", "no_field_errors");
+                    data.putString("message", "数据解析错误。");
+                }
+                msg.setData(data);
+                httpHandler.sendMessage(msg);
+            }
+        };
+        httpHandler.showDlg(MSG_ADD_SUPPLIER);
+        new Thread(httpRunnable).start();
+    }
+
+    public static void updateSupplier(final HttpHandler httpHandler, final Supplier supplier) {
+        final User user = User.getUser(null);
+
+        HttpRunnable httpRunnable = new HttpRunnable(URL_SUPPLIER ) {
+            @Override
+            public void run() {
+                Map<String, Object> dataMap = new HashMap<>();
+                dataMap.put("id", supplier.getId());
+                dataMap.put("name", supplier.getName());
+                dataMap.put("addr", supplier.getAddr());
+                dataMap.put("phone", supplier.getPhone());
+                dataMap.put("contacter", supplier.getContacter());
+                byte[] urlData = httpRequest(dataMap, "PUT", user.getToken());
+
+                Message msg = httpHandler.obtainMessage();
+                msg.what = MSG_UPDATE_SUPPLIER;
+                msg.arg1 = getHttpCode();
+
+                Bundle data = new Bundle();
+                String jsonString = new String(urlData);
+                try {
+                    if(msg.arg1 == HTTP_OK){
+                        data.putSerializable("supplier", supplier);
+                    }else{
+                        msg.arg1 = getErrorMessage(data, new JSONObject(jsonString));
+                    }
+                } catch (JSONException je) {
+                    Log.d(GCV.D_TAG, "updateSupplier()--->output data error: " + jsonString);
+                    msg.arg1 = HttpRunnable.HTTP_RESP_ERROR;
+                    data.putString("field", "no_field_errors");
+                    data.putString("message", "数据解析错误。");
+                }
+                msg.setData(data);
+                httpHandler.sendMessage(msg);
+            }
+        };
+        httpHandler.showDlg(MSG_UPDATE_SUPPLIER);
+        new Thread(httpRunnable).start();
+    }
+
+    public static void getSuppliers(final HttpHandler httpHandler, final List<Supplier> supplierList, final Integer storeId) {
+        HttpRunnable httpRunnable = new HttpRunnable(URL_SUPPLIER) {
+            @Override
+            public void run() {
+                addQueryParams("store_id", storeId.toString());
+                byte[] urlData = httpRequest("GET", User.getUser(null).getToken());
+
+                Message msg = httpHandler.obtainMessage();
+                msg.what = MSG_GET_SUPPLIER;
+                msg.arg1 = getHttpCode();
+
+                Bundle data = new Bundle();
+                String jsonString = new String(urlData);
+                //supplierList.clear();
+                try {
+                    if(msg.arg1 == HTTP_OK) {
+                        JSONArray jsonArray = new JSONArray(jsonString);
+                        for(int i = 0; i < jsonArray.length(); i++){
+                            supplierList.add(new Supplier(jsonArray.getJSONObject(i)));
+                        }
+                    }else {
+                        msg.arg1 = getErrorMessage(data, new JSONObject(jsonString));
+                    }
+                } catch (JSONException je) {
+                    Log.d(GCV.D_TAG, "getSuppliers()--->output data error: " + jsonString);
+                    msg.arg1 = HttpRunnable.HTTP_RESP_ERROR;
+                    data.putString("field", "no_field_errors");
+                    data.putString("message", "数据解析错误。");
+                }
+                msg.setData(data);
+                httpHandler.sendMessage(msg);
+            }
+        };
+        httpHandler.showDlg(MSG_GET_SUPPLIER);
+        new Thread(httpRunnable).start();
+    }
+
+    public static void deleteSupplier(final HttpHandler httpHandler, final Integer id) {
+        final User user = User.getUser(null);
+
+        HttpRunnable httpRunnable = new HttpRunnable(URL_SUPPLIER) {
+            @Override
+            public void run() {
+                addQueryParams("id", id.toString());
+                byte[] urlData = httpRequest("DELETE", user.getToken());
+
+                Message msg = httpHandler.obtainMessage();
+                msg.what = MSG_DEL_SUPPLIER;
+                msg.arg1 = getHttpCode();
+
+                if(msg.arg1 != HTTP_OK) {
+                    Bundle data = new Bundle();
+                    String jsonString = new String(urlData);
+                    try {
+                        msg.arg1 = getErrorMessage(data, new JSONObject(jsonString));
+                    } catch (JSONException je) {
+                        Log.d(GCV.D_TAG, "deleteSupplier()--->output data error: " + jsonString);
+                        msg.arg1 = HttpRunnable.HTTP_RESP_ERROR;
+                        data.putString("field", "no_field_errors");
+                        data.putString("message", "数据解析错误。");
+                    }
+                    msg.setData(data);
+                }
+                httpHandler.sendMessage(msg);
+            }
+        };
+        httpHandler.showDlg(MSG_DEL_SUPPLIER);
         new Thread(httpRunnable).start();
     }
 
@@ -1240,46 +1477,6 @@ public class WebServiceAPIs {
         new Thread(httpRunnable).start();
     }
 
-    public static void getGoods(final HttpHandler httpHandler, final String barcode) {
-        final User user = User.getUser(null);
-        HttpRunnable httpRunnable = new HttpRunnable(URL_GET_GOODS_BARCODE) {
-            @Override
-            public void run() {
-                addPathParams(barcode);
-                byte[] urlData = httpRequest("GET", "CONTENT_TYPE_JSON");
-
-                Message msg = httpHandler.obtainMessage();
-                msg.what = MSG_GET_GOODS;
-                if((msg.arg1 = getHttpCode()) != HTTP_OK){
-                    httpHandler.sendMessage(msg);
-                    return;
-                }
-
-                String returnDetail;
-                JSONObject jsonObject;
-                String jsonString = new String(urlData);
-                try {
-                    jsonObject = new JSONObject(jsonString);
-                    returnDetail = jsonObject.getString(KEY_ERR_MSG);
-                    if(HTTP_OK == (msg.arg1 = jsonObject.getInt(KEY_ERR_CODE))){
-                        Bundle bundle = new Bundle();
-                        jsonObject = jsonObject.getJSONObject("goods");
-                        bundle.putSerializable("goods", new Goods(jsonObject));
-                        msg.setData(bundle);
-                    }else{
-                        Log.d(GCV.D_TAG, "getGoods()--->Error message: " + returnDetail);
-                        msg.arg1 = HTTP_NO_EXIST;
-                    }
-                } catch (JSONException je) {
-                    Log.d(GCV.D_TAG, "getGoods()--->output data error: " + jsonString);
-                    msg.arg1 = HttpRunnable.HTTP_RESP_ERROR;
-                }
-                httpHandler.sendMessage(msg);
-            }
-        };
-        new Thread(httpRunnable).start();
-    }
-
     public static void userUpdate(final HttpHandler httpHandler, final Map<String, Object> dataMaps) {
         final User user = User.getUser(null);
 
@@ -1536,185 +1733,11 @@ public class WebServiceAPIs {
                     //user.setStaffStatus(jsonObject);
                     user.setEmail(jsonObject);
                     user.setIdCard(jsonObject);
-                    user.setUserName(jsonObject);
                 }
                 httpHandler.sendMessage(msg);
             }
         };
         httpHandler.showDlg(MSG_GET_USERINFO);
-        new Thread(httpRunnable).start();
-    }
-
-    public static void updateSupplier(final HttpHandler httpHandler, final Supplier supplier) {
-        final User user = User.getUser(null);
-
-        HttpRunnable httpRunnable = new HttpRunnable(URL_SUPPLIER ) {
-            @Override
-            public void run() {
-                addJsonParams("id", supplier.getId());
-                addJsonParams("storeId", supplier.getShopId());
-                addJsonParams("name", supplier.getName());
-                addJsonParams("addr", supplier.getAddr());
-                addJsonParams("phone", supplier.getPhone());
-                addJsonParams("contacter", supplier.getContacter());
-
-                byte[] urlData = httpRequest("PUT", "CONTENT_TYPE_JSON");
-
-                Message msg = httpHandler.obtainMessage();
-                msg.what = MSG_UPDATE_SUPPLIER;
-                if((msg.arg1 = transHttpCode(getHttpCode())) != HTTP_OK){
-                    httpHandler.sendMessage(msg);
-                    return;
-                }
-
-                String errMsg;
-                JSONObject jsonObject;
-                String jsonString = new String(urlData);
-                try {
-                    jsonObject = new JSONObject(jsonString);
-                    errMsg = jsonObject.getString("err_msg");
-                    if((msg.arg1 = jsonObject.getInt("err_code")) != HTTP_OK){
-                        Log.d(GCV.D_TAG, "updateSupplier()--->Error message: " + errMsg);
-                    }else{
-                        Bundle data = new Bundle();
-                        data.putSerializable("supplier", supplier);
-                        msg.setData(data);
-                    }
-                } catch (JSONException je) {
-                    Log.d(GCV.D_TAG, "updateSupplier()--->output data error: " + jsonString);
-                    msg.arg1 = HttpRunnable.HTTP_RESP_ERROR;
-                }
-                httpHandler.sendMessage(msg);
-            }
-        };
-        httpHandler.showDlg(MSG_UPDATE_SUPPLIER);
-        new Thread(httpRunnable).start();
-    }
-
-    public static void getSuppliers(final HttpHandler httpHandler, final List<Supplier> supplierList, final Integer storeId) {
-        HttpRunnable httpRunnable = new HttpRunnable(URL_SUPPLIER) {
-            @Override
-            public void run() {
-                addQueryParams("store_id", storeId.toString());
-                byte[] urlData = httpRequest("GET", "CONTENT_TYPE_JSON");
-
-                Message msg = httpHandler.obtainMessage();
-                msg.what = MSG_GET_SUPPLIER;
-                if((msg.arg1 = getHttpCode()) != HTTP_OK){
-                    httpHandler.sendMessage(msg);
-                    return;
-                }
-
-                String msgDetail;
-                JSONArray jsonArray;
-                JSONObject jsonObject;
-                supplierList.clear();
-                String jsonString = new String(urlData);
-                try {
-                    jsonObject = new JSONObject(jsonString);
-                    msgDetail = jsonObject.getString(KEY_ERR_MSG);
-                    if((msg.arg1 = jsonObject.getInt(KEY_ERR_CODE)) == HTTP_OK) {
-                        jsonArray = jsonObject.getJSONArray("supplier");
-                        for(int i = 0; i < jsonArray.length(); i++){
-                            supplierList.add(new Supplier(jsonArray.getJSONObject(i)));
-                        }
-                    }else {
-                        Log.d(GCV.D_TAG, "getSuppliers()--->Error message: " + msgDetail);
-                        msg.arg1 = HttpRunnable.HTTP_RESP_ERROR;
-                    }
-                } catch (JSONException je) {
-                    Log.d(GCV.D_TAG, "getSuppliers()--->output data error: " + jsonString);
-                    msg.arg1 = HttpRunnable.HTTP_RESP_ERROR;
-                }
-                httpHandler.sendMessage(msg);
-            }
-        };
-        httpHandler.showDlg(MSG_GET_SUPPLIER);
-        new Thread(httpRunnable).start();
-    }
-
-    public static void addSupplier(final HttpHandler httpHandler, final Supplier supplier) {
-        final User user = User.getUser(null);
-
-        HttpRunnable httpRunnable = new HttpRunnable(URL_SUPPLIER) {
-            @Override
-            public void run() {
-                addJsonParams("storeId", supplier.getShopId());
-                addJsonParams("name", supplier.getName());
-                addJsonParams("addr", supplier.getAddr());
-                addJsonParams("phone", supplier.getPhone());
-                addJsonParams("contacter", supplier.getContacter());
-
-                byte[] urlData = httpRequest("POST", "CONTENT_TYPE_JSON");
-
-                Message msg = httpHandler.obtainMessage();
-                msg.what = MSG_ADD_SUPPLIER;
-                if((msg.arg1 = transHttpCode(getHttpCode())) != HTTP_OK){
-                    httpHandler.sendMessage(msg);
-                    return;
-                }
-
-                String errMsg;
-                JSONObject jsonObject;
-                String jsonString = new String(urlData);
-                try {
-                    jsonObject = new JSONObject(jsonString);
-                    errMsg = jsonObject.getString("err_msg");
-                    if(HTTP_OK == (msg.arg1 = jsonObject.getInt("err_code"))){
-                        supplier.setId(jsonObject.getInt("id"));
-                        Bundle data = new Bundle();
-                        data.putSerializable("supplier", supplier);
-                        msg.setData(data);
-                    }else{
-                        Log.d(GCV.D_TAG, "updateSupplier()--->Error message: " + errMsg);
-                    }
-                } catch (JSONException je) {
-                    Log.d(GCV.D_TAG, "updateSupplier()--->output data error: " + jsonString);
-                    msg.arg1 = HttpRunnable.HTTP_RESP_ERROR;
-                }
-                httpHandler.sendMessage(msg);
-            }
-        };
-        httpHandler.showDlg(MSG_ADD_SUPPLIER);
-        new Thread(httpRunnable).start();
-    }
-
-    public static void deleteSupplier(final HttpHandler httpHandler, final Integer id) {
-        final User user = User.getUser(null);
-
-        HttpRunnable httpRunnable = new HttpRunnable(URL_SUPPLIER) {
-            @Override
-            public void run() {
-                addQueryParams("id", id.toString());
-
-                byte[] urlData = httpRequest("DELETE", "CONTENT_TYPE_JSON");
-
-                Message msg = httpHandler.obtainMessage();
-                msg.what = MSG_DEL_SUPPLIER;
-                if((msg.arg1 = transHttpCode(getHttpCode())) != HTTP_OK){
-                    httpHandler.sendMessage(msg);
-                    return;
-                }
-
-                String errMsg;
-                JSONObject jsonObject;
-                String jsonString = new String(urlData);
-                try {
-                    jsonObject = new JSONObject(jsonString);
-                    errMsg = jsonObject.getString("err_msg");
-                    if(HTTP_OK == (msg.arg1 = jsonObject.getInt("err_code"))){
-                        msg.arg2 = id;
-                    }else{
-                        Log.d(GCV.D_TAG, "updateSupplier()--->Error message: " + errMsg);
-                    }
-                } catch (JSONException je) {
-                    Log.d(GCV.D_TAG, "updateSupplier()--->output data error: " + jsonString);
-                    msg.arg1 = HttpRunnable.HTTP_RESP_ERROR;
-                }
-                httpHandler.sendMessage(msg);
-            }
-        };
-        httpHandler.showDlg(MSG_DEL_SUPPLIER);
         new Thread(httpRunnable).start();
     }
 

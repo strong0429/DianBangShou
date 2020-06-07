@@ -105,7 +105,7 @@ public class TradeFragmentByCode extends TradeFragment implements View.OnClickLi
             }
         };
 
-        mBarCode = (EditText)view.findViewById(R.id.edit_barcode);
+        mBarCode = view.findViewById(R.id.edit_barcode);
         mBarCode.setEnabled(false);
 
         mImgButton = (ImageButton)view.findViewById(R.id.barcode_input);

@@ -29,6 +29,7 @@ public class WelcomeActivity extends AppCompatActivity implements
         HttpHandler.handlerCallback, QueryDialog.QueryDlgListener{
     private HttpHandler mHttpHandler;
     private User mUser;
+    private boolean bExit = false;
 
     @Override
     public void onDialogNegativeClick(DialogInterface dialog, int which) {
@@ -73,18 +74,19 @@ public class WelcomeActivity extends AppCompatActivity implements
                     }
                 }else {
                     String err_msg;
-                    err_msg = msg.getData().getString("message");
+                    err_msg = msg.getData().getString("message") + "\n应用将终止执行！";
                     FreeToast.makeText(WelcomeActivity.this, err_msg, Toast.LENGTH_SHORT).show();
-                    intent = new Intent(WelcomeActivity.this, UserLoginActivity.class);
-                    startActivity(intent);
-                    finish();
+                    mHttpHandler.justWait(500,6);
+                    bExit = true;
                 }
                 break;
             case HttpHandler.JUST_WAITING:
                 if(msg.arg1 > 0)
                     break;
-                intent = new Intent(WelcomeActivity.this, UserLoginActivity.class);
-                startActivity(intent);
+                if(!bExit) {
+                    intent = new Intent(WelcomeActivity.this, UserLoginActivity.class);
+                    startActivity(intent);
+                }
                 finish();
         }
     }

@@ -433,8 +433,10 @@ public class StoreEditActivity extends AppCompatActivity implements View.OnClick
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(resultCode != RESULT_OK || (requestCode != SET_STORE_PHOTO &&
-                requestCode != SET_CCODE_ALI && requestCode != SET_CCODE_WX)){
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode != RESULT_OK || (requestCode != SET_STORE_PHOTO &&
+                requestCode != SET_CCODE_ALI && requestCode != SET_CCODE_WX)) {
             return;
         }
 
@@ -442,13 +444,13 @@ public class StoreEditActivity extends AppCompatActivity implements View.OnClick
         Uri uri = data.getData();
         String[] columns = {MediaStore.Images.Media.DATA};
         Cursor cursor = getContentResolver().query(uri, columns, null, null, null);
-        if(cursor.moveToFirst()){
+        if (cursor.moveToFirst()) {
             imgFile = cursor.getString(0);
             cursor.close();
         }
         Bitmap bitmap = BitmapFactory.decodeFile(imgFile);
 
-        if(requestCode == SET_STORE_PHOTO) {
+        if (requestCode == SET_STORE_PHOTO) {
             int w = Math.min(bitmap.getWidth(), 960);
             int h = (int) (bitmap.getHeight() * ((float) w / (float) bitmap.getWidth()));
             bitmap = Bitmap.createScaledBitmap(bitmap, w, h, false);
@@ -478,14 +480,14 @@ public class StoreEditActivity extends AppCompatActivity implements View.OnClick
         }
 
         String code = EncodingUtils.decodeQRMap(bitmap);
-        if(code == null){
+        if (code == null) {
             FreeToast.makeText(this, "无法识别的二维码！", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if(requestCode == SET_CCODE_WX){
+        if (requestCode == SET_CCODE_WX) {
             mCcodeWx.setText(code);
-        }else {
+        } else {
             mCcodeAli.setText(code);
         }
     }

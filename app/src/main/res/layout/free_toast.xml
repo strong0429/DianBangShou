@@ -15,19 +15,19 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="20dp"
         android:background="@drawable/toast_frame"
-        android:paddingBottom="8dp"
-        android:paddingEnd="8dp"
         android:paddingStart="16dp"
         android:paddingTop="8dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="8dp"
         android:textColor="#fff"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="这是自定义消息框"/>
+        tools:text="这是自定义消息框" />
 
     <ImageView
-        android:layout_width="35dp"
-        android:layout_height="35dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:src="@drawable/toast"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>

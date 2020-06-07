@@ -27,6 +27,14 @@ public class HttpHandler extends Handler {
 
     private handlerCallback mCallback;
 
+    public HttpHandler(Context context, handlerCallback callback){
+        super(context.getMainLooper());
+
+        mMsgList = new ArrayList<>();
+        mWaitingDlg = new WaitingDlg(context);
+        mCallback = callback;
+    }
+
     public HttpHandler(Context context){
         super(context.getMainLooper());
 

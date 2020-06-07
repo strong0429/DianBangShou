@@ -11,15 +11,16 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
 import android.provider.MediaStore;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.amap.api.location.AMapLocation;
@@ -32,11 +33,13 @@ import com.xingdhl.www.storehelper.ObjectDefine.GCV;
 import com.xingdhl.www.storehelper.ObjectDefine.Store;
 import com.xingdhl.www.storehelper.ObjectDefine.User;
 import com.xingdhl.www.storehelper.R;
-import com.xingdhl.www.storehelper.user.StoreOwnerActivity;
+import com.xingdhl.www.storehelper.utility.FileAbout;
 import com.xingdhl.www.storehelper.webservice.HttpHandler;
 import com.xingdhl.www.storehelper.webservice.HttpRunnable;
 import com.xingdhl.www.storehelper.webservice.WebServiceAPIs;
 import com.xingdhl.www.zxinglibrary.encoding.EncodingUtils;
+
+import java.io.File;
 
 import static java.net.HttpURLConnection.HTTP_OK;
 
@@ -47,8 +50,10 @@ import static java.net.HttpURLConnection.HTTP_OK;
 
 public class CreateStoreActivity extends AppCompatActivity implements View.OnClickListener,
         HttpHandler.handlerCallback, AMapLocationListener, QueryDialog.QueryDlgListener{
+    private final int ACCESS_LOCATION_REQUEST_CODE = 1000;
     private final int SET_CCODE_ALI = 2;
     private final int SET_CCODE_WX = 3;
+    private final int SET_TITLE_IMAGE = 4;
 
     private AMapLocationClient mLocationClient;
 
@@ -56,12 +61,16 @@ public class CreateStoreActivity extends AppCompatActivity implements View.OnCli
     private Store mStore;
     private HttpHandler mHttpHandler;
 
+    private File mLogoFile;
     private Button mButtonMap;
+    private ImageView mTitleImage;
     private EditText mShopName, mShopPhone,mCCodeWx, mCCodeAli;
     private EditText mShopAddrP, mShopAddrC, mShopAddrS, mShopAddrD, mShopAddrL;
 
     @Override
     public void onDialogPositiveClick(DialogInterface dialog, int which) {
+        if(mStore != null && mStore.getId() > 0)
+            startActivity(new Intent(getApplication(), ListStoreActivity.class));
         finish();
     }
 
@@ -71,10 +80,7 @@ public class CreateStoreActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     public void onBackPressed() {
-        if("null".equals(getIntent().getStringExtra("Parent")))
-            new QueryDialog(this, "终止注册店铺将退出程序。\n\n确认要终止注册吗？").show();
-        else
-            new QueryDialog(this, "确认终止注册店铺吗？").show();
+        new QueryDialog(this, "终止注册店铺将退出程序，确定终止吗？").show();
     }
 
     @Override
@@ -83,13 +89,19 @@ public class CreateStoreActivity extends AppCompatActivity implements View.OnCli
             return;
 
         if(msg.arg1 == HTTP_OK) {
-            mStore.setPosition("OW");
+            mStore.setPosition("O");
             mUser.getStores().add(mStore);
-            if ("null".equals(this.getIntent().getStringExtra("Parent"))) {
-                startActivity(new Intent(this, StoreOwnerActivity.class));
+            if(mStore.getLogo() != null && !mStore.getLogo().isEmpty()) {
+                File fileName = new File(mStore.getLogo());
+                File filePath = new File(getFilesDir(), "images/store");
+                if (!filePath.exists())
+                    filePath.mkdirs();
+                fileName = new File(filePath, fileName.getName());
+                mLogoFile.renameTo(fileName);
             }
-            setResult(RESULT_OK);
-            this.finish();
+            QueryDialog.showAlertMsg(this, "已为您创建店铺, 开始营业吧！", "确定");
+            //setResult(RESULT_OK, null);
+
             return;
         }
         if(msg.arg1 == HttpRunnable.HTTP_NETWORK_ERR)
@@ -133,9 +145,10 @@ public class CreateStoreActivity extends AppCompatActivity implements View.OnCli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_store_register);
 
-        mUser = User.getUser(getApplicationContext());
-        mHttpHandler = new HttpHandler(this);
+        mLogoFile = null;
         mStore = new Store();
+        mUser = User.getUser(null);
+        mHttpHandler = new HttpHandler(this);
 
         mLocationClient = new AMapLocationClient(getApplicationContext());
         mLocationClient.setLocationListener(this);
@@ -146,133 +159,30 @@ public class CreateStoreActivity extends AppCompatActivity implements View.OnCli
         mLocationOption.setNeedAddress(true);
         mLocationClient.setLocationOption(mLocationOption);
 
-        mShopName = (EditText)findViewById(R.id.edit_shop_name);
-        mShopName.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
+        mShopName = findViewById(R.id.edit_shop_name);
+        mShopPhone = findViewById(R.id.edit_shop_phone);
+        mShopAddrP = findViewById(R.id.addr_province);
+        mShopAddrC = findViewById(R.id.addr_city);
+        mShopAddrD = findViewById(R.id.addr_district);
+        mShopAddrS = findViewById(R.id.addr_street);
+        mShopAddrL = findViewById(R.id.addr_detail);
+        mCCodeWx = findViewById(R.id.edit_ccode_wx);
+        mCCodeAli = findViewById(R.id.edit_ccode_ali);
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String text = s.toString();
-                if(text.length() > 45){
-                    FreeToast.makeText(CreateStoreActivity.this, "超出名字允许长度!", Toast.LENGTH_SHORT).show();
-                    mShopName.setText(text.substring(0, start) + text.substring(start + count));
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
-        mShopPhone = (EditText)findViewById(R.id.edit_shop_phone);
-        mShopAddrP = (EditText)findViewById(R.id.addr_province);
-        mShopAddrP.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String text = s.toString();
-                if(text.length() > 16){
-                    FreeToast.makeText(CreateStoreActivity.this, "超出地址允许长度!", Toast.LENGTH_SHORT).show();
-                    mShopAddrP.setText(text.substring(0, start) + text.substring(start + count));
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
-        mShopAddrC = (EditText)findViewById(R.id.addr_city);
-        mShopAddrC.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String text = s.toString();
-                if(text.length() > 16){
-                    FreeToast.makeText(CreateStoreActivity.this, "超出地址允许长度!", Toast.LENGTH_SHORT).show();
-                    mShopAddrC.setText(text.substring(0, start) + text.substring(start + count));
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
-        mShopAddrD = (EditText)findViewById(R.id.addr_district);
-        mShopAddrD.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String text = s.toString();
-                if(text.length() > 16){
-                    FreeToast.makeText(CreateStoreActivity.this, "超出地址允许长度!", Toast.LENGTH_SHORT).show();
-                    mShopAddrD.setText(text.substring(0, start) + text.substring(start + count));
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
-        mShopAddrS = (EditText)findViewById(R.id.addr_street);
-        mShopAddrS.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String text = s.toString();
-                if(text.length() > 16){
-                    FreeToast.makeText(CreateStoreActivity.this, "超出地址允许长度!", Toast.LENGTH_SHORT).show();
-                    mShopAddrS.setText(text.substring(0, start) + text.substring(start + count));
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
-        mShopAddrL = (EditText)findViewById(R.id.addr_detail);
-        mShopAddrL.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String text = s.toString();
-                if(text.length() > 32){
-                    FreeToast.makeText(CreateStoreActivity.this, "超出地址允许长度!", Toast.LENGTH_SHORT).show();
-                    mShopAddrL.setText(text.substring(0, start) + text.substring(start + count));
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
-
-        mCCodeWx = (EditText)findViewById(R.id.edit_ccode_wx);
-        mCCodeAli = (EditText)findViewById(R.id.edit_ccode_ali);
-
-        mButtonMap = (Button)findViewById(R.id.button_map);
+        mButtonMap = findViewById(R.id.button_map);
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-            mButtonMap.setEnabled(false);
+            ActivityCompat.requestPermissions(this,
+                    new String[]{ Manifest.permission.ACCESS_COARSE_LOCATION,
+                            Manifest.permission.ACCESS_FINE_LOCATION},
+                    ACCESS_LOCATION_REQUEST_CODE);
         }
-
         mButtonMap.setOnClickListener(this);
+
+        mTitleImage = findViewById(R.id.title_image);
+        mTitleImage.setOnClickListener(this);
+
         findViewById(R.id.scan_wx).setOnClickListener(this);
         findViewById(R.id.scan_ali).setOnClickListener(this);
         findViewById(R.id.button_shop_register).setOnClickListener(this);
@@ -297,6 +207,9 @@ public class CreateStoreActivity extends AppCompatActivity implements View.OnCli
                 startActivityForResult(new Intent(Intent.ACTION_PICK, android.provider.MediaStore
                         .Images.Media.EXTERNAL_CONTENT_URI), SET_CCODE_ALI);
                 break;
+            case R.id.title_image:
+                startActivityForResult(new Intent(Intent.ACTION_PICK, android.provider.MediaStore
+                        .Images.Media.EXTERNAL_CONTENT_URI), SET_TITLE_IMAGE);
         }
     }
 
@@ -304,43 +217,47 @@ public class CreateStoreActivity extends AppCompatActivity implements View.OnCli
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(resultCode != RESULT_OK || (requestCode != SET_CCODE_ALI && requestCode != SET_CCODE_WX))
+        if(resultCode != RESULT_OK )
             return;
 
         String imgFile = null;
         Uri uri = data.getData();
         String[] columns = {MediaStore.Images.Media.DATA};
         Cursor cursor = getContentResolver().query(uri, columns, null, null, null);
-        if(cursor.moveToFirst()){
+        if (cursor != null && cursor.moveToFirst()) {
             imgFile = cursor.getString(0);
             cursor.close();
-        }
-        Bitmap bitmap = BitmapFactory.decodeFile(imgFile);
-
-        String barcode = EncodingUtils.decodeQRMap(bitmap);
-        if(barcode == null){
-            FreeToast.makeText(this, "无法识别的二维码！", Toast.LENGTH_SHORT).show();
+        } else
             return;
-        }
 
-        if(requestCode == SET_CCODE_WX) {
-            mCCodeWx.setText(barcode);
-        }else {
-            mCCodeAli.setText(barcode);
+        switch (requestCode) {
+            case SET_TITLE_IMAGE:
+                mLogoFile = new File(imgFile);
+                if(mLogoFile.length() > 1024 * 1024){   //文件大小>1M, 缩小文件；
+                    float rate = (float)Math.sqrt((1024. * 1024) / mLogoFile.length());
+                    mLogoFile = FileAbout.transImgFile(this, imgFile, rate);
+                }
+                mTitleImage.setImageURI(Uri.parse(mLogoFile.getAbsolutePath()));
+                break;
+            case SET_CCODE_ALI:
+            case SET_CCODE_WX:
+                Bitmap bitmap = BitmapFactory.decodeFile(imgFile);
+                String barcode = EncodingUtils.decodeQRMap(bitmap);
+                if (barcode == null) {
+                    FreeToast.makeText(this, "无法识别的二维码！", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (requestCode == SET_CCODE_WX) {
+                    mCCodeWx.setText(barcode);
+                } else {
+                    mCCodeAli.setText(barcode);
+                }
         }
     }
 
     public void shopRegister() {
         if (mShopName.getText().toString().isEmpty()) {
             Toast.makeText(CreateStoreActivity.this, "请输入店铺的名字！", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (mShopAddrP.getText().toString().isEmpty() ||
-                mShopAddrC.getText().toString().isEmpty() ||
-                mShopAddrD.getText().toString().isEmpty() ||
-                mShopAddrS.getText().toString().isEmpty() ||
-                mShopAddrL.getText().toString().isEmpty()) {
-            Toast.makeText(CreateStoreActivity.this, "请输入店铺的地址！", Toast.LENGTH_SHORT).show();
             return;
         }
         if (!mShopPhone.getText().toString().matches(GCV.RegExp_phone) &&
@@ -360,7 +277,19 @@ public class CreateStoreActivity extends AppCompatActivity implements View.OnCli
         mStore.setWxCode(mCCodeWx.getText().toString());
         mStore.setAliCode(mCCodeAli.getText().toString());
 
-        WebServiceAPIs.createStore(mHttpHandler, mStore);
+        WebServiceAPIs.createStore(mHttpHandler, mStore, mLogoFile);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if(requestCode == ACCESS_LOCATION_REQUEST_CODE){
+            if(grantResults[0] != 0 && grantResults[1] != 0){
+                FreeToast.makeText(this, "您拒绝了位置定位权限申请，将无法自动获取位置信息！", Toast.LENGTH_SHORT).show();
+                mButtonMap.setEnabled(false);
+            }
+        }
     }
 
     @Override

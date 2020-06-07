@@ -2,6 +2,7 @@ package com.xingdhl.www.storehelper.webservice;
 
 import android.net.Uri;
 import android.util.Log;
+import android.view.View;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,6 +16,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
@@ -36,6 +38,8 @@ public abstract class HttpRunnable implements Runnable{
     public static final int HTTP_SERVER_ERR = 1003;
     public static final int HTTP_API_ERR = 1004;
     public static final int HTTP_RESP_ERROR = 1005;
+    public static final int HTTP_NO_ROUTE = 1006;
+    public static final int HTTP_FILE_ERR = 1007;
     public static final int HTTP_UNKNOWN_ERR = 1010;
 
     private final String TAG = "XDB_DebugInfo";
@@ -111,10 +115,11 @@ public abstract class HttpRunnable implements Runnable{
 
         if(contentType.equals(CONTENT_TYPE_MULTI)){
             for(Map.Entry<?, ?> dataEntry : dataMap.entrySet()){
-                dataString.append(PREFIX).append(mBoundary).append(LINE_END);
+                if(dataEntry.getValue() == null) continue;
                 if(dataEntry.getValue() instanceof File){
+                    dataString.append(PREFIX).append(mBoundary).append(LINE_END);
                     dataString.append("Content-Disposition: form-data; name=\"")
-                            .append(dataEntry.getValue()).append("\"; filename=\"")
+                            .append(dataEntry.getKey()).append("\"; filename=\"")
                             .append(((File) dataEntry.getValue()).getName())
                             .append("\"").append(LINE_END)
                             .append("Content-Type: application/octet-stream")
@@ -130,6 +135,8 @@ public abstract class HttpRunnable implements Runnable{
                     }
                     outputStream.write(LINE_END.getBytes());
                 }else {
+                    if(dataEntry.getValue().toString().isEmpty()) continue;
+                    dataString.append(PREFIX).append(mBoundary).append(LINE_END);
                     dataString.append(String.format("Content-Disposition: form-data; name=\"%s\"", dataEntry.getKey()));
                     dataString.append(LINE_END).append(LINE_END);
                     dataString.append(dataEntry.getValue().toString()).append(LINE_END);
@@ -284,20 +291,12 @@ public abstract class HttpRunnable implements Runnable{
         return out.toByteArray();
     }
     */
-    byte[] httpRequest(String mode, String contentType){
-        return null;
+    byte[] httpRequest(String method, String token){
+        return httpRequest(null, method, CONTENT_TYPE_JSON, token);
     }
 
-    byte[] httpRequest(String token){
-        return httpRequest(null, "GET", CONTENT_TYPE_JSON, token);
-    }
-
-    byte[] httpRequest(Map<?,?> dataRequest, String token){
-        return httpRequest(dataRequest, "POST", CONTENT_TYPE_FORM, token);
-    }
-
-    byte[] httpRequest(Map<?,?> dataRequest, String contentType, String token){
-        return httpRequest(dataRequest, "POST", contentType, token);
+    byte[] httpRequest(Map<?,?> dataRequest, String method, String token){
+        return httpRequest(dataRequest, method, CONTENT_TYPE_FORM, token);
     }
 
     byte[] httpRequest(Map<?,?> dataRequest, String method, String contentType, String token) {
@@ -376,7 +375,11 @@ public abstract class HttpRunnable implements Runnable{
                 mHttpCode = HTTP_NETWORK_ERR;
                 respData = makeJsonData(respData, "code", HTTP_NETWORK_ERR);
                 respData = makeJsonData(respData, "message", "网络连接不可用。");
-            }else if(err_msg.contains(("timed out"))) {
+            }else if(err_msg.contains("route to host")){
+                mHttpCode = HTTP_NO_ROUTE;
+                respData = makeJsonData(respData, "code", HTTP_NO_ROUTE);
+                respData = makeJsonData(respData, "message", "找不到服务器。");
+            }else if(err_msg.contains("timed out")) {
                 mHttpCode = HTTP_TIMEOUT_ERR;
                 respData = makeJsonData(respData, "code", HTTP_TIMEOUT_ERR);
                 respData = makeJsonData(respData, "message", "服务器响应超时。");

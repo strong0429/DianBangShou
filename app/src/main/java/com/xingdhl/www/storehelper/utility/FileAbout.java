@@ -4,8 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -19,7 +17,7 @@ public class FileAbout {
         try {
             File tmpFile = File.createTempFile("tmp", ".jpg", context.getCacheDir());
             FileOutputStream fOutputStream = new FileOutputStream(tmpFile);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, fOutputStream);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 85, fOutputStream);
             fOutputStream.flush();
             fOutputStream.close();
             return tmpFile;

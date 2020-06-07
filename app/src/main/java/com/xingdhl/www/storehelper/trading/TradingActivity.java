@@ -9,12 +9,14 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 import com.xingdhl.www.storehelper.CustomStuff.FreeToast;
 import com.xingdhl.www.storehelper.CustomStuff.QueryDialog;
 import com.xingdhl.www.storehelper.Database.DbSchemaXingDB;
@@ -102,13 +104,13 @@ public class TradingActivity extends AppCompatActivity implements HttpHandler.ha
                 break;
             case WebServiceAPIs.MSG_GET_STOCK:
                 if(msg.arg1 == WebServiceAPIs.HTTP_CONTINUE){
-                    WebServiceAPIs.getStockGoods(mHttpHandler, mStoreGoods, mStoreId,
-                            msg.arg2 + 1, GCV.PAGE_SIZE);
+                    WebServiceAPIs.getStockGoods(mHttpHandler, mStoreGoods, mStoreId/*,
+                            msg.arg2 + 1, GCV.PAGE_SIZE*/);
                 }else if(msg.arg1 != HTTP_OK) {
                     mStoreGoods.clear();
                     FreeToast.makeText(this, "查询库存商品信息失败，请稍后重试", Toast.LENGTH_SHORT).show();
                 }
-                mFragments.get(1).updateItem(null);
+                //2020-05-12 mFragments.get(1).updateItem(null);
                 break;
             case GCV.MSG_CLEAR_ITEM:
                 if(-1 == msg.arg2) {
@@ -154,7 +156,7 @@ public class TradingActivity extends AppCompatActivity implements HttpHandler.ha
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trading);
 
-        User user = User.getUser(getApplicationContext());
+        User user = User.getUser(null);
 
         int storeNo = getIntent().getIntExtra("store_No", -1);
         mStoreId = user.getStore(storeNo).getId();
@@ -167,62 +169,62 @@ public class TradingActivity extends AppCompatActivity implements HttpHandler.ha
 
         mHttpHandler = new HttpHandler(this);
 
-        TradeFragment.init(new ArrayList<>(mStoreGoods.values()), mSales, mGoodsId, mHttpHandler, mStoreId);
+        TradeFragment.init(new ArrayList<>(mStoreGoods.values()),
+                mSales, mGoodsId, mHttpHandler, mStoreId);
         mFragments = new ArrayList<>();
         mFragments.add(TradeFragmentByCode.instance());
         mFragments.add(TradeFragmentByName.instance());
         mFragments.add(TradeFragmentSimple.instance());
 
-        ViewPager mTradePager = (ViewPager)findViewById(R.id.trade_pager);
-        mTradePager.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
+        ViewPager2 viewPager = findViewById(R.id.trade_pager);
+        viewPager.setAdapter(new FragmentStateAdapter(this) {
+            @NonNull
             @Override
-            public Fragment getItem(int position) {
+            public Fragment createFragment(int position) {
                 return mFragments.get(position);
             }
+
             @Override
-            public int getCount() {
+            public int getItemCount() {
                 return mFragments.size();
             }
         });
-        mTradePager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
-            }
+        TabLayout tabLayout = findViewById(R.id.tablayout_title);
+        tabLayout.setTabMode(TabLayout.MODE_FIXED);
+        new TabLayoutMediator(tabLayout, viewPager,
+            new TabLayoutMediator.TabConfigurationStrategy(){
+                @Override
+                public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
+                    String[] tabText = {
+                            getString(R.string.trade_barcode),
+                            getString(R.string.trade_name),
+                            getString(R.string.trade_simple)
+                    };
+                    tab.setText(tabText[position]);
+                }
+            }).attach();
+
+        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
-                if(position == 0) {   //条码销售页
+                //super.onPageSelected(position);
+                if(position == 0) //条码销售页面
                     mFragments.get(0).startScan(10);
-                }else{
+                else
                     mFragments.get(0).stopScan();
-                }
-            }
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
             }
         });
-
-        TabLayout tabLayout = (TabLayout)findViewById(R.id.tablayout_title);
-        tabLayout.setTabMode(TabLayout.MODE_FIXED);
-        tabLayout.addTab(tabLayout.newTab());
-        tabLayout.addTab(tabLayout.newTab());
-        tabLayout.addTab(tabLayout.newTab());
-        tabLayout.setupWithViewPager(mTradePager);
-        tabLayout.getTabAt(0).setText(getString(R.string.trade_barcode));
-        tabLayout.getTabAt(1).setText(getString(R.string.trade_name));
-        tabLayout.getTabAt(2).setText(getString(R.string.trade_simple));
 
         //结算流程处理：弹出窗口选择支付方式并确认金额；
         findViewById(R.id.button_submit).setOnClickListener(this);
 
         if(mStoreGoods.size() == 0){
             //数据库获取库存商品信息；
-            mStoreGoods.clear();
-            WebServiceAPIs.getStockGoods(mHttpHandler, mStoreGoods, mStoreId, 0, GCV.PAGE_SIZE);
+            WebServiceAPIs.getStockGoods(mHttpHandler, mStoreGoods, mStoreId/*, 0, GCV.PAGE_SIZE*/);
         }
 
-        mTotalMoney = (TextView)findViewById(R.id.total_money);
+        mTotalMoney = findViewById(R.id.total_money);
         mTotalMoney.setText(getString(R.string.trade_total, 0f));
 
         uploadSales();

@@ -66,11 +66,11 @@ public abstract class TradeFragment extends Fragment {
             super(view);
 
             mView = view;
-            mName = (TextView)view.findViewById(R.id.goods_name);
-            mPrice = (TextView)view.findViewById(R.id.goods_price);
-            mSpec = (TextView)view.findViewById(R.id.goods_spec);
+            mName = view.findViewById(R.id.goods_name);
+            mPrice = view.findViewById(R.id.goods_price);
+            mSpec = view.findViewById(R.id.goods_spec);
 
-            mCount = (EditText)view.findViewById(R.id.goods_count);
+            mCount = view.findViewById(R.id.goods_count);
             mTextWatcher = new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -99,7 +99,7 @@ public abstract class TradeFragment extends Fragment {
                     msg.what = GCV.MSG_MANUAL_ADD;
 
                     float goodsCount = Float.valueOf(s.toString());
-                    if((msg.arg2 = getSaleListId(getAdapterPosition())) == -1)
+                    if((msg.arg2 = getSaleListId(getBindingAdapterPosition())) == -1)
                         return;
                     mSalesList.get(msg.arg2).setCount(goodsCount);
                     //msg.arg1 = 0;   //要更新的Fragment的序号；
@@ -118,8 +118,8 @@ public abstract class TradeFragment extends Fragment {
                         isModified = false;
                         Message msg = mHttpHandler.obtainMessage();
                         msg.what = GCV.MSG_CLEAR_ITEM;
-                        msg.arg1 = getGoodsListId(getAdapterPosition());
-                        msg.arg2 = getSaleListId(getAdapterPosition());
+                        msg.arg1 = getGoodsListId(getBindingAdapterPosition());
+                        msg.arg2 = getSaleListId(getBindingAdapterPosition());
 
                         String text = mCount.getText().toString();
                         if(text.isEmpty() || text.equals(".") || Float.valueOf(text) < 0.0001){
@@ -140,9 +140,9 @@ public abstract class TradeFragment extends Fragment {
                 public void onClick(View v) {
                     Message msg = mHttpHandler.obtainMessage();
                     msg.what = GCV.MSG_SALE_ADD;
-                    msg.arg1 = getGoodsListId(getAdapterPosition());    //传递商品在mStorageList 的索引位置；
+                    msg.arg1 = getGoodsListId(getBindingAdapterPosition());    //传递商品在mStorageList 的索引位置；
 
-                    if((msg.arg2 = getSaleListId(getAdapterPosition())) == -1){
+                    if((msg.arg2 = getSaleListId(getBindingAdapterPosition())) == -1){
                         //销售列表中没有该商品；
                         msg.what = GCV.MSG_SALE_NEW;
                         mHttpHandler.sendMessage(msg);
@@ -154,15 +154,15 @@ public abstract class TradeFragment extends Fragment {
                     mHttpHandler.sendMessage(msg);
                 }
             });
-            mBtnSub = (ImageView)view.findViewById(R.id.goods_num_sub);
+            mBtnSub = view.findViewById(R.id.goods_num_sub);
             mBtnSub.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Message msg = mHttpHandler.obtainMessage();
                     msg.what = GCV.MSG_SALE_SUB;
-                    msg.arg1 = getGoodsListId(getAdapterPosition());
+                    msg.arg1 = getGoodsListId(getBindingAdapterPosition());
 
-                    if((msg.arg2 = getSaleListId(getAdapterPosition())) != -1){
+                    if((msg.arg2 = getSaleListId(getBindingAdapterPosition())) != -1){
                         float saleCount = mSalesList.get(msg.arg2).getCount() - 1;
                         mSalesList.get(msg.arg2).setCount(saleCount);
                         mHttpHandler.sendMessage(msg);

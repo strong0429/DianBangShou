@@ -165,8 +165,8 @@ public class StorageManageActivity extends AppCompatActivity implements
         switch (msg.what){
             case WebServiceAPIs.MSG_GET_STOCK:
                 if(msg.arg1 == WebServiceAPIs.HTTP_CONTINUE){
-                    WebServiceAPIs.getStockGoods(mHttpHandler, mStoreGoods, mStoreId,
-                            msg.arg2 + 1, GCV.PAGE_SIZE);
+                    WebServiceAPIs.getStockGoods(mHttpHandler, mStoreGoods, mStoreId/*,
+                            msg.arg2 + 1, GCV.PAGE_SIZE*/);
                     mListView.getAdapter().notifyDataSetChanged();
                 }else if(msg.arg1 != HTTP_OK){
                     mStoreGoods.clear();
@@ -198,7 +198,7 @@ public class StorageManageActivity extends AppCompatActivity implements
         //获取库存商品信息；
         mStoreGoods = store.getGoodsList();
         mStoreGoods.clear();
-        WebServiceAPIs.getStockGoods(mHttpHandler, mStoreGoods, mStoreId, 0,  GCV.PAGE_SIZE);
+        WebServiceAPIs.getStockGoods(mHttpHandler, mStoreGoods, mStoreId/*, 0,  GCV.PAGE_SIZE*/);
 
         GoodsListAdapter adapter = new GoodsListAdapter(new ArrayList<>(mStoreGoods.values()));
         adapter.setOnItemClickListener(this);

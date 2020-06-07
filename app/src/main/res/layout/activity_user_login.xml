@@ -37,7 +37,7 @@
         app:layout_constraintTop_toBottomOf="@id/app_icon">
 
         <EditText
-            android:id="@+id/user_name"
+            android:id="@+id/user_mobile"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
@@ -49,19 +49,19 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignTop="@id/user_name"
-            android:layout_alignEnd="@id/user_name"
+            android:layout_alignTop="@id/user_mobile"
+            android:layout_alignEnd="@id/user_mobile"
             android:layout_marginTop="8dp"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
-            android:text="用户名"
+            android:text="手机号码"
             android:textColor="@color/colorPrimary" />
 
         <EditText
             android:id="@+id/user_passward"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/user_name"
+            android:layout_below="@id/user_mobile"
             android:layout_margin="8dp"
             android:hint="@string/hint_password"
             android:inputType="textPassword"
@@ -84,7 +84,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/user_passward"
-            android:layout_alignStart="@id/user_name"
+            android:layout_alignStart="@id/user_mobile"
             android:text="@string/remember_pwd" />
 
         <Button

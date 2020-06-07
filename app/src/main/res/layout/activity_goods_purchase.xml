@@ -16,60 +16,55 @@
         android:layout_width="match_parent"
         android:layout_height="240dp">
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/top_guideline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent=".15"/>
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/bottom_guideline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent=".85"/>
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/left_guideline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent=".15"/>
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/right_guideline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent=".85"/>
-
         <ImageView
             android:id="@+id/capture_mask_top"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="@drawable/shadow"
-            app:layout_constraintBottom_toTopOf="@+id/top_guideline"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintHeight_percent=".15"/>
+
+        <ImageView
+            android:id="@+id/capture_mask_bottom"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/shadow"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintHeight_percent=".15"/>
 
         <ImageView
             android:id="@+id/capture_mask_left"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="@drawable/shadow"
-            app:layout_constraintBottom_toTopOf="@+id/bottom_guideline"
-            app:layout_constraintEnd_toStartOf="@+id/left_guideline"
+            app:layout_constraintBottom_toTopOf="@+id/capture_mask_bottom"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/top_guideline" />
+            app:layout_constraintTop_toBottomOf="@+id/capture_mask_top"
+            app:layout_constraintWidth_percent=".15"/>
+
+        <ImageView
+            android:id="@+id/capture_mask_right"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/shadow"
+            app:layout_constraintTop_toBottomOf="@+id/capture_mask_top"
+            app:layout_constraintBottom_toTopOf="@+id/capture_mask_bottom"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintWidth_percent=".15"/>
 
         <RelativeLayout
             android:id="@+id/capture_crop_view"
             android:layout_height="0dp"
             android:layout_width="0dp"
             android:background="@drawable/zxing_code_bg"
-            app:layout_constraintBottom_toTopOf="@+id/bottom_guideline"
-            app:layout_constraintEnd_toStartOf="@+id/right_guideline"
-            app:layout_constraintStart_toStartOf="@+id/left_guideline"
-            app:layout_constraintTop_toTopOf="@+id/top_guideline">
+            app:layout_constraintBottom_toTopOf="@+id/capture_mask_bottom"
+            app:layout_constraintEnd_toStartOf="@+id/capture_mask_right"
+            app:layout_constraintStart_toEndOf="@+id/capture_mask_left"
+            app:layout_constraintTop_toBottomOf="@+id/capture_mask_top">
 
             <ImageView
                 android:id="@+id/capture_scan_line"
@@ -82,26 +77,6 @@
                 android:src="@drawable/zxing_line" />
         </RelativeLayout>
 
-        <ImageView
-            android:id="@+id/capture_mask_right"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@drawable/shadow"
-            app:layout_constraintBottom_toTopOf="@+id/bottom_guideline"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/right_guideline"
-            app:layout_constraintTop_toTopOf="@+id/top_guideline"/>
-
-        <ImageView
-            android:id="@+id/capture_mask_bottom"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@drawable/shadow"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/bottom_guideline" />
-
         <Button
             android:id="@+id/flash_switch"
             android:layout_width="32dp"
@@ -109,8 +84,8 @@
             android:layout_marginStart="8dp"
             android:background="@drawable/flash_on"
             android:tag="off"
-            app:layout_constraintStart_toStartOf="@+id/right_guideline"
-            app:layout_constraintTop_toTopOf="@id/top_guideline" />
+            app:layout_constraintStart_toEndOf="@+id/capture_crop_view"
+            app:layout_constraintTop_toBottomOf="@id/capture_mask_top" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -118,17 +93,10 @@
         android:id="@+id/layout_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorBackground"
         android:layout_below="@id/capture_container"
-        android:layout_above="@id/button_layout"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorBackground"
         android:padding="16dp">
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/mid_guideline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent=".5"/>
 
         <EditText
             android:id="@+id/goods_barcode"
@@ -219,9 +187,9 @@
             android:inputType="numberDecimal"
             android:singleLine="true"
             android:textSize="16sp"
-            app:layout_constraintEnd_toStartOf="@+id/mid_guideline"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/goods_spec" />
+            app:layout_constraintTop_toBottomOf="@+id/goods_spec"
+            app:layout_constraintWidth_percent=".49" />
 
         <TextView
             android:id="@+id/textView18"
@@ -244,8 +212,8 @@
             android:text="个"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/mid_guideline"
-            app:layout_constraintTop_toBottomOf="@+id/goods_spec" />
+            app:layout_constraintTop_toBottomOf="@+id/goods_spec"
+            app:layout_constraintWidth_percent=".49" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -266,9 +234,9 @@
             android:inputType="numberDecimal"
             android:singleLine="true"
             android:textSize="16sp"
-            app:layout_constraintEnd_toStartOf="@+id/mid_guideline"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/goods_count"/>
+            app:layout_constraintTop_toBottomOf="@+id/goods_count"
+            app:layout_constraintWidth_percent=".49" />
 
         <TextView
             android:id="@+id/textView21"
@@ -292,8 +260,8 @@
             android:singleLine="true"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/mid_guideline"
-            app:layout_constraintTop_toBottomOf="@+id/goods_unit"/>
+            app:layout_constraintTop_toBottomOf="@+id/goods_unit"
+            app:layout_constraintWidth_percent=".49" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -315,38 +283,18 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/goods_price" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/button_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="@color/colorBackground">
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/left_button_guideline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent=".2"/>
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/right_button_guideline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent=".8"/>
-
         <Button
             android:id="@+id/button_ok"
             style="@style/Button_Text"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="8dp"
             android:background="@drawable/selector_button_bg"
             android:text="@string/button_ok"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/right_button_guideline"
-            app:layout_constraintStart_toStartOf="@+id/left_button_guideline" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintWidth_percent=".6" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </RelativeLayout>

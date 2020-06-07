@@ -96,7 +96,7 @@ public class ResetPasswordActivity extends AppCompatActivity implements
                 break;
             case WebServiceAPIs.MSG_RESET_PWD:
                 if(msg.arg1 == HTTP_OK){
-                    mUser.setPhoneNum(mETPhoneNum.getText().toString());
+                    mUser.setMobile(mETPhoneNum.getText().toString());
                     mUser.setPassword(mETPasswd.getText().toString());
                     mUser.setAutoLogin(false);
                     startActivity(new Intent(this, UserLoginActivity.class));
@@ -155,7 +155,7 @@ public class ResetPasswordActivity extends AppCompatActivity implements
         mETPwdRev = (EditText)findViewById(R.id.edit_pwdrev);
 
         mETPhoneNum = (EditText)findViewById(R.id.edit_phone);
-        mETPhoneNum.setText(mUser.getPhoneNum());
+        mETPhoneNum.setText(mUser.getMobile());
 
         mBtnChkNum = (Button)findViewById(R.id.button_chknum);
         mBtnChkNum.setOnClickListener(this);

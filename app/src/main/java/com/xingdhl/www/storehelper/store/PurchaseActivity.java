@@ -107,12 +107,10 @@ public class PurchaseActivity extends AppCompatActivity implements View.OnClickL
 
                     //首次入库，创建库存记录；
                     mStockGoods = new StockGoods(goods);
-                } else if(msg.arg1 == WebServiceAPIs.HTTP_NO_EXIST){
+                } else {
                     //弹出对话框确认是否要添加新商品；
                     QueryDialog.whoIs = 1;
                     new QueryDialog(this, "该条码对应商品信息还未录入。\n\n\t现在录入吗？").show();
-                }else{
-                    FreeToast.makeText(this, "获取商品信息失败，请稍后重试！", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case WebServiceAPIs.MSG_ADD_PURCHASE:
@@ -165,7 +163,7 @@ public class PurchaseActivity extends AppCompatActivity implements View.OnClickL
         //获取当前店铺的商品价格表；
         mStockGoodsMap = store.getGoodsList();
         if(mStockGoodsMap.size() == 0){
-            WebServiceAPIs.getStockGoods(mHttpHandler, mStockGoodsMap, mStoreId, 0, GCV.PAGE_SIZE);
+            WebServiceAPIs.getStockGoods(mHttpHandler, mStockGoodsMap, mStoreId/*, 0, GCV.PAGE_SIZE*/);
         }
 
         //远端获取供应商信息;
@@ -204,7 +202,7 @@ public class PurchaseActivity extends AppCompatActivity implements View.OnClickL
             }
         };
 
-        mButtonKey = (Button)findViewById(R.id.key_input);
+        mButtonKey = findViewById(R.id.key_input);
         mButtonKey.setOnClickListener(this);
 
         findViewById(R.id.button_ok).setOnClickListener(this);
@@ -213,15 +211,15 @@ public class PurchaseActivity extends AppCompatActivity implements View.OnClickL
         mFlash.setOnClickListener(this);
 
         //其它输入栏控件；
-        mBarcode = (EditText)findViewById(R.id.goods_barcode);
+        mBarcode = findViewById(R.id.goods_barcode);
         mBarcode.setEnabled(false); //条码框默认不允许输入；
 
-        mGoodsName = (EditText)findViewById(R.id.goods_name);
-        mGoodsSpec = (EditText)findViewById(R.id.goods_spec);
-        mCount = (EditText)findViewById(R.id.goods_count);
-        mBuyPrice = (EditText)findViewById(R.id.buy_price);
-        mPrice = (EditText)findViewById(R.id.goods_price);
-        mUnit = (EditText)findViewById(R.id.goods_unit);
+        mGoodsName = findViewById(R.id.goods_name);
+        mGoodsSpec = findViewById(R.id.goods_spec);
+        mCount = findViewById(R.id.goods_count);
+        mBuyPrice = findViewById(R.id.buy_price);
+        mPrice = findViewById(R.id.goods_price);
+        mUnit = findViewById(R.id.goods_unit);
     }
 
     @Override
@@ -342,14 +340,16 @@ public class PurchaseActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(resultCode != RESULT_OK){
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode != RESULT_OK) {
             mBarcode.setText("");
             return;
         }
-        if(requestCode == 1){
+        if (requestCode == 1) {
             //从GoodsInputActivity返回参数中取出商品信息；
             Bundle bundle = data.getBundleExtra("goods");
-            Goods goods = (Goods)bundle.getSerializable("goods");
+            Goods goods = (Goods) bundle.getSerializable("goods");
             mGoodsName.setText(goods.getName());
             mGoodsSpec.setText(goods.getSpec());
 

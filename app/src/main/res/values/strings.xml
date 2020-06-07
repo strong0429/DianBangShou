@@ -25,7 +25,7 @@
     <string name="button_customer_guid">我要开店！</string>
     <string name="button_guest_guid">我要注册！</string>
 
-    <string name="shop_name">店铺名称</string>
+    <string name="shop_name">*店铺名称</string>
     <string name="hint_shop_name">请输入店铺名称</string>
     <string name="shop_addr">店铺地址</string>
     <string name="shop_addr_format">%1$s:%2$s:%3$s:%4$s:%5$s</string>
@@ -36,7 +36,7 @@
     <string name="hint_addr_detail">详细地址</string>
 
     <string name="button_map">获取当前位置</string>
-    <string name="shop_phone">联系电话</string>
+    <string name="shop_phone">*联系电话</string>
     <string name="hint_shop_phone">请输入店铺联系电话</string>
     <string name="shop_type">类别</string>
     <string name="hint_shop_type">请选择经营类别</string>
@@ -85,4 +85,8 @@
     <string name="purchase_buyer">采购员：%s</string>
     <string name="purchase_date">日期：%s</string>
     <string name="image_view_description">Nothing</string>
+
+    <string name="button_create_store">我要开店</string>
+    <string name="button_just_look">只想逛逛</string>
+    <string name="hint_create_store">您还没有自己的店铺？赶快点击按钮开个店吧！</string>
 </resources>

@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.xingdhl.www.storehelper.ObjectDefine.OnItemClickListener;
 import com.xingdhl.www.storehelper.ObjectDefine.Supplier;
+import com.xingdhl.www.storehelper.ObjectDefine.User;
 import com.xingdhl.www.storehelper.R;
 import com.xingdhl.www.storehelper.webservice.HttpHandler;
 import com.xingdhl.www.storehelper.webservice.WebServiceAPIs;
@@ -33,7 +34,6 @@ public class SupplierManageActivity extends AppCompatActivity implements
 
     private RecyclerView mSupplierListView;
     private List<Supplier> mSupplierList;
-    private HttpHandler mHttpHandler;
 
     private int mShopId;
 
@@ -42,7 +42,7 @@ public class SupplierManageActivity extends AppCompatActivity implements
         Bundle bundle = new Bundle();
         bundle.putSerializable("supplier", mSupplierList.get(position));
         Intent intent = new Intent(SupplierManageActivity.this, SupplierEditActivity.class);
-        intent.putExtra("store_id", mSupplierList.get(position).getShopId());
+        intent.putExtra("store_No", mShopId);
         intent.putExtra("bundle", bundle);
         startActivityForResult(intent, UPDATE_SUPPLIER);
     }
@@ -92,9 +92,9 @@ public class SupplierManageActivity extends AppCompatActivity implements
 
         private SupplierHolder(View v){
             super(v);
-            mName = (TextView)v.findViewById(R.id.supp_name);
-            mContacter = (TextView)v.findViewById(R.id.supp_contacter);
-            mTel = (TextView)v.findViewById(R.id.supp_tel);
+            mName = v.findViewById(R.id.supp_name);
+            mContacter = v.findViewById(R.id.supp_contacter);
+            mTel = v.findViewById(R.id.supp_tel);
         }
 
         private void Bind(Supplier supplier){
@@ -150,15 +150,15 @@ public class SupplierManageActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_supplier_manage);
 
-        mHttpHandler = new HttpHandler(this);
+        HttpHandler httpHandler = new HttpHandler(this);
 
         //从父Activity获取店铺id；
-        mShopId = getIntent().getIntExtra("store_id", -1);
+        mShopId = getIntent().getIntExtra("store_No", -1);
 
         //向服务器请求店铺id的供应商信息；
         mSupplierList = new ArrayList<>();
-        WebServiceAPIs.getSuppliers(mHttpHandler, mSupplierList, mShopId);
-        mSupplierListView = (RecyclerView)findViewById(R.id.recyclerview_supp);
+        WebServiceAPIs.getSuppliers(httpHandler, mSupplierList, User.getUser(null).getStore(mShopId).getId());
+        mSupplierListView = findViewById(R.id.recyclerview_supp);
         mSupplierListView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
         //处理添加供应商浮动按钮事件；
@@ -166,7 +166,7 @@ public class SupplierManageActivity extends AppCompatActivity implements
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(SupplierManageActivity.this, SupplierEditActivity.class);
-                intent.putExtra("store_id", mShopId);
+                intent.putExtra("store_No", mShopId);
                 startActivityForResult(intent, NEW_SUPPLIER);
             }
         });

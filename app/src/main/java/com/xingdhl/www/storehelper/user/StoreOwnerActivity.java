@@ -20,6 +20,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -31,7 +32,6 @@ import com.xingdhl.www.storehelper.CustomStuff.FreeToast;
 import com.xingdhl.www.storehelper.CustomStuff.QueryDialog;
 import com.xingdhl.www.storehelper.CustomStuff.ViewPagerAdapter;
 import com.xingdhl.www.storehelper.ObjectDefine.GCV;
-import com.xingdhl.www.storehelper.ObjectDefine.SaleSummary;
 import com.xingdhl.www.storehelper.ObjectDefine.User;
 import com.xingdhl.www.storehelper.R;
 import com.xingdhl.www.storehelper.trading.SalesAnalysisActivity;
@@ -64,7 +64,10 @@ public class StoreOwnerActivity extends AppCompatActivity implements
     private DrawerLayout mDrawer;
     private TextView mTitle;
 
-    private List<SaleSummary> mSaleSummaries;
+    private List<SalesSumDataFragment> mSaleSumFragments;
+    private List<double[]> mSaleSumList;
+    private List<double[]> mSaleProfList;
+
     private HttpHandler mHttpHandler;
     private User mUser;
 
@@ -195,9 +198,20 @@ public class StoreOwnerActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_store_owner);
 
-        mSaleSummaries = new ArrayList<>();
+        //mSaleSummaries = new ArrayList<>();
+        mSaleProfList = new ArrayList<>();
+        mSaleSumList = new ArrayList<>();
+
         mHttpHandler = new HttpHandler(this);
         mUser = User.getUser(null);
+
+        List<StorePagerFragment> storeFragments = new ArrayList<>();
+        for(int i = 0; i < mUser.getStores().size(); i++)
+            storeFragments.add(new StorePagerFragment(mHttpHandler, i));
+
+        mSaleSumFragments = new ArrayList<>();
+        mSaleSumFragments.add(new SalesSumDataFragment());
+        mSaleSumFragments.add(new SalesSumDataFragment());
 
         //申请网络定位权限
         if (ContextCompat.checkSelfPermission(this,
@@ -211,7 +225,8 @@ public class StoreOwnerActivity extends AppCompatActivity implements
 
         //查询当前用户所有店铺上月至今的销售额统计；
         for(int i = 0; i < mUser.getStores().size(); i++) {
-            mSaleSummaries.add(new SaleSummary());
+            mSaleSumList.add(new double[]{0., 0., 0., 0., 0., 0.});
+            mSaleProfList.add(new double[]{0., 0., 0., 0., 0., 0.});
             WebServiceAPIs.getSalesSummary(mHttpHandler, i);
         }
 
@@ -229,11 +244,8 @@ public class StoreOwnerActivity extends AppCompatActivity implements
         mMainMenu.setNavigationItemSelectedListener(this);
 
         mSellCalcPager = findViewById(R.id.sell_calc_pager);
-        mSellCalcPager.setAdapter(new ViewPagerAdapter(this, SalesSumDataFragment.class, 2));
-
-        mStorePager = findViewById(R.id.shop_pager);
-        mStorePager.setAdapter(new ViewPagerAdapter(this, StorePagerFragment.class,
-                mUser.getStores().size(), mHttpHandler, mStorePager.getCurrentItem()));
+        mSellCalcPager.setAdapter(new ViewPagerAdapter(this, mSaleSumFragments));
+        mSellCalcPager.setOffscreenPageLimit(1);
 
         TabLayout tabLayout = findViewById(R.id.layout_calc_title);
         tabLayout.setTabMode(TabLayout.MODE_FIXED);
@@ -246,6 +258,8 @@ public class StoreOwnerActivity extends AppCompatActivity implements
                     }
                 }).attach();
 
+        mStorePager = findViewById(R.id.shop_pager);
+        mStorePager.setAdapter(new ViewPagerAdapter(this, storeFragments));
         mStorePager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
@@ -260,7 +274,8 @@ public class StoreOwnerActivity extends AppCompatActivity implements
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && requestCode == 0) {  //注册店铺返回
-            mSaleSummaries.add(new SaleSummary());
+            mSaleSumList.add(new double[]{0., 0., 0., 0., 0., 0.});
+            mSaleProfList.add(new double[]{0., 0., 0., 0., 0., 0.});
             Objects.requireNonNull(mStorePager.getAdapter()).notifyDataSetChanged();
             return;
         }
@@ -300,44 +315,43 @@ public class StoreOwnerActivity extends AppCompatActivity implements
     }
 
     private void updateSellPager(int position){
-        SaleSummary saleSummary = mSaleSummaries.get(position);
+        double[] saleSumData = mSaleSumList.get(position);
+        double[] saleProfData = mSaleProfList.get(position);
         ViewPagerAdapter adapter = (ViewPagerAdapter)mSellCalcPager.getAdapter();
-        List<Object> fragments = adapter.getFragments();
-        if(fragments.size() < 2) return;
-        ((SalesSumDataFragment)(fragments.get(0))).updateText(
-                saleSummary.getDaySum(), saleSummary.getDayRise(),
-                saleSummary.getWeekSum(), saleSummary.getWeekRise(),
-                saleSummary.getMonthSum(), saleSummary.getMonthRise());
-        ((SalesSumDataFragment)(fragments.get(1))).updateText(
-                saleSummary.getDayProfit(), saleSummary.getDayProfitRise(),
-                saleSummary.getWeekProfit(), saleSummary.getWeekProfitRise(),
-                saleSummary.getMonthProfit(), saleSummary.getMonthProfitRise());
+        adapter.notifyDataSetChanged();
+        if(adapter.isBinded(0)) {
+            mSaleSumFragments.get(0).updateText(saleSumData);
+        }
+        if(adapter.isBinded(1)) {
+            mSaleSumFragments.get(1).updateText(saleProfData);
+        }
     }
 
     private void setSaleSummary(int id, Bundle sumData){
-        SaleSummary saleSummary = mSaleSummaries.get(id);
-        if(saleSummary == null){
+        double[] saleSumData = mSaleSumList.get(id);
+        double[] saleProfData = mSaleProfList.get(id);
+
+        if(saleSumData == null || saleProfData == null){
             Log.d(GCV.D_TAG, "setSaleSummary(): id = " + id);
             return;
         }
 
-        //当天销售、利润及环比增长；
-        saleSummary.setDaySum(sumData.getDouble("td_sum"));
-        saleSummary.setDayProfit(sumData.getDouble("td_pro"));
-        saleSummary.setDayRise(saleSummary.getDaySum() - sumData.getDouble("yd_sum"));
-        saleSummary.setDayProfitRise(saleSummary.getDayProfit() - sumData.getDouble("yd_pro"));
+        //当天销售额、利润及环比增长；
+        saleSumData[0] = sumData.getDouble("td_sum");
+        saleProfData[0] = sumData.getDouble("td_pro");
+        saleSumData[1] = saleSumData[0] - sumData.getDouble("yd_sum");
+        saleProfData[1] = saleProfData[0] - sumData.getDouble("yd_pro");
 
-        //本周销售及环比增长
-        saleSummary.setWeekSum(sumData.getDouble("cw_sum"));
-        saleSummary.setWeekProfit(sumData.getDouble("cw_pro"));
-        saleSummary.setWeekRise(saleSummary.getWeekSum() - sumData.getDouble("lw_sum"));
-        saleSummary.setWeekProfitRise(saleSummary.getWeekProfit() - sumData.getDouble("lw_pro"));
+        //本周销售e及环比增长
+        saleSumData[2] = sumData.getDouble("cw_sum");
+        saleProfData[2] = sumData.getDouble("cw_pro");
+        saleSumData[3] = saleSumData[2] - sumData.getDouble("lw_sum");
+        saleProfData[3] = saleProfData[2] - sumData.getDouble("lw_pro");
 
         //本月销售及环比增长
-        saleSummary.setMonthSum(sumData.getDouble("cm_sum"));
-        saleSummary.setMonthProfit(sumData.getDouble("cm_pro"));
-        saleSummary.setMonthRise(saleSummary.getMonthSum() - sumData.getDouble("lm_sum"));
-        saleSummary.setMonthProfitRise(saleSummary.getMonthProfit() - sumData.getDouble("lm_pro"));
+        saleSumData[4] = sumData.getDouble("cm_sum");
+        saleProfData[4] = sumData.getDouble("cm_pro");
+        saleSumData[5] = saleSumData[4] - sumData.getDouble("lm_sum");
+        saleProfData[5] = saleProfData[4] - sumData.getDouble("lm_pro");
     }
-
 }

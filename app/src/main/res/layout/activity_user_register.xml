@@ -40,33 +40,9 @@
         app:layout_constraintTop_toBottomOf="@+id/title_icon">
 
         <EditText
-            android:id="@+id/edit_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="4dp"
-            android:hint="@string/hint_username"
-            android:inputType="text"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@id/edit_name"
-            android:layout_alignEnd="@id/edit_name"
-            android:layout_marginTop="8dp"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:text="用户名"
-            android:textColor="@color/colorPrimary" />
-
-        <EditText
             android:id="@+id/edit_phone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/edit_name"
-            android:layout_alignStart="@id/edit_name"
             android:layout_marginTop="4dp"
             android:layout_marginBottom="4dp"
             android:hint="@string/hint_phone"

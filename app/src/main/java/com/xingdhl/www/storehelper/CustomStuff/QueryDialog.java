@@ -40,7 +40,10 @@ public class QueryDialog {
                 builder.setPositiveButton(txtButton, null);
             }
         }
-        builder.create().show();
+        AlertDialog dialog = builder.create();
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
     }
 
     public QueryDialog(Context context, String msg, QueryDlgListener... listeners) {

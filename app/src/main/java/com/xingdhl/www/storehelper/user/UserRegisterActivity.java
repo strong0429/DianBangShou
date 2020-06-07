@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.TintTypedArray;
 
 import com.xingdhl.www.storehelper.CustomStuff.FreeToast;
 import com.xingdhl.www.storehelper.CustomStuff.QueryDialog;
@@ -36,8 +37,7 @@ public class UserRegisterActivity extends AppCompatActivity implements
     private Button mBtnRegister;
     private Button mBtnChkNum;
 
-    private EditText mETUsername;
-    private EditText mETPhoneNum;
+    private EditText mETMobile;
     private EditText mETChkNum;
     private EditText mETPasswd;
     private EditText mETPwdRev;
@@ -57,7 +57,7 @@ public class UserRegisterActivity extends AppCompatActivity implements
 
     @Override
     public void onBackPressed() {
-        if(mETUsername.getText().length() > 0 || mETPhoneNum.getText().length() > 0) {
+        if(mETMobile.getText().length() > 0) {
             new QueryDialog(this, "确认要终止注册吗？").show();
         }else{
             startActivity(new Intent(this, UserLoginActivity.class));
@@ -69,29 +69,24 @@ public class UserRegisterActivity extends AppCompatActivity implements
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.button_chknum:
-                if(!mETPhoneNum.getText().toString().matches(GCV.RegExp_cell)){
+                if(!mETMobile.getText().toString().matches(GCV.RegExp_cell)){
                     FreeToast.makeText(UserRegisterActivity.this, "请输入正确的手机号码！",
                             Toast.LENGTH_SHORT).show();
                     return;
                 }
                 mBtnChkNum.setEnabled(false);
                 mHttpHandler.justWait(1000, 60);
-                WebServiceAPIs.getSmsCode(mHttpHandler, mETPhoneNum.getText().toString(), false);
+                WebServiceAPIs.getSmsCode(mHttpHandler, mETMobile.getText().toString(), false);
                 break;
             case R.id.chkbox_protocol:
                 mBtnRegister.setEnabled(mChkBProtocol.isChecked());
                 break;
             case R.id.button_register:
-                if(mETUsername.getText().length() <= 0){
-                    FreeToast.makeText(this, "请输入注册用户名！", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                mUser.setUserName(mETUsername.getText().toString());
-                if(!mETPhoneNum.getText().toString().matches(GCV.RegExp_cell)){
+                if(!mETMobile.getText().toString().matches(GCV.RegExp_cell)){
                     FreeToast.makeText(this, "请输入正确的手机号码！", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                mUser.setMobile(mETPhoneNum.getText().toString());
+                mUser.setMobile(mETMobile.getText().toString());
                 if(!mETChkNum.getText().toString().matches(GCV.RegExp_ChkNum)) {
                     FreeToast.makeText(this, "请输入正确的手机短信校验码！",
                             Toast.LENGTH_SHORT).show();
@@ -133,12 +128,15 @@ public class UserRegisterActivity extends AppCompatActivity implements
             case WebServiceAPIs.MSG_USER_REGISTER:
                 if(msg.arg1 == HTTP_OK) {
                     mUser.setAutoLogin(false);
-                    startActivity(new Intent(this, UserLoginActivity.class));
+                    Intent intent = new Intent(this, UserLoginActivity.class);
+                    // 通知UserLoginActivity重新获取App Token；
+                    intent.putExtra("ORIGIN", "UserRegisterActivity");
+                    startActivity(intent);
                     this.finish();
                     return;
                 }
                 if(msg.arg1 == HttpRunnable.HTTP_UNIQUE_ERROR){
-                    FreeToast.makeText(this, "注册失败！用户名已存在。",
+                    FreeToast.makeText(this, "注册失败！手机号码已被注册。",
                             Toast.LENGTH_SHORT).show();
                 }
                 else if(msg.arg1 == HttpRunnable.HTTP_DISACCORD_ERROR){
@@ -171,7 +169,6 @@ public class UserRegisterActivity extends AppCompatActivity implements
 
         mUser = User.getUser(getApplicationContext());
 
-        mETUsername = findViewById(R.id.edit_name);
         mETChkNum = findViewById(R.id.edit_chknum);
         mETPasswd = findViewById(R.id.edit_passward);
         mETPasswd.addTextChangedListener(new TextWatcher() {
@@ -195,18 +192,17 @@ public class UserRegisterActivity extends AppCompatActivity implements
 
             }
         });
-        mETPwdRev = (EditText)findViewById(R.id.edit_pwdrev);
+        mETPwdRev = findViewById(R.id.edit_pwdrev);
 
-        mETPhoneNum = (EditText)findViewById(R.id.edit_phone);
-        //mETPhoneNum.setText(getIntent().getStringExtra("phone"));
+        mETMobile = findViewById(R.id.edit_phone);
 
-        mBtnChkNum = (Button)findViewById(R.id.button_chknum);
+        mBtnChkNum = findViewById(R.id.button_chknum);
         mBtnChkNum.setOnClickListener(this);
 
-        mChkBProtocol = (CheckBox)findViewById(R.id.chkbox_protocol);
+        mChkBProtocol = findViewById(R.id.chkbox_protocol);
         mChkBProtocol.setOnClickListener(this);
 
-        mBtnRegister = (Button)findViewById(R.id.button_register);
+        mBtnRegister = findViewById(R.id.button_register);
         mBtnRegister.setOnClickListener(this);
         mBtnRegister.setEnabled(mChkBProtocol.isChecked());
 

@@ -44,7 +44,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:tabBackground="@drawable/selector_tablayout"
-            app:tabIndicatorColor="@color/colorPrimaryDark"
+            app:tabIndicatorColor="@color/colorDisabled"
             app:tabSelectedTextColor="#FFF"
             app:tabTextAppearance="@style/Tablayout_Text_Style"
             app:tabTextColor="@color/colorDisabled"

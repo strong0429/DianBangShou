@@ -78,6 +78,8 @@ public class Categories {
         }
 
         public List<Category> getSubCategories(){
+            if(mSubCategories == null)
+                mSubCategories = new ArrayList<>();
             return mSubCategories;
         }
     }

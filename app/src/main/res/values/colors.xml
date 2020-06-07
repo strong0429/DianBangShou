@@ -18,4 +18,6 @@
     <color name="colorTabTitleText">@color/colorPrimaryDark</color>
 
     <color name="transparent">#a0000000</color>
+
+    <color name="colorRed">#F00000</color>
 </resources>

@@ -30,12 +30,12 @@ import java.util.Locale;
  */
 
 public class StorePagerFragment extends Fragment {
-    private static HttpHandler mHttpHandler;
+    private HttpHandler mHttpHandler;
     private ImageView mStoreImgView;
     private Store mStore;
     private int mPageNo;
 
-    public StorePagerFragment(HttpHandler httpHandler, Integer position){
+    public StorePagerFragment(HttpHandler httpHandler, int position){
         mHttpHandler = httpHandler;
         mPageNo = position;
         mStore = User.getUser(null).getStores().get(mPageNo);
@@ -94,7 +94,7 @@ public class StorePagerFragment extends Fragment {
                 mStoreImgView.setImageResource(R.drawable.store_default);
                 return view;
             }
-            WebServiceAPIs.imgDownload(mHttpHandler, imgFile, mPageNo);
+            //WebServiceAPIs.imgDownload(mHttpHandler, imgFile, mPageNo);
         }
         return view;
     }

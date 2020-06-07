@@ -109,12 +109,14 @@ public class Store {
     public void setLogo(JSONObject jsonObject){
         try {
             mLogo = jsonObject.getString("logo");
+            mLogo = mLogo.equals("null") ? null : mLogo;
         }catch (JSONException je){
             je.printStackTrace();
         }
     }
 
     public Store(JSONObject jsonObject){
+        this();
         setId(jsonObject);
         setName(jsonObject);
         setPosition(jsonObject);
@@ -291,7 +293,8 @@ public class Store {
     }
 
     public String getAddress() {
-        return mAddress == null ? "" : mAddress;
+        return mAddress == null ? "" :
+                (mProvince + mCity + mDistrict + mStreet + mAddress);
     }
 
     public void setAddress(String address) {

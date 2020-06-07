@@ -1,193 +1,237 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.percent.PercentRelativeLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorBackground">
 
-    <de.hdodenhof.circleimageview.CircleImageView
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/left_guideline"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent=".2"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/right_guideline"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent=".8"/>
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="140dp"
+        android:contentDescription="@string/image_view_description"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/title_bg_shape" />
+
+    <ImageView
         android:id="@+id/title_image"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_margin="16dp"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/store_default"/>
+        android:layout_width="160dp"
+        android:layout_height="120dp"
+        android:layout_marginBottom="8dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/store_default"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/edit_shop_name"
-        android:layout_width="match_parent"
-        android:layout_below="@id/title_image"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:paddingLeft="8dp"
         style="@style/EditText"
-        android:hint="@string/hint_shop_name"/>
+        android:layout_width="0dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="16dp"
+        android:hint="@string/hint_shop_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_alignBottom="@id/edit_shop_name"
-        android:layout_alignEnd="@id/edit_shop_name"
-        android:layout_alignRight="@id/edit_shop_name"
-        android:textColor="@color/colorPrimary"
-        android:layout_marginBottom="8dp"
         style="@style/CommonText"
+        android:layout_width="wrap_content"
+        android:text="@string/shop_name"
+        android:textColor="@color/colorRed"
         android:textSize="14sp"
-        android:text="@string/shop_name"/>
+        app:layout_constraintBottom_toBottomOf="@+id/edit_shop_name"
+        app:layout_constraintEnd_toEndOf="@+id/edit_shop_name"
+        app:layout_constraintTop_toTopOf="@+id/edit_shop_name" />
 
     <EditText
         android:id="@+id/edit_shop_phone"
-        android:layout_width="match_parent"
-        android:layout_below="@id/edit_shop_name"
-        android:layout_alignLeft="@id/edit_shop_name"
-        android:layout_alignStart="@id/edit_shop_name"
-        android:layout_alignRight="@id/edit_shop_name"
-        android:layout_alignEnd="@id/edit_shop_name"
-        android:paddingLeft="8dp"
         style="@style/EditText"
+        android:layout_width="0dp"
+        android:layout_marginTop="8dp"
+        android:hint="@string/hint_shop_phone"
         android:inputType="phone"
-        android:hint="@string/hint_shop_phone"/>
+        app:layout_constraintEnd_toEndOf="@+id/edit_shop_name"
+        app:layout_constraintStart_toStartOf="@+id/edit_shop_name"
+        app:layout_constraintTop_toBottomOf="@+id/edit_shop_name" />
+
     <TextView
+        style="@style/CommonText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/edit_shop_phone"
-        android:layout_alignEnd="@id/edit_shop_phone"
-        android:layout_alignRight="@id/edit_shop_phone"
-        android:layout_marginBottom="8dp"
-        style="@style/CommonText"
+        android:text="@string/shop_phone"
+        android:textColor="@color/colorRed"
         android:textSize="14sp"
-        android:textColor="@color/colorPrimary"
-        android:text="@string/shop_phone"/>
+        app:layout_constraintBottom_toBottomOf="@+id/edit_shop_phone"
+        app:layout_constraintEnd_toEndOf="@+id/edit_shop_phone"
+        app:layout_constraintTop_toTopOf="@+id/edit_shop_phone" />
 
     <EditText
         android:id="@+id/edit_ccode_wx"
-        android:layout_width="match_parent"
-        android:layout_below="@id/edit_shop_phone"
-        android:layout_alignLeft="@id/edit_shop_name"
-        android:layout_alignStart="@id/edit_shop_name"
-        android:layout_alignRight="@id/edit_shop_name"
-        android:layout_alignEnd="@id/edit_shop_name"
-        android:paddingLeft="8dp"
         style="@style/EditText"
+        android:layout_width="0dp"
+        android:layout_marginTop="8dp"
         android:enabled="false"
-        android:hint="添加微信收款码"/>
+        android:hint="添加微信收款码"
+        app:layout_constraintEnd_toEndOf="@+id/edit_shop_name"
+        app:layout_constraintStart_toStartOf="@+id/edit_shop_name"
+        app:layout_constraintTop_toBottomOf="@+id/edit_shop_phone" />
+
     <Button
         android:id="@+id/scan_wx"
         android:layout_width="36dp"
         android:layout_height="36dp"
-        android:layout_alignBottom="@id/edit_ccode_wx"
-        android:layout_alignEnd="@id/edit_ccode_wx"
-        android:layout_alignRight="@id/edit_ccode_wx"
-        android:layout_marginBottom="10dp"
-        android:layout_marginRight="8dp"
         android:layout_marginEnd="8dp"
-        android:background="@drawable/weixin"/>
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/weixin"
+        app:layout_constraintBottom_toBottomOf="@+id/edit_ccode_wx"
+        app:layout_constraintEnd_toEndOf="@+id/edit_ccode_wx"
+        app:layout_constraintTop_toTopOf="@+id/edit_ccode_wx" />
 
     <EditText
         android:id="@+id/edit_ccode_ali"
-        android:layout_width="match_parent"
-        android:layout_below="@id/edit_ccode_wx"
-        android:layout_alignLeft="@id/edit_shop_name"
-        android:layout_alignStart="@id/edit_shop_name"
-        android:layout_alignRight="@id/edit_shop_name"
-        android:layout_alignEnd="@id/edit_shop_name"
-        android:paddingLeft="8dp"
         style="@style/EditText"
+        android:layout_width="0dp"
+        android:layout_marginTop="8dp"
         android:enabled="false"
-        android:hint="添加支付宝收款码"/>
+        android:hint="添加支付宝收款码"
+        app:layout_constraintEnd_toEndOf="@+id/edit_shop_name"
+        app:layout_constraintStart_toStartOf="@+id/edit_shop_name"
+        app:layout_constraintTop_toBottomOf="@+id/edit_ccode_wx" />
+
     <Button
         android:id="@+id/scan_ali"
         android:layout_width="36dp"
         android:layout_height="36dp"
-        android:layout_alignBottom="@id/edit_ccode_ali"
-        android:layout_alignEnd="@id/edit_ccode_ali"
-        android:layout_alignRight="@id/edit_ccode_ali"
-        android:layout_marginBottom="10dp"
-        android:layout_marginRight="8dp"
         android:layout_marginEnd="8dp"
-        android:background="@drawable/ailipay"/>
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/ailipay"
+        app:layout_constraintBottom_toBottomOf="@+id/edit_ccode_ali"
+        app:layout_constraintEnd_toEndOf="@+id/edit_ccode_ali"
+        app:layout_constraintTop_toBottomOf="@+id/edit_ccode_wx" />
 
     <EditText
         android:id="@+id/addr_province"
-        app:layout_widthPercent="32%"
-        android:layout_below="@id/edit_ccode_ali"
-        android:layout_alignLeft="@id/edit_shop_name"
-        android:layout_alignStart="@id/edit_shop_name"
-        android:paddingLeft="8dp"
         style="@style/EditText"
-        android:hint="@string/hint_addr_province"/>
+        android:layout_width="0dp"
+        android:layout_marginTop="8dp"
+        android:hint="@string/hint_addr_province"
+        app:layout_constraintStart_toStartOf="@+id/edit_shop_name"
+        app:layout_constraintEnd_toStartOf="@+id/addr_city"
+        app:layout_constraintTop_toBottomOf="@+id/edit_ccode_ali"
+        app:layout_constraintHorizontal_weight="1"/>
+
     <EditText
         android:id="@+id/addr_city"
-        android:layout_alignBottom="@id/addr_province"
-        android:layout_toRightOf="@id/addr_province"
-        android:layout_toEndOf="@id/addr_province"
-        app:layout_widthPercent="32%"
-        android:paddingLeft="8dp"
         style="@style/EditText"
-        android:hint="@string/hint_addr_city"/>
+        android:layout_width="0dp"
+        android:hint="@string/hint_addr_city"
+        app:layout_constraintBottom_toBottomOf="@+id/addr_province"
+        app:layout_constraintEnd_toStartOf="@+id/addr_district"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toEndOf="@+id/addr_province" />
+
     <EditText
         android:id="@+id/addr_district"
-        android:layout_width="match_parent"
-        android:layout_alignBottom="@id/addr_province"
-        android:layout_toRightOf="@id/addr_city"
-        android:layout_toEndOf="@id/addr_city"
-        android:layout_alignEnd="@id/edit_shop_name"
-        android:layout_alignRight="@id/edit_shop_name"
-        android:paddingLeft="8dp"
         style="@style/EditText"
-        android:hint="@string/hint_addr_district"/>
+        android:layout_width="0dp"
+        android:hint="@string/hint_addr_district"
+        app:layout_constraintBottom_toBottomOf="@+id/addr_province"
+        app:layout_constraintEnd_toEndOf="@+id/edit_shop_name"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toEndOf="@+id/addr_city" />
 
     <EditText
         android:id="@+id/addr_street"
-        app:layout_widthPercent="50%"
-        android:layout_below="@id/addr_province"
-        android:layout_alignLeft="@id/edit_shop_name"
-        android:layout_alignStart="@id/edit_shop_name"
-        android:paddingLeft="8dp"
         style="@style/EditText"
-        android:hint="@string/hint_addr_street"/>
+        android:layout_width="0dp"
+        android:layout_marginTop="8dp"
+        android:hint="@string/hint_addr_street"
+        app:layout_constraintEnd_toStartOf="@+id/addr_detail"
+        app:layout_constraintStart_toStartOf="@+id/edit_shop_name"
+        app:layout_constraintTop_toBottomOf="@+id/addr_province"
+        app:layout_constraintHorizontal_weight="4" />
+
     <EditText
         android:id="@+id/addr_detail"
-        android:layout_width="match_parent"
-        android:layout_toEndOf="@id/addr_street"
-        android:layout_toRightOf="@id/addr_street"
-        android:layout_alignBottom="@id/addr_street"
-        android:layout_alignEnd="@id/edit_shop_name"
-        android:layout_alignRight="@id/edit_shop_name"
-        android:paddingLeft="8dp"
         style="@style/EditText"
-        android:hint="@string/hint_addr_detail"/>
+        android:layout_width="0dp"
+        android:hint="@string/hint_addr_detail"
+        app:layout_constraintBottom_toBottomOf="@+id/addr_street"
+        app:layout_constraintEnd_toEndOf="@+id/edit_shop_name"
+        app:layout_constraintHorizontal_weight="6"
+        app:layout_constraintStart_toEndOf="@+id/addr_street" />
+
     <TextView
+        android:id="@+id/textView22"
+        style="@style/CommonText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/addr_detail"
         android:layout_alignEnd="@id/addr_detail"
         android:layout_alignRight="@id/addr_detail"
-        android:layout_marginBottom="8dp"
-        style="@style/CommonText"
-        android:textSize="14sp"
+        android:layout_alignBottom="@id/addr_detail"
+        android:text="@string/shop_addr"
         android:textColor="@color/colorPrimary"
-        android:text="@string/shop_addr"/>
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/addr_detail"
+        app:layout_constraintEnd_toEndOf="@+id/addr_detail"
+        app:layout_constraintTop_toTopOf="@+id/addr_detail" />
 
     <Button
         android:id="@+id/button_map"
-        app:layout_widthPercent="40%"
         android:layout_height="wrap_content"
-        android:layout_below="@id/addr_detail"
-        android:layout_alignEnd="@id/edit_shop_name"
-        android:layout_alignRight="@id/edit_shop_name"
+        android:layout_width="0dp"
         android:background="@drawable/selector_button_bg_s"
+        android:layout_marginTop="8dp"
+        android:text="@string/button_map"
         android:textColor="@drawable/selector_button_txtcolor"
-        android:text="@string/button_map"/>
+        app:layout_constraintEnd_toEndOf="@+id/addr_detail"
+        app:layout_constraintStart_toEndOf="@+id/addr_street"
+        app:layout_constraintTop_toBottomOf="@+id/addr_detail" />
 
     <Button
         android:id="@+id/button_shop_register"
-        app:layout_widthPercent="70%"
+        style="@style/Button_Text"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="24dp"
         android:background="@drawable/selector_button_bg"
-        style="@style/Button_Text"
-        android:text="@string/button_shop"/>
+        android:text="@string/button_shop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/right_guideline"
+        app:layout_constraintStart_toStartOf="@+id/left_guideline"/>
 
-</android.support.percent.PercentRelativeLayout>
+    <TextView
+        android:id="@+id/textView23"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="点击可选择新的图片"
+        android:textColor="@color/colorDisabledLight"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

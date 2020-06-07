@@ -18,6 +18,7 @@ import com.xingdhl.www.storehelper.CustomStuff.QueryDialog;
 import com.xingdhl.www.storehelper.ObjectDefine.User;
 import com.xingdhl.www.storehelper.R;
 import com.xingdhl.www.storehelper.store.CreateStoreActivity;
+import com.xingdhl.www.storehelper.store.ListStoreActivity;
 import com.xingdhl.www.storehelper.webservice.HttpHandler;
 import com.xingdhl.www.storehelper.webservice.HttpRunnable;
 import com.xingdhl.www.storehelper.webservice.WebServiceAPIs;
@@ -26,7 +27,7 @@ import static java.net.HttpURLConnection.HTTP_OK;
 
 public class UserLoginActivity extends AppCompatActivity implements
         HttpHandler.handlerCallback, QueryDialog.QueryDlgListener, View.OnClickListener{
-    private EditText mTextUserName;
+    private EditText mTextMobile;
     private EditText mTextPasswd;
     private CheckBox mAutoLogin;
 
@@ -37,12 +38,12 @@ public class UserLoginActivity extends AppCompatActivity implements
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.button_login:
-                mUser.setUserName(mTextUserName.getText().toString());
+                mUser.setMobile(mTextMobile.getText().toString());
                 mUser.setPassword(mTextPasswd.getText().toString());
                 mUser.setAutoLogin(mAutoLogin.isChecked());
 
-                if(mUser.getUserName().isEmpty() || mUser.getPassword().isEmpty()) {
-                    FreeToast.makeText(UserLoginActivity.this, "请输入用户名和密码！",
+                if(mUser.getMobile().isEmpty() || mUser.getPassword().isEmpty()) {
+                    FreeToast.makeText(UserLoginActivity.this, "请输入手机号码和密码！",
                             Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -51,13 +52,13 @@ public class UserLoginActivity extends AppCompatActivity implements
                 break;
             case R.id.button_register:
                 Intent iRegister = new Intent(UserLoginActivity.this, UserRegisterActivity.class);
-                iRegister.putExtra("phone", mTextUserName.getText().toString());
+                iRegister.putExtra("phone", mTextMobile.getText().toString());
                 startActivity(iRegister);
                 finish();
                 break;
             case R.id.forgot_pwd:
                 Intent iForgot = new Intent(UserLoginActivity.this, ResetPasswordActivity.class);
-                iForgot.putExtra("phone", mTextUserName.getText().toString());
+                iForgot.putExtra("phone", mTextMobile.getText().toString());
                 startActivity(iForgot);
                 finish();
         }
@@ -78,19 +79,18 @@ public class UserLoginActivity extends AppCompatActivity implements
 
     @Override
     public void onMsgHandler(Message msg) {
+        if(msg.what == WebServiceAPIs.MSG_GET_TOKEN) {
+            if (msg.arg1 == HTTP_OK) {
+                mUser.setToken(msg.getData().getString("token"));
+            }
+            return;
+        }
+
         if(msg.what != WebServiceAPIs.MSG_USER_LOGIN)
             return;
-
         if(msg.arg1 == HTTP_OK) {
             mUser.saveInfo();
-            Intent intent;
-            if (mUser.getStores().size() > 0) {
-                intent = new Intent(this, StoreOwnerActivity.class);
-            } else {
-                new QueryDialog(this, "您还没有注册店铺! 现在注册？\n\n\t‘是’注册新店铺。\n\t‘否’退出程序。").show();
-                return;
-            }
-            startActivity(intent);
+            startActivity(new Intent(this, ListStoreActivity.class));
             finish();
         } else if(msg.arg1 >= HttpRunnable.HTTP_NETWORK_ERR) {
             String err_msg = msg.getData().getString("message");
@@ -109,19 +109,28 @@ public class UserLoginActivity extends AppCompatActivity implements
         mHttpHandler = new HttpHandler(this);
         mUser = User.getUser(getApplicationContext());
 
+        Intent intent = getIntent();
+        if(intent != null){
+            String origin = intent.getStringExtra("ORIGIN");
+            if(origin != null && origin.equals("UserRegisterActivity")){
+                //新注册用户，重新获取App Token；
+                WebServiceAPIs.getToken(mHttpHandler, this.getPackageName());
+            }
+        }
+
         mTextPasswd = findViewById(R.id.user_passward);
         if(mUser.isAutoLogin()) //是否填充密码；
             mTextPasswd.setText(mUser.getPassword());
 
-        mTextUserName = findViewById(R.id.user_name);
-        mTextUserName.setText(mUser.getUserName());
+        mTextMobile = findViewById(R.id.user_mobile);
+        mTextMobile.setText(mUser.getMobile());
 
         mAutoLogin = findViewById(R.id.remember_pwd);
         mAutoLogin.setChecked(mUser.isAutoLogin());
 
         Button buttonLog = findViewById(R.id.button_login);
         Button buttonReg = findViewById(R.id.button_register);
-        if(mUser.getPhoneNum() == null || mUser.getPhoneNum().isEmpty()){
+        if(mUser.getMobile() == null || mUser.getMobile().isEmpty()){
             buttonLog.setBackgroundResource(R.drawable.selector_button_bg_s);
             buttonReg.setBackgroundResource(R.drawable.selector_button_bg);
             buttonLog.setTextColor(getResources().getColorStateList(R.drawable.selector_button_txtcolor_s));
@@ -137,6 +146,6 @@ public class UserLoginActivity extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
 
-        mTextUserName.setText(mUser.getUserName());
+        mTextMobile.setText(mUser.getMobile());
     }
 }

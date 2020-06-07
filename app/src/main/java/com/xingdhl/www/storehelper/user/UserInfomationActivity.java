@@ -53,8 +53,8 @@ public class UserInfomationActivity extends AppCompatActivity implements View.On
                 }
                 FreeToast.makeText(this, "更新用户信息成功!", Toast.LENGTH_SHORT).show();
                 mButtonOk.setEnabled(false);
-                mUser.setPhoneNum(mEtPhone.getText().toString());
-                mUser.setUserName(mEtName.getText().toString());
+                mUser.setMobile(mEtPhone.getText().toString());
+                //mUser.setUserName(mEtName.getText().toString());
                 mUser.setIdCard(mEtIdcard.getText().toString());
                 mUser.setEmail(mEtEmail.getText().toString());
                 mEditMark = 0x00;
@@ -75,14 +75,14 @@ public class UserInfomationActivity extends AppCompatActivity implements View.On
         mButtonOk.setOnClickListener(this);
 
         mEtPhone = (EditText)findViewById(R.id.text_phone);
-        mEtPhone.setText(mUser.getPhoneNum());
+        mEtPhone.setText(mUser.getMobile());
         mEtPhone.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(s.toString().trim().equals(mUser.getPhoneNum())){
+                if(s.toString().trim().equals(mUser.getMobile())){
                     mEditMark &= 0xFE;
                 }else{
                     mEditMark |= 0x01;
@@ -102,19 +102,21 @@ public class UserInfomationActivity extends AppCompatActivity implements View.On
         mEtPasswd.setText("12345678");
 
         mEtName = (EditText)findViewById(R.id.text_name);
-        mEtName.setText(mUser.getUserName());
+        //mEtName.setText(mUser.getUserName());
         mEtName.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+/*
                 if((s.length() == 0 && (mUser.getUserName() == null || mUser.getUserName().length() == 0)) ||
                         s.toString().equals(mUser.getUserName())){
                     mEditMark &= 0xFD;
                 }else{
                     mEditMark |= 0x02;
                 }
+*/
                 mButtonOk.setEnabled((mEditMark&0xFF) != 0);
             }
             @Override

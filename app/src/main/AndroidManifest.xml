@@ -1,43 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.xingdhl.www.storehelper">
-
+    package="com.xingdhl.www.storehelper">
     <!-- 用于访问网络，网络定位需要上网 -->
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <!-- 获取手机录音机使用权限，听写、识别、语义理解需要用到此权限  -->
-    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
-    <!-- 用于进行网络定位 -->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <!-- 用于访问GPS定位 -->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <!-- 用于获取运营商信息，用于支持提供运营商信息相关的接口 -->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <!--允许程序改变网络连接状态 -->
-    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
-    <!-- 用于访问wifi网络信息，wifi信息会用于进行网络定位 -->
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-    <!-- 用于获取wifi的获取权限，wifi信息会用来进行网络定位 -->
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
-    <!-- 用于读取手机当前的状态 -->
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-    <!-- 用于读/写入缓存数据到扩展存储卡 -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <!-- 用于申请调用A-GPS模块 -->
-    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS"/>
-    <!-- 用于申请获取蓝牙信息进行室内定位 -->
-    <uses-permission android:name="android.permission.BLUETOOTH"/>
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
-    <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION"/>
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- 获取手机录音机使用权限，听写、识别、语义理解需要用到此权限 -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" /> <!-- 用于进行网络定位 -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- 用于访问GPS定位 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- 用于获取运营商信息，用于支持提供运营商信息相关的接口 -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- 允许程序改变网络连接状态 -->
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" /> <!-- 用于访问wifi网络信息，wifi信息会用于进行网络定位 -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> <!-- 用于获取wifi的获取权限，wifi信息会用来进行网络定位 -->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" /> <!-- 用于读取手机当前的状态 -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" /> <!-- 用于读/写入缓存数据到扩展存储卡 -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- 用于申请调用A-GPS模块 -->
+    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" /> <!-- 用于申请获取蓝牙信息进行室内定位 -->
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
 
     <application
+        android:name=".DbsApplication"
         android:allowBackup="true"
         android:icon="@drawable/app_icon"
-        android:name="com.xingdhl.www.storehelper.DbsApplication"
         android:label="@string/app_name"
         android:roundIcon="@drawable/app_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".store.MainBusinessActivity"></activity>
+        <activity android:name=".store.ListStoreActivity"></activity>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.xingdhl.www.storehelper.fileprovider"
@@ -45,118 +36,93 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths"/>
-        </provider>
-
-        <!-- 高德地图开发API Key 及地图服务 -->
+                android:resource="@xml/provider_paths" />
+        </provider> <!-- 高德地图开发API Key 及地图服务 -->
         <meta-data
             android:name="com.amap.api.v2.apikey"
-            android:value="bc2adf211670cc05f823ceb7b7a59cea"/>
+            android:value="bc2adf211670cc05f823ceb7b7a59cea" />
 
-        <service android:name="com.amap.api.location.APSService"/>
+        <service android:name="com.amap.api.location.APSService" />
         <service
-            android:name="com.xingdhl.www.storehelper.webservice.UpdateService"
-            android:enabled="true"/>
+            android:name=".webservice.UpdateService"
+            android:enabled="true" />
 
         <activity
-            android:name="com.xingdhl.www.storehelper.WelcomeActivity"
+            android:name=".WelcomeActivity"
             android:screenOrientation="portrait">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name="com.xingdhl.www.storehelper.user.UserRegisterActivity"
-            android:screenOrientation="portrait">
-        </activity>
+            android:name=".user.UserRegisterActivity"
+            android:screenOrientation="portrait"></activity>
         <activity
-            android:name="com.xingdhl.www.storehelper.user.UserLoginActivity"
-            android:screenOrientation="portrait">
-        </activity>
-        <activity android:name="com.xingdhl.www.storehelper.user.ResetPasswordActivity">
-        </activity>
+            android:name=".user.UserLoginActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".user.ResetPasswordActivity" />
         <activity
-            android:name="com.xingdhl.www.storehelper.store.CreateStoreActivity"
-            android:screenOrientation="portrait">
-        </activity>
+            android:name=".store.CreateStoreActivity"
+            android:screenOrientation="portrait" />
         <activity
-            android:name="com.xingdhl.www.storehelper.user.SupplierManageActivity"
-            android:screenOrientation="portrait">
-        </activity>
+            android:name=".user.SupplierManageActivity"
+            android:screenOrientation="portrait" />
         <activity
-            android:name="com.xingdhl.www.storehelper.user.SupplierEditActivity"
-            android:screenOrientation="portrait">
-        </activity>
+            android:name=".user.SupplierEditActivity"
+            android:screenOrientation="portrait" />
         <activity
-            android:name="com.xingdhl.www.storehelper.trading.TradingActivity"
+            android:name=".trading.TradingActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan">
-        </activity>
+            android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name="com.xingdhl.www.storehelper.store.PurchaseActivity"
+            android:name=".store.PurchaseActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan">
-        </activity>
+            android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name="com.xingdhl.www.storehelper.store.GoodsInputActivity"
+            android:name=".store.GoodsInputActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan">
-        </activity>
+            android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name="com.xingdhl.www.storehelper.store.StorageManageActivity"
+            android:name=".store.StorageManageActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan">
-        </activity>
+            android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name="com.xingdhl.www.storehelper.store.StorageEditActivity"
-            android:screenOrientation="portrait">
-        </activity>
+            android:name=".store.StorageEditActivity"
+            android:screenOrientation="portrait" />
         <activity
-            android:name="com.xingdhl.www.storehelper.AboutActivity"
-            android:screenOrientation="portrait">
-        </activity>
+            android:name=".AboutActivity"
+            android:screenOrientation="portrait" />
         <activity
-            android:name="com.xingdhl.www.storehelper.user.ClerkManageActivity"
-            android:screenOrientation="portrait">
-        </activity>
+            android:name=".user.ClerkManageActivity"
+            android:screenOrientation="portrait" />
         <activity
-            android:name="com.xingdhl.www.storehelper.user.ClerkEditActivity"
-            android:screenOrientation="portrait">
-        </activity>
+            android:name=".user.ClerkEditActivity"
+            android:screenOrientation="portrait" />
         <activity
-            android:name="com.xingdhl.www.storehelper.trading.SalesAnalysisActivity"
-            android:screenOrientation="portrait">
-        </activity>
+            android:name=".trading.SalesAnalysisActivity"
+            android:screenOrientation="portrait" />
         <activity
-            android:name="com.xingdhl.www.storehelper.trading.CalenderActivity"
-            android:screenOrientation="portrait">
-        </activity>
+            android:name=".trading.CalenderActivity"
+            android:screenOrientation="portrait" />
         <activity
-            android:name="com.xingdhl.www.storehelper.user.StoreOwnerActivity"
-            android:screenOrientation="portrait">
-        </activity>
+            android:name=".user.StoreOwnerActivity"
+            android:screenOrientation="portrait" />
         <activity
-            android:name="com.xingdhl.www.storehelper.user.UserInfomationActivity"
-            android:screenOrientation="portrait">
-        </activity>
+            android:name=".user.UserInfomationActivity"
+            android:screenOrientation="portrait" />
         <activity
-            android:name="com.xingdhl.www.storehelper.user.ModifyPwdActivity"
-            android:screenOrientation="portrait">
-        </activity>
+            android:name=".user.ModifyPwdActivity"
+            android:screenOrientation="portrait"></activity>
         <activity
-            android:name="com.xingdhl.www.storehelper.store.StoreEditActivity"
-            android:screenOrientation="portrait">
-        </activity>
+            android:name=".store.StoreEditActivity"
+            android:screenOrientation="portrait"></activity>
         <activity
-            android:name="com.xingdhl.www.storehelper.store.PurchaseReviewActivity"
-            android:screenOrientation="portrait">
-        </activity>
-        <activity android:name="com.xingdhl.www.storehelper.utility.ScanBardcodeActivity">
-        </activity>
-        <activity android:name="com.xingdhl.www.storehelper.trading.PaymentActivity">
-        </activity>
+            android:name=".store.PurchaseReviewActivity"
+            android:screenOrientation="portrait"></activity>
+        <activity android:name=".utility.ScanBardcodeActivity"></activity>
+        <activity android:name=".trading.PaymentActivity"></activity>
     </application>
 
 </manifest>

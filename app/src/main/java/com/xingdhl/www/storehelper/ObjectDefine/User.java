@@ -20,7 +20,6 @@ public class User {
     private static User sUser;
     private Context mContext;
 
-    private String mPhoneNum;
     private String mPassword;
     private String mAutonym;
     private String mIdCard;
@@ -67,6 +66,7 @@ public class User {
 
     public static User getUser(Context context) {
         if (sUser == null) {
+            assert context != null;
             sUser = new User(context);
         }
         return sUser;
@@ -240,14 +240,6 @@ public class User {
 
     public void addStore(Store store){
         mStores.add(store);
-    }
-
-    public String getPhoneNum() {
-        return mPhoneNum;
-    }
-
-    public void setPhoneNum(String phoneNum) {
-        mPhoneNum = phoneNum;
     }
 
     public String getPassword() {

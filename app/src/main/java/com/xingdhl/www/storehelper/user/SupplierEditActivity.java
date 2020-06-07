@@ -18,6 +18,7 @@ import com.xingdhl.www.storehelper.CustomStuff.FreeToast;
 import com.xingdhl.www.storehelper.CustomStuff.QueryDialog;
 import com.xingdhl.www.storehelper.ObjectDefine.GCV;
 import com.xingdhl.www.storehelper.ObjectDefine.Supplier;
+import com.xingdhl.www.storehelper.ObjectDefine.User;
 import com.xingdhl.www.storehelper.R;
 import com.xingdhl.www.storehelper.webservice.HttpHandler;
 import com.xingdhl.www.storehelper.webservice.WebServiceAPIs;
@@ -36,11 +37,11 @@ public class SupplierEditActivity extends AppCompatActivity implements
     private EditText mTel;
     private EditText mContacter;
     private Button mButtonEdit;
-    private Button mButtonDel;
 
     private HttpHandler mHttpHandler;
     private Supplier mSupplier;
 
+    private int mStoreNo;
     private int mMarks;
 
     @Override
@@ -62,9 +63,13 @@ public class SupplierEditActivity extends AppCompatActivity implements
                 finish();
                 break;
             case WebServiceAPIs.MSG_DEL_SUPPLIER:
-                arg.putExtra("id", msg.arg2);
-                setResult(RESULT_OK, arg);
-                finish();
+                if(msg.arg1 == HTTP_OK) {
+                    arg.putExtra("id", mSupplier.getId());
+                    setResult(RESULT_OK, arg);
+                    finish();
+                }else{
+                    FreeToast.makeText(this, "删除供应商失败，请稍后重试", Toast.LENGTH_SHORT).show();
+                }
         }
     }
 
@@ -75,8 +80,9 @@ public class SupplierEditActivity extends AppCompatActivity implements
 
         mMarks = 0;
         mHttpHandler = new HttpHandler(this);
+        mStoreNo = getIntent().getIntExtra("store_No", -1);
 
-        mContacter = (EditText)findViewById(R.id.supp_contacter);
+        mContacter = findViewById(R.id.supp_contacter);
         mContacter.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -105,7 +111,7 @@ public class SupplierEditActivity extends AppCompatActivity implements
 
             }
         });
-        mName = (EditText)findViewById(R.id.supp_name);
+        mName = findViewById(R.id.supp_name);
         mName.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -134,7 +140,7 @@ public class SupplierEditActivity extends AppCompatActivity implements
 
             }
         });
-        mAddr = (EditText)findViewById(R.id.supp_addr);
+        mAddr = findViewById(R.id.supp_addr);
         mAddr.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -163,7 +169,7 @@ public class SupplierEditActivity extends AppCompatActivity implements
 
             }
         });
-        mTel = (EditText)findViewById(R.id.supp_tel);
+        mTel = findViewById(R.id.supp_tel);
         mTel.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -188,8 +194,8 @@ public class SupplierEditActivity extends AppCompatActivity implements
             }
         });
 
-        mButtonEdit = (Button)findViewById(R.id.supp_edit);
-        mButtonDel = (Button)findViewById(R.id.supp_del);
+        mButtonEdit = findViewById(R.id.supp_edit);
+        Button buttonDel = findViewById(R.id.supp_del);
 
         Bundle bundle = getIntent().getBundleExtra("bundle");
         if(bundle != null) {
@@ -199,7 +205,7 @@ public class SupplierEditActivity extends AppCompatActivity implements
             mAddr.setText(mSupplier.getAddr());
             mTel.setText(mSupplier.getPhone());
         }else{
-            mButtonDel.setEnabled(false);
+            buttonDel.setEnabled(false);
             //mSupplier = new Supplier();
         }
         mButtonEdit.setEnabled((mMarks & 0x0F) != 0);
@@ -225,22 +231,23 @@ public class SupplierEditActivity extends AppCompatActivity implements
                     return;
                 }
 
-                Supplier supplier = new Supplier(mName.getText().toString().trim(),
+                Supplier supplier = new Supplier(User.getUser(null).getStore(mStoreNo).getId(),
+                        mName.getText().toString().trim(),
                         mAddr.getText().toString().trim(),
                         mTel.getText().toString().trim(),
                         mContacter.getText().toString().trim());
-                supplier.setShopId(getIntent().getIntExtra("store_id", -1));
                 if(mSupplier != null) {
                     supplier.setId(mSupplier.getId());
                     //supplier.setShopId(mSupplier.getShopId());
                     WebServiceAPIs.updateSupplier(mHttpHandler, supplier);
                 } else {
-                    WebServiceAPIs.addSupplier(mHttpHandler, supplier);
+                    WebServiceAPIs.addSupplier(mHttpHandler,
+                            User.getUser(null).getStore(mStoreNo).getId(), supplier);
                 }
             }
         });
 
-        mButtonDel.setOnClickListener(new View.OnClickListener() {
+        buttonDel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 QueryDialog.whoIs = 1;

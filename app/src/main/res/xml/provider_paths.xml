@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths xmlns:android="http://schemas.android.com/apk/res/android">
-    <external-path name="app_download" path="Download"/>
+    <external-path name="app_download" path="app_down"/>
+    <files-path name="store_logo" path="images/store"/>
+    <files-path name="goods_logo" path="images/goods"/>
+    <files-path name="user_logo" path="images/user"/>
 </paths>

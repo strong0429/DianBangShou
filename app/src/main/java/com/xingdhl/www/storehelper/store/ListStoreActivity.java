@@ -7,50 +7,33 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.os.Bundle;
-import android.os.Message;
+
 import com.xingdhl.www.storehelper.ObjectDefine.Store;
 import com.xingdhl.www.storehelper.ObjectDefine.User;
 import com.xingdhl.www.storehelper.R;
-import com.xingdhl.www.storehelper.webservice.HttpHandler;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListStoreActivity extends AppCompatActivity implements
-        HttpHandler.handlerCallback {
-    public static final int NEW_STORE_ADDED = -100;
-
-    private User mUser;
-    private ViewPager2 mViewPager;
-    private HttpHandler mHttpHandler;
+public class ListStoreActivity extends AppCompatActivity {
     private List<Fragment> mFragments;
-
-    @Override
-    public void onMsgHandler(Message msg) {
-        if(msg.what != NEW_STORE_ADDED)
-            return;
-        //mFragments.clear();
-        mFragments.add(new ViewStoreFragment(mUser.getStore(0)));
-        mViewPager.getAdapter().notifyDataSetChanged();
-        mViewPager.setCurrentItem(mFragments.size() - 1);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_store_pager);
 
-        mHttpHandler = new HttpHandler(this);
-        mViewPager = findViewById(R.id.viewpager_container);
-        mViewPager.setOffscreenPageLimit(1);
+        ViewPager2 viewPager = findViewById(R.id.viewpager_container);
+        //mViewPager.setOffscreenPageLimit(1);
 
-        mUser = User.getUser(null);
+        User user = User.getUser(null);
         mFragments = new ArrayList<>();
-        mFragments.add(new HomePageFragment());
-        for(Store store : mUser.getStores())
+        for(Store store : user.getStores())
             mFragments.add(new ViewStoreFragment(store));
+        if(mFragments.size() == 0)
+            mFragments.add(new HomePageFragment());
 
-        mViewPager.setAdapter(new FragmentStateAdapter(this) {
+        viewPager.setAdapter(new FragmentStateAdapter(this) {
             @NonNull
             @Override
             public Fragment createFragment(int position) {
@@ -74,9 +57,5 @@ public class ListStoreActivity extends AppCompatActivity implements
         }
         fm.beginTransaction().add(R.id.fragment_container, fragment).commit();
          */
-    }
-
-    public HttpHandler getHttpHandler(){
-        return mHttpHandler;
     }
 }

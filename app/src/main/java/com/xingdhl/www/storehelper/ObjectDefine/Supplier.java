@@ -6,6 +6,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Strong on 17/11/28.
@@ -18,7 +20,7 @@ public class Supplier implements Serializable{
     private String mContacter;
     private String mAddr;
     private int mId;
-    private int mShopId;
+    //private int mShopId;
 
     public Supplier()
     {
@@ -26,16 +28,23 @@ public class Supplier implements Serializable{
     }
 
     public Supplier(JSONObject jsonObject){
-        try{
+        try {
             mId = jsonObject.getInt("id");
-            mShopId = jsonObject.getInt("storeId");
+        }catch(JSONException ignored){ }
+        try {
             mName = jsonObject.getString("name");
+        }catch(JSONException ignored){ }
+        try {
             mPhone = jsonObject.getString("phone");
+        }catch(JSONException ignored){ }
+        try {
             mContacter = jsonObject.getString("contacter");
+        }catch(JSONException ignored){ }
+        try {
             mAddr = jsonObject.getString("addr");
-        }catch (JSONException je){
-            Log.d("XDB_DebugInfo", "parse Supplier JSON error: ", je);
-        }
+        }catch(JSONException ignored){ }
+
+        //mShopId = jsonObject.getInt("store");
     }
 
     public String getContacter() {
@@ -54,7 +63,8 @@ public class Supplier implements Serializable{
         mId = id;
     }
 
-    public Supplier(String name, String addr, String tel, String contacter){
+    public Supplier(int storeId, String name, String addr, String tel, String contacter){
+        //mShopId = storeId;
         mName = name;
         mAddr = addr;
         mPhone = tel;
@@ -83,13 +93,5 @@ public class Supplier implements Serializable{
 
     public void setPhone(String phone) {
         mPhone = phone;
-    }
-
-    public int getShopId() {
-        return mShopId;
-    }
-
-    public void setShopId(int shopId) {
-        mShopId = shopId;
     }
 }
